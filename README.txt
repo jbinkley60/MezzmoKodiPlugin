@@ -1,3 +1,10 @@
+2.2.1.4 2/22/2025
+
+- Added new feature Mezzmo Skip to allow setting a skip value for the beginning of playback
+- Modified automatic playback adjustment introduced in v2.2.1.1 so that it will not operate
+  during the daily sync or manual user forced sync processes.
+- Improved logging if there is a failure of the automatic playcount adjustment process 
+
 2.2.1.3 1/10/2025
 
 - Fixed a bug where Mezzmo Show TV Episodes could display additional TV Episodes or movies

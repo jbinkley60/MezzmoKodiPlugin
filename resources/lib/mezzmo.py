@@ -809,7 +809,12 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
-                        if tags_text is not None: vinfo.setTags(tags_text.split(','))
+                        if tags_text is not None:
+                            if 'startskip:' in tags_text:
+                                skipval = media.checkSkips(tags_text)
+                                if int(skipval) > 0:     
+                                    vinfo.setUniqueID(skipval, "startskip")
+                            vinfo.setTags(tags_text.split(','))
                         vinfo.setRating(rating_valf)
                         vinfo.setIMDBNumber(imdb_text)
                         vinfo.setMediaType(categories_text)
@@ -1533,7 +1538,12 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                         vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
-                        if tags_text is not None: vinfo.setTags(tags_text.split(','))
+                        if tags_text is not None:
+                            if 'startskip:' in tags_text:
+                                skipval = media.checkSkips(tags_text)
+                                if int(skipval) > 0:     
+                                    vinfo.setUniqueID(skipval, "startskip")
+                            vinfo.setTags(tags_text.split(','))
                         vinfo.setRating(rating_valf)
                         vinfo.setIMDBNumber(imdb_text)
                         vinfo.setMediaType(categories_text)

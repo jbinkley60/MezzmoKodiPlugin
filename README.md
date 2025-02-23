@@ -22,8 +22,7 @@ With the Mezzmo Kodi addon there is full integration into Kodi and <a href="http
 
 
 <b>Features: </b>
-- Kodi 18 and 19-21+ versions with almost 100% feature parity
-- Kodi 22 interim development support 
+- Kodi 18 and 19-22+ versions with almost 100% feature parity
 - Play and resume videos with 0-30 sec rewind / <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Settings#timers--servers">lookback option</a>
 - Share <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/How-it-works-%3F#resume-point-sharing">resume points</a> between other devices through the Mezzmo server
 - <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Last-Played-Media">Last Played Media</a> feature for quick access to recently played media
@@ -42,6 +41,7 @@ With the Mezzmo Kodi addon there is full integration into Kodi and <a href="http
 - Flexible user definable <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Managing-Your-Library#mezzmo-movie-collection">movie collections</a> with quick context menu access
 - Automatically stop paused playback <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Settings#timers--servers">user selectable</a> timer
 - Performance <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Logs-&-Statistics">statistics</a> and log viewing
+- Flexible <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Managing-Your-Library#mezzmo-autoskip">automatic skipping</a> of the opening introduction when playing videos
 - <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Settings#content-control">Option</a> for managing Kodi artwork caching for Mezzmo
 - Modify <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Context-Menu-Additions#individual-item-context-menu-additions">video watched</a> status in Mezzmo from the Kodi GUI
 - <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Context-Menu-Additions#mezzmo-autostart">Automatically start</a> on your favorite playlist  
