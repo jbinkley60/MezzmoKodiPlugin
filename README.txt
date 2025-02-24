@@ -1,3 +1,9 @@
+2.2.1.5 2/25/2025
+
+- Bug fix to address issue introduced in version 2.2.1.4 which could cause the sync process
+  to end prematurely due to a metadata change in a recent video file.  This had to do with
+  attempting to parse keywords for the startskip feature when there were no keywords.
+
 2.2.1.4 2/22/2025
 
 - Added new feature Mezzmo Skip to allow setting a skip value for the beginning of playback

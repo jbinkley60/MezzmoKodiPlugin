@@ -1091,11 +1091,11 @@ def writeMovieToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, m
             insertStudios(movienumb, db, 'movie', mstudio, knative)
             insertVversion(fileId[0], movienumb, db, 'movie', kversion) # Insert Kodi video version 
             if mdupelog == 'false' and fsyncflag == 'no':
-                if 'startskip:' not in mkeywords:  
-                    mgsynclog = '###' + mtitle
-                    mezlogUpdate(mgsynclog)
-                    mgsynclog ='There was a Mezzmo metadata change detected: '
-                    mezlogUpdate(mgsynclog)
+                if mkeywords == None or 'startskip:' not in mkeywords:
+                    msynclog = '###' + mtitle
+                    mezlogUpdate(msynclog)
+                    msynclog ='There was a Mezzmo metadata change detected: '
+                    mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    # Add dupes to database
             movienumb = 999999                                        # Trigger actor update
@@ -1166,10 +1166,10 @@ def writeMusicVToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, 
             insertDirectors(movienumb, db, 'musicvideo', mdirector, imageSearchUrl, kdirector)
             insertStudios(movienumb, db, 'musicvideo', mstudio, kdirector)    
             if mdupelog == 'false' and fsyncflag == 'no':
-                if 'startskip:' not in mkeywords: 
-                    synclog = '###' + mtitle
+                if mkeywords == None or 'startskip:' not in mkeywords:
+                    msynclog = '###' + mtitle
                     mezlogUpdate(msynclog)
-                    synclog ='There was a Mezzmo metadata change detected: '
+                    msynclog ='There was a Mezzmo metadata change detected: '
                     mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    # Add dupes to database
@@ -1253,14 +1253,14 @@ def writeEpisodeToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, maired
             insertTags(shownumb, db, 'tvshow', mkeywords)              # Insert tags for episode
             insertIMDB(movienumb, db, 'episode', mimdb_text)           # Insert IMDB for episode
             insertKwords(mkeywords, 'episode', movienumb)              # Insert keywords for episode
-            insertSkips(movienumb, db, 'episode', mkeywords)           # Insert skips for episode  
+            insertSkips(movienumb, db, 'episode', mkeywords)           # Insert skips for episode 
             insertDirectors(movienumb, db, 'episode', mdirector, imageSearchUrl, kdirector)
             insertWriters(movienumb, db, 'episode', mwriter, imageSearchUrl, kdirector) 
             if mdupelog == 'false' and fsyncflag == 'no':
-                if 'startskip:' not in mkeywords: 
+                if mkeywords == None or 'startskip:' not in mkeywords:
                     msynclog = '###' + mtitle
                     mezlogUpdate(msynclog)
-                    mgenlog ='There was a Mezzmo metadata change detected: '
+                    msynclog ='There was a Mezzmo metadata change detected: '
                     mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    #  Add dupes to database
@@ -1841,8 +1841,8 @@ def insertSkips(movienumb, db, media_type, keywords):                          #
 
     try:
         if keywords == None or  'startskip:' not in keywords:                  # Only save skips
-            db.execute('DELETE FROM uniqueid WHERE media_type=? and media_id=?',        \
-            (media_type, movienumb,))
+            #db.execute('DELETE FROM uniqueid WHERE media_type=? and media_id=?',        \
+            #(media_type, movienumb,))
             return
 
         xbmc.log('Mezzmo skip keywords: ' + str(keywords) + ' ' + media_type + ' ' + str(movienumb), xbmc.LOGDEBUG)
