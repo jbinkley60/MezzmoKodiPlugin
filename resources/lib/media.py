@@ -217,7 +217,21 @@ def getDatabaseName():
     elif installed_version == '22':
         return "MyVideos133.db"
       
-    return ""  
+    return ""
+
+
+def getteDatabaseName():
+    installed_version = get_installedversion()
+    if installed_version == '19':
+        return "Textures13.db"
+    elif installed_version == '20':
+        return "Textures13.db"
+    elif installed_version == '21':
+        return "Textures13.db"   
+    elif installed_version == '22':
+        return "Textures14.db"
+    else:     
+        return None  
 
 
 def openKodiDB():                                   #  Open Kodi database

@@ -31,8 +31,15 @@ def updateTexturesCache(contenturl):     # Update Kodi image cache timers
         from sqlite3 import dbapi2 as sqlite
     except:
         from pysqlite2 import dbapi2 as sqlite
-                      
-    DB = os.path.join(xbmcvfs.translatePath("special://database"), "Textures13.db")
+
+    dbfile = media.getteDatabaseName()
+
+    if dbfile == None:
+        mgenlog = 'Mezzmo textures could not be cleared.  No dbfile version returned.'
+        media.mgenlogUpdate(mgenlog)
+        return          
+                  
+    DB = os.path.join(xbmcvfs.translatePath("special://database"), dbfile)
     db = sqlite.connect(DB)
 
     serverport = '%' + media.getServerport(contenturl) + '%'     #  Get Mezzmo server port info
@@ -54,7 +61,14 @@ def deleteTexturesCache(contenturl, force = ''):    # do not cache texture image
         except:
             from pysqlite2 import dbapi2 as sqlite
                       
-        DB = os.path.join(xbmcvfs.translatePath("special://database"), "Textures13.db")
+        dbfile = media.getteDatabaseName()
+
+        if dbfile == None:
+            mgenlog = 'Mezzmo textures could not be deleted.  No dbfile version returned.'
+            media.mgenlogUpdate(mgenlog)
+            return          
+                  
+        DB = os.path.join(xbmcvfs.translatePath("special://database"), dbfile)
         db = sqlite.connect(DB)
     
         serverport = '%' + media.getServerport(contenturl) + '%'     #  Get Mezzmo server port info

@@ -1,3 +1,9 @@
+2.2.1.6 4/9/2025
+
+- Added support for handling Textures database refresh options with Kodi 22.  Previous versions 
+  only supported up to Kodi 21.
+- Improved graceful handling of unsupported Kodi versions with the texture database.
+
 2.2.1.5 2/25/2025
 
 - Bug fix to address issue introduced in version 2.2.1.4 which could cause the sync process
