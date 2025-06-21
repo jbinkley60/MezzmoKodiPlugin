@@ -38,7 +38,8 @@ addon_path = addon.getAddonInfo("path")
 addon_icon = addon_path + '/resources/icon.png'
 addon_fanart = addon_path + '/resources/fanart.jpg'
 searchcontrol = 'browse'
-searchcontrol2 = '' 
+searchcontrol2 = ''
+source = ''
 
 installed_version = media.get_installedversion()
 
@@ -249,12 +250,12 @@ def listServers(force):
 def build_url(query):
     return base_url + '?' + urllib.parse.urlencode(query)
 
-def handleBrowse(content, contenturl, objectID, parentID):
+def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     contentType = 'movies'
     itemsleft = -1
     pitemsleft = -1
     global brtime, patime
-    srtime = 0 
+    srtime = itemcount = 0 
     media.settings('contenturl', contenturl)
     koditv = media.settings('koditv')
     knative = media.settings('knative')
@@ -281,7 +282,8 @@ def handleBrowse(content, contenturl, objectID, parentID):
     menuitem7 = addon.getLocalizedString(30384)
     menuitem8 = addon.getLocalizedString(30412)
     menuitem9 = addon.getLocalizedString(30434)
-    menuitem10 = addon.getLocalizedString(30435)    
+    menuitem10 = addon.getLocalizedString(30435)
+    menuitem11 = addon.getLocalizedString(30464)    
     autostart = media.settings('autostart')
     sync.deleteTexturesCache(contenturl)                # Call function to delete textures cache if user enabled.  
     #xbmc.log('Kodi version: ' + installed_version, xbmc.LOGINFO)
@@ -298,6 +300,8 @@ def handleBrowse(content, contenturl, objectID, parentID):
             result = browseresponse.find('Result')
             NumberReturned = browseresponse.find('NumberReturned').text
             TotalMatches = browseresponse.find('TotalMatches').text
+
+            xbmc.log('Mezzmo items: ' + NumberReturned + ' ' + objectID, xbmc.LOGDEBUG)
             
             if int(NumberReturned) == 0:
                 dialog_text = media.translate(30421) + '\n' + xbmc.getInfoLabel("ListItem.Label")
@@ -307,6 +311,21 @@ def handleBrowse(content, contenturl, objectID, parentID):
                 
             if itemsleft == -1:
                 itemsleft = int(TotalMatches)
+
+            if searchcontrol != 'browse' and reqcount > 0:
+                itemurl = build_url({'mode': 'home'})
+                li = xbmcgui.ListItem(menuitem11, offscreen=True)
+                mediaClass_text = 'video'
+                if installed_version == '19':              #  Kodi 19 format
+                    khinfo = {
+                            'plot': media.translate(30572),
+                    }
+                    li.setInfo(mediaClass_text, khinfo)
+                else:                                                 # Kodi 20+ format   
+                    khfinfo = li.getVideoInfoTag()
+                    khfinfo.setPlot(media.translate(30572)) 
+                li.setArt({'thumb': addon_icon, 'poster': addon_icon, 'icon': addon_icon, 'fanart': addon_fanart})
+                xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
             
             #elems = xml.etree.ElementTree.fromstring(result.text.encode('utf-8'))
             elems = xml.etree.ElementTree.fromstring(result.text)
@@ -480,7 +499,7 @@ def handleBrowse(content, contenturl, objectID, parentID):
                 cast_dict = []    # Added cast & thumbnail display from Mezzmo server
                 cast_dict_keys = ['name','thumbnail']
                 actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
-                if actors != None and imageSearchUrl != None and len(actors.text) > 2:
+                if actors != None and imageSearchUrl != None and len(actors.text.strip()) > 2:
                     actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
                     if installed_version == '19':                     
                         for a in actor_list:                  
@@ -519,7 +538,7 @@ def handleBrowse(content, contenturl, objectID, parentID):
                 if tags != None:
                     tags_text = tags.text
                     taglist = str(tags_text).replace(',', '$')
-                    
+                  
                 categories_text = 'movie'
                 categories = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}categories')
                 if categories != None and categories.text != None:
@@ -551,10 +570,12 @@ def handleBrowse(content, contenturl, objectID, parentID):
                         contentType = 'videos'
                         showtitle = title
                 else:
-                    movieset = album_text = trtype = ''
+                    movieset = trtype = ''
                     categories_text = 'video'
                     contentType = 'videos'
                     showtitle = title
+
+                xbmc.log('Mezzmo album_text: ' + str(album_text), xbmc.LOGDEBUG)
 
                 if 'tvtrailer' in trtype and imageSearchUrl != None and actors != None  \
                 and actors.text == 'Unknown Artist':                     # TV trailer cast search
@@ -788,6 +809,12 @@ def handleBrowse(content, contenturl, objectID, parentID):
                         vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
+                        if tags_text is not None:
+                            if 'startskip:' in tags_text:
+                                skipval = media.checkSkips(tags_text)
+                                if int(skipval) > 0:     
+                                    vinfo.setUniqueID(skipval, "startskip")
+                            vinfo.setTags(tags_text.split(','))
                         vinfo.setRating(rating_valf)
                         vinfo.setIMDBNumber(imdb_text)
                         vinfo.setMediaType(categories_text)
@@ -941,6 +968,7 @@ def handleBrowse(content, contenturl, objectID, parentID):
                     itemurl = build_url({'mode': 'picture', 'itemurl': itemurl})
                 if validf == 1: 
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
+                    itemcount += 1         #  Increment item counter
                 else:
                     dialog_text = "Video file:  " + title + " is invalid. Check Mezzmo video properties for this file."
                     xbmcgui.Dialog().ok("Mezzmo", dialog_text)
@@ -978,6 +1006,11 @@ def handleBrowse(content, contenturl, objectID, parentID):
             if itemsleft < 1000:
                 requestedCount = itemsleft
 
+            if reqcount > 0 and itemcount >= reqcount:  # Max count reached for last played
+                dbfile.commit()
+                dbfile.close()             #  Final commit writes and close Kodi database
+                break      
+
             pin = media.settings('content_pin')
             brtime2 = time.time()                       #  Additional browse begin time
             content = browse.Browse(contenturl, objectID, 'BrowseDirectChildren', offset, requestedCount, pin)        
@@ -988,6 +1021,8 @@ def handleBrowse(content, contenturl, objectID, parentID):
     setViewMode(contentType)
     if contentType == 'top' or contentType == 'folders':
         contentType = ''
+    if reqcount > 0:
+        xbmc.executebuiltin('Container.SetSortMethod(0)')
     xbmcplugin.setContent(addon_handle, contentType)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_UNSORTED)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DATE)
@@ -999,7 +1034,7 @@ def handleBrowse(content, contenturl, objectID, parentID):
     xbmcplugin.endOfDirectory(addon_handle)
 
 
-def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
+def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch = ''):
     global searchcontrol, searchcontrol2
     contentType = 'movies'
     itemsleft = -1
@@ -1014,15 +1049,20 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
     trcount = media.settings('trcount')                 # Checks multiple trailer setting
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
+    menuitem3 = addon.getLocalizedString(30372)
+    menuitem4 = addon.getLocalizedString(30373)
     menuitem9 = addon.getLocalizedString(30434)
     menuitem10 = addon.getLocalizedString(30464)
-    menuitem11 = addon.getLocalizedString(30465)
+    menuitem11 = addon.getLocalizedString(30465)        # New search
+    menuitem12 = addon.getLocalizedString(30435)  
     kodichange = media.settings('kodichange')           # Checks for change detection user setting
     kodiactor = media.settings('kodiactor')             # Checks for actor info setting
     sstudio = media.settings('singlestudio')            # Checks for single studio setting
     sync.deleteTexturesCache(contenturl)                # Call function to delete textures cache if user enabled
     enhdesc = media.settings('enhdesc')                 # Enhanced description setting
-    kodiart = media.settings('kodiart')                 # Additional Kodi artwork 
+    kodiart = media.settings('kodiart')                 # Additional Kodi artwork
+    srchorder = int(media.settings('srchorder'))        # Default search result sort order (integer)
+    srchcontent = media.settings('srchcontent')         # Default content type for search results
     
     try:
         while True:
@@ -1037,10 +1077,13 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
             result = browseresponse.find('Result')
             NumberReturned = browseresponse.find('NumberReturned').text
             TotalMatches = browseresponse.find('TotalMatches').text
+
+            xbmc.log('Handle search items found: ' + str(TotalMatches) + ' ' + str(NumberReturned), xbmc.LOGDEBUG) 
             
             if int(NumberReturned) == 0:
                 dialog_text = media.translate(30414)
                 xbmcgui.Dialog().ok(media.translate(30420), dialog_text)
+                searchsave = media.settings('searchsave', 'None')       # Clear search criteria when no results
                 if searchcontrol == 'native':
                     xbmc.executebuiltin('Dialog.Close(all)')
                     xbmc.executebuiltin('ReplaceWindow(%s)' % ('10000'))
@@ -1058,20 +1101,56 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                     itemurl2 = build_url({'mode': 'newsearch', 'contentdirectory': contenturl, 'source': 'native', \
                     'objectID': objectID})
                     li = xbmcgui.ListItem(menuitem10)
+                    mediaClass_text = 'video'
+                    if installed_version == '19':                         #  Kodi 19 format
+                        khinfo = {
+                                'plot': media.translate(30572),
+                        }
+                        li.setInfo(mediaClass_text, khinfo)
+                    else:                                                 # Kodi 20+ format   
+                        khfinfo = li.getVideoInfoTag()
+                        khfinfo.setPlot(media.translate(30572))
                     li.setArt({'thumb': addon_icon, 'poster': addon_icon, 'icon': addon_icon, 'fanart': addon_fanart})
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
                     li = xbmcgui.ListItem(menuitem11)
+                    mediaClass_text = 'video'
+                    if installed_version == '19':                         #  Kodi 19 format
+                        khinfo = {
+                            'plot': media.translate(30815),
+                        }
+                        li.setInfo(mediaClass_text, khinfo)
+                    else:                                                 # Kodi 20+ format   
+                        khfinfo = li.getVideoInfoTag()
+                        khfinfo.setPlot(media.translate(30815)) 
                     li.setArt({'thumb': addon_icon, 'poster': addon_icon, 'icon': addon_icon, 'fanart': addon_fanart})
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl2, listitem=li, isFolder=False)
                 elif searchcontrol == 'native' and (searchcontrol2 == 'movieset' or searchcontrol2 == 'collection'):
                     itemurl = build_url({'mode': 'home'})
                     li = xbmcgui.ListItem(menuitem10)
+                    mediaClass_text = 'video'
+                    if installed_version == '19':                         #  Kodi 19 format
+                        khinfo = {
+                                'plot': media.translate(30572),
+                        }
+                        li.setInfo(mediaClass_text, khinfo)
+                    else:                                                 # Kodi 20+ format   
+                        khfinfo = li.getVideoInfoTag()
+                        khfinfo.setPlot(media.translate(30572)) 
                     li.setArt({'thumb': addon_icon, 'poster': addon_icon, 'icon': addon_icon, 'fanart': addon_fanart})
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
                 elif searchcontrol2 != 'movieset' and searchcontrol2 != 'collection':
                     itemurl2 = build_url({'mode': 'newsearch', 'contentdirectory': contenturl, 'source': 'browse', \
                     'objectID': objectID})
                     li = xbmcgui.ListItem(menuitem11)
+                    mediaClass_text = 'video'
+                    if installed_version == '19':                         #  Kodi 19 format
+                        khinfo = {
+                            'plot': media.translate(30815),
+                        }
+                        li.setInfo(mediaClass_text, khinfo)
+                    else:                                                 # Kodi 20+ format   
+                        khfinfo = li.getVideoInfoTag()
+                        khfinfo.setPlot(media.translate(30815)) 
                     li.setArt({'thumb': addon_icon, 'poster': addon_icon, 'icon': addon_icon, 'fanart': addon_fanart})
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl2, listitem=li, isFolder=False)
                 searchmenu += 1
@@ -1209,6 +1288,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                 tags = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}keywords')
                 if tags != None:
                     tags_text = tags.text
+                    taglist = str(tags_text).replace(',', '$')
                     
                 categories_text = 'movie'
                 categories = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}categories')
@@ -1220,11 +1300,15 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                     else:
                         movieset =  album_text = ''                      
 
+                    if 'trailer' in categories_text.lower():
+                        trtype = categories_text.lower()
+                    else:
+                        trtype = 'video' 
                     if 'tv show' in categories_text.lower():
                         categories_text = 'episode'
                         contentType = 'episodes'
                         showtitle = album_text
-                    elif 'movie' in categories_text.lower():
+                    elif 'movie' in categories_text.lower() or 'trailer' in categories_text.lower():
                         categories_text = 'movie'
                         contentType = 'movies'
                         showtitle = title
@@ -1237,15 +1321,10 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                         contentType = 'videos'
                         showtitle = title
                 else:
-                    movieset = album_text = ''
+                    movieset = trtype = ''
                     categories_text = 'video'
                     contentType = 'videos'
                     showtitle = title
-                        
-                episode_text = ''
-                episode = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}episode')
-                if episode != None:
-                    episode_text = episode.text
                  
                 season_text = season_kodi = ''
                 season = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}season')
@@ -1255,6 +1334,11 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                         season_kodi = None
                     else:
                         season_kodi = season_text
+
+                episode_text = ''
+                episode = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}episode')
+                if episode != None:
+                    episode_text = episode.text
                  
                 playcount = 0
                 playcount_text = ''
@@ -1394,13 +1478,14 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                         li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})  
                     mtitle = media.displayTitles(title)					#  Normalize title
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
-                    if int(trcount) > 0 and trailerurl != None:        
-                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),        \
-                        (addon.getLocalizedString(30348), 'Action(Info)'), (menuitem9, 'RunScript(%s, %s, %s, %s, %s)' \
-                        % ("plugin.video.mezzmo", "trailer", pctitle, trcount, icon)) ])  
-                    else:                              
-                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),        \
-                        (addon.getLocalizedString(30348), 'Action(Info)') ])      
+                    pcseries = '"' + album_text + '"'                                   #  Handle commas
+                    mtype = categories_text  
+
+                    li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),   \
+                    (menuitem12, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
+                    ("plugin.video.mezzmo", "context", pctitle, itemurl, season_text, episode_text, playcount,     \
+                    pcseries, mtype, contenturl, dcmInfo_text, icon, movieset, taglist, release_year_text, trtype, \
+                    imdb_text))])         
                     
                     if installed_version == '19':   
                         info = {
@@ -1453,6 +1538,12 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                         vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
+                        if tags_text is not None:
+                            if 'startskip:' in tags_text:
+                                skipval = media.checkSkips(tags_text)
+                                if int(skipval) > 0:     
+                                    vinfo.setUniqueID(skipval, "startskip")
+                            vinfo.setTags(tags_text.split(','))
                         vinfo.setRating(rating_valf)
                         vinfo.setIMDBNumber(imdb_text)
                         vinfo.setMediaType(categories_text)
@@ -1519,13 +1610,30 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                         #dbfile.close() 
                       
                 elif mediaClass_text == 'music':
-                    offsetmenu = 'Play from ' + time.strftime("%H:%M:%S", time.gmtime(int(dcmInfo_text)))
-                    if int(dcmInfo_text) > 0:
-                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),     \
-                        (offsetmenu, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "playm",      \
+                    mtitle = media.displayTitles(title)					#  Normalize title
+                    pctitle = '"' + mtitle + '"'  		                        #  Handle commas
+                    pcseries = '"' + album_text + '"'                                   #  Handle commas
+                    offsetmenu = 'Resume from ' + time.strftime("%H:%M:%S", time.gmtime(int(dcmInfo_text)))
+                    if int(dcmInfo_text) > 0 and playcount == 0:
+                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),       \
+                        (menuitem3, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "count", \
+                        pctitle, itemurl, season_text, episode_text, playcount, pcseries, 'audiom', contenturl)),          \
+                        (offsetmenu, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "playm",        \
                         itemurl, li, title, icon, backdropurl, dcmInfo_text)) ])
-                    else:
-                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)') ])  
+                    elif int(dcmInfo_text) > 0 and playcount > 0:
+                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),       \
+                        (menuitem4, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "count", \
+                        pctitle, itemurl, season_text, episode_text, playcount, pcseries, 'audiom', contenturl)),          \
+                        (offsetmenu, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "playm",        \
+                        itemurl, li, title, icon, backdropurl, dcmInfo_text)),  ])
+                    elif int(dcmInfo_text) == 0 and playcount > 0:
+                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),       \
+                        (menuitem4, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "count", \
+                        pctitle, itemurl, season_text, episode_text, playcount, pcseries, 'audiom', contenturl)) ])
+                    elif int(dcmInfo_text) == 0 and playcount == 0:
+                        li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),       \
+                        (menuitem3, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % ("plugin.video.mezzmo", "count", \
+                         pctitle, itemurl, season_text, episode_text, playcount, pcseries, 'audiom', contenturl)) ])   
 
                     info = {
                         'duration': durationsecs,
@@ -1577,9 +1685,11 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                     contentType = 'files'
                     itemurl = build_url({'mode': 'picture', 'itemurl': itemurl})
 
-                if validf == 1:  
-                    xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
-                    itemcount += 1         #  Increment item counter
+                if validf == 1:            # If valid  listitem
+                    xbmc.log("Mezzmo movieset / TV Series search info: " + albumsrch + '  ' + album_text, xbmc.LOGDEBUG)
+                    if len(albumsrch) == 0 or albumsrch == album_text:    # Exact match for moviesets and TV episodes
+                        xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
+                        itemcount += 1         #  Increment item counter
 
             xbmc.log('Mezzmo search item count: ' + str(itemcount) + ' ' + str(reqcount), xbmc.LOGDEBUG)            
             itemsleft = itemsleft - int(NumberReturned) - 1
@@ -1611,7 +1721,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
                 dbfile.close()             #  Final commit writes and close Kodi database
                 break                
             
-            pin = media.settings('content_pin')   
+            pin = media.settings('content_pin') 
             content = browse.Search(contenturl, objectID, term, offset, requestedCount, pin)
     except Exception as e:
         media.printexception()
@@ -1623,11 +1733,14 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000):
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_VIDEO_YEAR)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_GENRE)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DURATION)
+    if srchcontent != 'None':                      # Set default content type for search results
+        contentType = srchcontent
     setViewMode(contentType)
+    #xbmc.log('Search order value is: ' + str(srchorder) + ' ' + searchcontrol2, xbmc.LOGINFO) 
     if searchcontrol2 == 'movieset':               # Sort moviesets by year
         xbmc.executebuiltin('Container.SetSortMethod(16)')
-    else:                                          # Sort everything else by title
-        xbmc.executebuiltin('Container.SetSortMethod(7)')
+    else:                                          # Sort everything else by sort order setting
+        xbmc.executebuiltin('Container.SetSortMethod(%d)' % (srchorder))
     xbmcplugin.endOfDirectory(addon_handle)
     
     #xbmc.executebuiltin("Dialog.Close(busydialog)")
@@ -1714,7 +1827,10 @@ def promptSearch():
         searchCriteria = getSearchCriteria(term)
         
         searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"
-        
+
+        if len(searchCriteria) > 0:                           #  Save last search criteria
+            media.settings('searchsave', searchCriteria)
+            xbmc.log('Mezzmo searchsave is: ' + str(searchCriteria), xbmc.LOGDEBUG)
         url = args.get('contentdirectory', '')
         
         pin = media.settings('content_pin')
@@ -1746,8 +1862,7 @@ if mode[0] == 'manual':                          #  Manually add Mezzmo server I
         mgenlog = media.translate(30451) + serverurl
         #xbmc.log(mgenlog, xbmc.LOGINFO)
         media.mgenlogUpdate(mgenlog)
-        #notify = xbmcgui.Dialog().notification(media.translate(30447), mgenlog, addon_icon, 5000)
-        notify = xbmcgui.Dialog().notification(dialog_text, mgenlog, addon_icon, 5000)
+        notify = xbmcgui.Dialog().notification(media.translate(30447), mgenlog, addon_icon, 5000)
     listServers(False)
     
 if mode[0] == 'serverlist':
@@ -1815,6 +1930,7 @@ elif mode[0] == 'newsearch':
         itemurl2 = build_url({'mode': 'search', 'contentdirectory': scontenturl, 'source': 'native', \
         'objectID': cobjectID})
     xbmc.executebuiltin('Container.Update(%s)' % (itemurl2))
+    
 
 elif mode[0] == 'movieset':
     contenturl = args.get('contentdirectory', '')
@@ -1826,12 +1942,13 @@ elif mode[0] == 'movieset':
     searchcontrol2 = mode[0]   
     searchCriteria = "upnp:album=&quot;" + smovieset + "&quot;"
     upnpClass = "upnp:class derivedfrom &quot;object.item.videoItem&quot;"
-    searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"    
+    searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"
+    xbmc.log('Mezzmo movieset search criteria: ' + searchCriteria, xbmc.LOGDEBUG)      
     pin = media.settings('content_pin')
     xbmc.executebuiltin('Dialog.Close(all, true)')
     content = browse.Search(scontenturl, '0', searchCriteria, 0, 1000, pin)
     if len(content) > 0:                                  #  Check for server response
-        handleSearch(content, scontenturl, '0', searchCriteria, 1000)
+        handleSearch(content, scontenturl, '0', searchCriteria, 1000, smovieset)
     else:
         downServer() 
 
@@ -1845,18 +1962,48 @@ elif mode[0] == 'collection':
     searchcontrol2 = mode[0]    
     searchCriteria = "keywords=&quot;" + scollection + "&quot;"
     upnpClass = "upnp:class derivedfrom &quot;object.item.videoItem&quot;"
-    searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"    
+    searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"
+    xbmc.log('Mezzmo collection search criteria: ' + searchCriteria, xbmc.LOGDEBUG)         
     pin = media.settings('content_pin')
     xbmc.executebuiltin('Dialog.Close(all, true)')
     content = browse.Search(scontenturl, '0', searchCriteria, 0, 1000, pin)
     if len(content) > 0:                                  #  Check for server response
         handleSearch(content, scontenturl, '0', searchCriteria, 1000)        
     else:
-        downServer() 
+        downServer()
 
-elif mode[0] == 'picture':
-    url = args.get('itemurl', '')
-    showSingle(url)
+elif mode[0] == 'lastvpl':
+    plcount = args.get('count', '')
+    count = plcount[0]
+    plurl = args.get('contentdirectory', '')
+    url = plurl[0]
+    scontrol = args.get('source', 'browse')
+    searchcontrol = scontrol[0]
+    pin = media.settings('content_pin')
+    xbmc.executebuiltin('Dialog.Close(all, true)')
+    #xbmc.log('Mezzmo last played count: ' + str(count), xbmc.LOGINFO)
+    content = browse.Browse(url, 'lastplayed', 'BrowseDirectChildren', 0, count, pin)
+    if len(content) > 0:                                  #  Check for server response
+        handleBrowse(content, url, 'lastplayed', '0', int(count))      
+    else:
+        downServer()
+
+searchsave = media.settings('searchsave')
+if searchcontrol2 == 'search' and searchsave != 'None' and 'native' not in source:   #  Catchall search re-entry from shell 
+    pin = media.settings('content_pin')
+    url = media.settings('contenturl')
+    maxsearch = int(media.settings('maxsearch'))
+    xbmc.log('Mezzmo search criteria ' + str(source) + ' ' + searchcontrol + ' ' + searchcontrol2 \
+    + ' ' + str(len(searchsave)), xbmc.LOGDEBUG)
+    content = browse.Search(url, '0', searchsave, 0, maxsearch, pin)
+    if len(content) > 0:                                  #  Check for server response
+        handleSearch(content, url, '0', searchsave, maxsearch)
+    else:
+        downServer()        
+
+xbmc.log('Mezzmo catchall source: ' + str(source) + ' Mode: ' + str(mode) + ' searchcontrol: ' + searchcontrol \
++ ' searchcontrol2: ' + searchcontrol2 + ' search save length: ' + str(len(searchsave)), xbmc.LOGDEBUG)
+
    
 def start():
     if mode == 'none':

@@ -1,6 +1,104 @@
-2.2.0.7a 8/25/2024 Test Release
+2.2.1.6 4/9/2025
 
--  Added support for Kodi 22 Piers interim development builds
+- Added support for handling Textures database refresh options with Kodi 22.  Previous versions 
+  only supported up to Kodi 21.
+- Improved graceful handling of unsupported Kodi versions with the texture database.
+
+2.2.1.5 2/25/2025
+
+- Bug fix to address issue introduced in version 2.2.1.4 which could cause the sync process
+  to end prematurely due to a metadata change in a recent video file.  This had to do with
+  attempting to parse keywords for the startskip feature when there were no keywords.
+
+2.2.1.4 2/22/2025
+
+- Added new feature Mezzmo Skip to allow setting a skip value for the beginning of playback
+- Modified automatic playback adjustment introduced in v2.2.1.1 so that it will not operate
+  during the daily sync or manual user forced sync processes.
+- Improved logging if there is a failure of the automatic playcount adjustment process 
+
+2.2.1.3 1/10/2025
+
+- Fixed a bug where Mezzmo Show TV Episodes could display additional TV Episodes or movies
+  due to the Mezzmo server returning Like vs. an equal query results. The Mezzmo Kodi addon
+  will now filter the Like results to an exact match on the TV Series.
+- Updated GitHub repo location from Conceiva to jbinkley60  
+
+2.2.1.2 1/5/2025
+
+- Added feature to check for the Hide Watched Kodi setting being enabled.  The addon
+  setting allows for logging and user notification via the Kodi GUI.
+- Fixed an old bug which was causing the album information not to display properly when
+  browsing music in GUI mode.
+- Updated a few addon setting help messages to provide better clarity on how to use the
+  setting options.
+- Fixed bug which was causing exception error when displaying notification of a new 
+  Mezzmo or UPnP server being manually added.
+- Minor user friendliness enhancements 
+
+2.2.1.1 12/10/2024
+
+- Improved the automatic playcount adjustment for newly discovered media introduced in
+  v2.2.1.0.  In addition to checking for improper playcounts for media which has a last
+  played value, checking will also occur for situations where new media has a low 
+  playcount value but no last played time.  For those situations the playcount value
+  will be set to 0.
+- Added new Last Played Media feature for quick access to the most recently watched 
+  media.  See:  https://github.com/Conceiva/MezzmoKodiPlugin/wiki/Last-Played-Media
+- Moved the Performance Logging Enabled addon setting from the Content Control tab to
+  the Diagnostics addon tab settings section
+
+2.2.1.0 11/14/2024
+
+- Added automatic playcount adjustment, during the background sync process, for newly 
+  discovered in process PVR recordings to reset initial playcount to 1 if > 1.  This 
+  is due to playcount getting incremented as the playback progress % reaches the 
+  playcount value while the recording is still occurring.  This fix will set the 
+  proper playcount in both Mezzmo and Kodi.  This feature is enabled with the Mezzmo
+  Maximum Playcount setting when it is not set to Off.
+- Added passing Mezzmo keywords to Kodi tags when browsing your video library in GUI
+  mode when running with Kodi version 20 and higher.  Keywords are already passed as 
+  tags via the background sync process for Kodi native mode. 
+- Added an option setting select the default Mezzmo server search results sort order.  
+  The default sort order is by Default \ Label.
+- Added an option setting select the default Mezzmo server search results content
+  type.  The default content type is None which means it will be determined by the 
+  Mezzmo search results.  
+
+2.2.0.9 10/1/2024
+
+- Added full Mezzmo options to context menu items when searching videos.  Previously 
+  only a subset of options were available when searching.  Now searching and browsing
+  have the same set of context menu options.
+- Added the ability to mark music files watched and unwatched when browsing search
+  results.  Previously this was only available when browsing via GUI.  This will
+  also clear the music bookmarks when marking unwatched.  Music bookmarks and the
+  ability to resume music tracks is generally not available with native Kodi.  It is
+  fully supported with the Mezzmo Kodi addon, regardless of the music track length.  
+- Fixed issue where certain video searching context menu actions would cause the addon
+  to drop out of GUI mode.  Now all search context menu actions will return you to the 
+  same search results when the context menu action is complete. This includes all of
+  the new search context menu actions added above to match the browsing context menu.   
+- Updated the addon setting search criteria labeled album to include TV series and 
+  moviesets.  The album criteria is for music.  TV Series and movie sets are for 
+  videos.  The album search setting has always searched for both audio and video 
+  items (if selected) but the selection option was just labeled album.
+- Updated maximum search results addon setting from a slider to a spinner control
+  with specific setting limits. Thus making it easier to select whole number limits.  
+
+2.2.0.8 9/12/2024
+
+- Added support for Kodi 22 Piers interim development builds
+- Added total Mezzmo record count to status display when manually syncing Mezzmo
+  database to Kodi library.  
+- Added automatic generation of actor thumb records in the Kodi art table from
+  Mezzmo. Now all Kodi actors with Mezzmo artwork will display the actor image
+  in the Kodi actor browse view. Previously the actor images only displayed in 
+  the Video Information cast view for Kodi library items.  These features allow  
+  centralized management of all Kodi actor artwork across multiple Kodi instances 
+  and / or Kodi versions leveraging Mezzmo's flat actor artwork structure 
+  (i.e. multiple images not required for the same actor in different movies, 
+  episodes etc..).    
 
 2.2.0.7 8/4/2024
 

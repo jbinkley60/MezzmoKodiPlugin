@@ -7,6 +7,7 @@ import socket
 import contentrestriction
 import sync
 import media
+import json
 from server import checkSync, getContentURL
 
 pos = fastsync = orgtrvol = 0
@@ -31,11 +32,24 @@ class XBMCPlayer(xbmc.Player):
             global mtype, orgtrvol
             mtype = ''
             file = xbmc.Player().getPlayingFile()
-            xbmc.sleep(2000)
+            xbmc.sleep(500)
             if xbmc.Player().isPlayingVideo():
                 finfo = xbmc.Player().getVideoInfoTag()
                 mtype = finfo.getMediaType()
-                self.mtitle = media.displayTitles(finfo.getTitle()) 
+                self.mtitle = media.displayTitles(finfo.getTitle())
+                seekpos = finfo.getUniqueID('startskip')
+                pos = int(xbmc.Player().getTime())
+                if len(seekpos) > 0:
+                    seekpos = int(seekpos)
+                    xbmc.log('Mezzmo skip position: ' + str(pos) + '   '  + str(seekpos), xbmc.LOGDEBUG)
+                    if pos < seekpos:
+                        seeksecs = seekpos % 60
+                        seekmins = int(seekpos / 60)
+                        xbmc.log('Mezzmo seektimes: ' + str(pos) + '   '  + str(seeksecs) + '  ' + str(seekmins), xbmc.LOGDEBUG)
+                        json_query = xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":1, \
+                        "value":{"time": {"minutes":%d, "seconds":%d }}},"id":1}' % (seekmins, seeksecs))
+                        mgenlog = 'Mezzmo start skip ' + str(seekpos) + 's for: ' +  self.mtitle
+                        media.mgenlogUpdate(mgenlog)
             if xbmc.Player().isPlayingAudio():
                 finfo = xbmc.Player().getMusicInfoTag()
                 mtype = 'audiom'      # For future music sync
@@ -158,6 +172,7 @@ while True:
         media.settings('kodiclean', 'false')  # Clear manual resync flag on addon restart
         media.settings('curr_sync','0')       # Clear sync running flag
         media.settings('movieprvw', 'false')  # Clear Mezzmo movie previews flag
+        media.settings('searchsave', 'None')  # Clear saved search criteria
         knative = media.settings('knative')   # Get initial native sync setting
         fastsync = media.settings('fastsync') # Get initial fast sync setting
 
@@ -239,6 +254,7 @@ while True:
                 xbmc.log(msynclog, xbmc.LOGINFO)
                 media.mezlogUpdate(msynclog)
             count = 20                      # Reset hourly counter
+            sync.checkHideWatched()         # Check Hide Watched setting
 
     elif not xbmc.Player().isPlaying() and int(fastsync) > 0 and fscount >= (int(fastsync) * 60):      
         syncpin = media.settings('content_pin')

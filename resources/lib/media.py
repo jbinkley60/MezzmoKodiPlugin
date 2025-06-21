@@ -217,7 +217,21 @@ def getDatabaseName():
     elif installed_version == '22':
         return "MyVideos133.db"
       
-    return ""  
+    return ""
+
+
+def getteDatabaseName():
+    installed_version = get_installedversion()
+    if installed_version == '19':
+        return "Textures13.db"
+    elif installed_version == '20':
+        return "Textures13.db"
+    elif installed_version == '21':
+        return "Textures13.db"   
+    elif installed_version == '22':
+        return "Textures14.db"
+    else:     
+        return None  
 
 
 def openKodiDB():                                   #  Open Kodi database
@@ -809,7 +823,7 @@ def kodiCleanDB(force):
             dbsync.execute('DELETE FROM mTrailers')
             dbsync.execute('DELETE FROM mKeywords')
             dbsync.execute('DELETE FROM mCollection')
-            dbsync.execute('DELETE FROM mCollection_link')
+            dbsync.execute('DELETE FROM mCollection_link')          
             dblimit = 10000
             dblimit2 = 10000
             dbsync.execute('delete from mperfStats where psDate not in (select psDate from  \
@@ -1071,7 +1085,7 @@ def writeMovieToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, m
         #xbmc.log('Checking movie for changes : ' + mtitle, xbmc.LOGINFO)        
         if kplot != mplot or ktagline != mtagline or kwriter != mwriter or kdirector != mdirector   \
         or kyear != myear or krating != mrating or kgenres != mgenre or int(kduration) != mduration \
-        or kstudio != mstudio or kstitle != mstitle:                  # Update movie info if changed
+        or kstudio != mstudio or kstitle != mstitle  or mkeywords != None:  # Update movie info if changed
             mgenres = mgenre.replace(',' , ' /')                      #  Format genre for proper Kodi display
             db.execute('UPDATE MOVIE SET c01=?, c03=?, c06=?, c11=?, c15=?, premiered=?, c14=?, c19=?, c12=?,     \
             c18=?, c10=?, c23=?, userrating=?, c22=? WHERE idMovie=?', (mplot,  mtagline, mwriter, mduration, mdirector, \
@@ -1082,7 +1096,8 @@ def writeMovieToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, m
             db.execute('DELETE FROM genre_link WHERE media_id=? and media_type=?',(str(movienumb), 'movie'))
             insertGenre(movienumb, db, 'movie', mgenre)               # Insert genre for movie
             insertTags(movienumb, db, 'movie', mkeywords)             # Insert tags for movie
-            insertKwords(mkeywords, 'movie', movienumb)               # Insert keywords for movie 
+            insertKwords(mkeywords, 'movie', movienumb)               # Insert keywords for muovie
+            insertSkips(movienumb, db, 'movie', mkeywords)            # Insert skips for movie  
             insertIMDB(movienumb, db, 'movie', mimdb_text)            # Insert IMDB for movie
             insertSets(movienumb, db, movieset, knative, murl, micon)   # Insert movie set for movie
             insertDirectors(movienumb, db, 'movie', mdirector, imageSearchUrl, kdirector)
@@ -1090,10 +1105,11 @@ def writeMovieToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, m
             insertStudios(movienumb, db, 'movie', mstudio, knative)
             insertVversion(fileId[0], movienumb, db, 'movie', kversion) # Insert Kodi video version 
             if mdupelog == 'false' and fsyncflag == 'no':
-                mgsynclog = '###' + mtitle
-                mezlogUpdate(mgsynclog)
-                mgsynclog ='There was a Mezzmo metadata change detected: '
-                mezlogUpdate(mgsynclog)
+                if mkeywords == None or 'startskip:' not in mkeywords:
+                    msynclog = '###' + mtitle
+                    mezlogUpdate(msynclog)
+                    msynclog ='There was a Mezzmo metadata change detected: '
+                    mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    # Add dupes to database
             movienumb = 999999                                        # Trigger actor update
@@ -1125,6 +1141,7 @@ def writeMusicVToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, 
             insertGenre(movienumb, db, 'musicvideo', mgenre)         # Insert genre for musicvideo 
             insertTags(movienumb, db, 'musicvideo', mkeywords)       # Insert tags for musicvideo
             insertKwords(mkeywords, 'musicvideo', movienumb)         # Insert keywords for musicvideo
+            insertSkips(movienumb, db, 'musicvideo', mkeywords)      # Insert skips for musicvideo  
             insertDirectors(movienumb, db, 'musicvideo', mdirector, imageSearchUrl, kdirector)
             insertStudios(movienumb, db, 'musicvideo', mstudio, knative)    
             cur.close()
@@ -1147,7 +1164,7 @@ def writeMusicVToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, 
         kgenres = kgenre.replace(' /' , ',')                          #  Format genre for proper Kodi display
         #xbmc.log('Checking musicvideo for changes : ' + mtitle, xbmc.LOGINFO)        
         if kplot != mplot or kdirector != mdirector or kyear != myear or  kgenres != mgenre or int(kduration)  \
-        != mduration or kstudio != mstudio or kartist != martist:     #  Update movie info if changed
+        != mduration or kstudio != mstudio or kartist != martist or mkeywords != None:     #  Update movie info if changed
             mgenres = mgenre.replace(',' , ' /')                      #  Format genre for proper Kodi display
             db.execute('UPDATE MUSICVIDEO SET c01=?, c04=?, c05=?, c06=?, premiered=?, c08=?, c09=?, c10=?, c11=?,    \
             c12=?, c13=?, userrating=?, c14=? WHERE idMVideo=?', (murl, mduration, mdirector, mstudio, myear, mplot,  \
@@ -1158,14 +1175,16 @@ def writeMusicVToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, 
             db.execute('DELETE FROM genre_link WHERE media_id=? and media_type=?',(str(movienumb), 'musicvideo'))
             insertGenre(movienumb, db, 'musicvideo', mgenre)          # Insert genre for musicvideo 
             insertTags(movienumb, db, 'musicvideo', mkeywords, movienumb) # Insert tags for musicvideo
-            insertKwords(mkeywords, 'musicvideo', movienumb)          # Insert keywords for musicvideo 
+            insertKwords(mkeywords, 'musicvideo', movienumb)          # Insert keywords for musicvideo
+            insertSkips(movienumb, db, 'musicvideo', mkeywords)       # Insert skips for musicvideo  
             insertDirectors(movienumb, db, 'musicvideo', mdirector, imageSearchUrl, kdirector)
             insertStudios(movienumb, db, 'musicvideo', mstudio, kdirector)    
             if mdupelog == 'false' and fsyncflag == 'no':
-                synclog = '###' + mtitle
-                mezlogUpdate(msynclog)
-                synclog ='There was a Mezzmo metadata change detected: '
-                mezlogUpdate(msynclog)
+                if mkeywords == None or 'startskip:' not in mkeywords:
+                    msynclog = '###' + mtitle
+                    mezlogUpdate(msynclog)
+                    msynclog ='There was a Mezzmo metadata change detected: '
+                    mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    # Add dupes to database
             movienumb = 999999                                        # Trigger actor update
@@ -1196,9 +1215,10 @@ def writeEpisodeToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, maired
             insertArt(movienumb, db, 'episode', murl, micon)         # Insert artwork for episode
             insertGenre(movienumb, db, 'episode', mgenre)            # Insert genre for episode 
             insertGenre(shownumb, db, 'tvshow', mgenre)              # Insert genre for episode
-            insertTags(shownumb, db, 'tvshow', mkeywords)            # Insert tags for episode
-            insertKwords(mkeywords, 'episode', movienumb)            # Insert keywords for episode   
+            insertTags(shownumb, db, 'tvshow', mkeywords)            # Insert tags for episode 
             insertIMDB(movienumb, db, 'episode', mimdb_text)         # Insert IMDB for episode
+            insertKwords(mkeywords, 'episode', movienumb)            # Insert keywords for episode
+            insertSkips(movienumb, db, 'episode', mkeywords)         # Insert skips for episode  
             insertDirectors(movienumb, db, 'episode', mdirector, imageSearchUrl, kdirector)
             insertWriters(movienumb, db, 'episode', mwriter, imageSearchUrl, kdirector)        
             db.execute('INSERT into RATING (media_id, media_type, rating_type, rating) values   \
@@ -1231,7 +1251,7 @@ def writeEpisodeToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, maired
         krate = episodetuple[9]
         #xbmc.log('Checking episode for changes : ' + mtitle, xbmc.LOGINFO)     
         if kplot != mplot or int(kduration) != mduration or kdirector != mdirector or kwriter != mwriter    \
-        or kseason != mseason or kepisode != mepisode or kaired != maired[:10] or kshow != shownumb: 
+        or kseason != mseason or kepisode != mepisode or kaired != maired[:10] or kshow != shownumb or mkeywords != None: 
             db.execute('UPDATE EPISODE SET c01=?, c09=?, c10=?, c04=?, c12=?, c13=?, c05=?, idShow=?, C19=?,\
             userrating=?, c18=? WHERE idEpisode=?', (mplot, mduration, mdirector, mwriter, mseason, mepisode,      \
             maired[:10], shownumb, fileId[5], murate, mitemurl, movienumb))     #  Update Episode information
@@ -1245,21 +1265,23 @@ def writeEpisodeToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, maired
             db.execute('DELETE FROM genre_link WHERE media_id=? and media_type=?',(str(movienumb), 'tvshow'))
             insertGenre(shownumb, db, 'tvshow', mgenre)                # Insert genre for episode
             insertTags(shownumb, db, 'tvshow', mkeywords)              # Insert tags for episode
-            insertKwords(mkeywords, 'episode', movienumb)              # Insert keywords for episode 
             insertIMDB(movienumb, db, 'episode', mimdb_text)           # Insert IMDB for episode
+            insertKwords(mkeywords, 'episode', movienumb)              # Insert keywords for episode
+            insertSkips(movienumb, db, 'episode', mkeywords)           # Insert skips for episode 
             insertDirectors(movienumb, db, 'episode', mdirector, imageSearchUrl, kdirector)
             insertWriters(movienumb, db, 'episode', mwriter, imageSearchUrl, kdirector) 
             if mdupelog == 'false' and fsyncflag == 'no':
-                msynclog = '###' + mtitle
-                mezlogUpdate(msynclog)
-                mgenlog ='There was a Mezzmo metadata change detected: '
-                mezlogUpdate(msynclog)
+                if mkeywords == None or 'startskip:' not in mkeywords:
+                    msynclog = '###' + mtitle
+                    mezlogUpdate(msynclog)
+                    msynclog ='There was a Mezzmo metadata change detected: '
+                    mezlogUpdate(msynclog)
             elif fsyncflag == 'no':
                 checkDupes(movienumb, '0', mtitle)                    #  Add dupes to database
             movienumb = 999999                                        # Trigger actor update            
         movienumb = 0                                                 # disable change checking
         curm.close()
-
+ 
     return(movienumb)
 
 
@@ -1291,18 +1313,23 @@ def writeActorsToDb(actors, movieId, imageSearchUrl, mtitle, db, fileId, mnative
             #xbmc.log('The current actor is: ' + str(actor), xbmc.LOGINFO)      # actor insertion debugging
             #xbmc.log('The movieId is: ' + str(movieId), xbmc.LOGINFO)          # actor insertion debugging  
             cur = db.execute('SELECT actor_id FROM actor WHERE name=?',(actor,))   
-            actortuple = cur.fetchone()                                         #  Get actor id from actor table
+            actortuple = cur.fetchone()                                         # Get actor id from actor table
             cur.close()
-            if not actortuple:              #  If actor not in actor table insert and fetch new actor ID
+            if not actortuple:               # If actor not in actor table insert and fetch new actor ID
                 db.execute('INSERT into ACTOR (name, art_urls) values (?, ?)', (actor, searchUrl,))
                 cur = db.execute('SELECT actor_id FROM actor WHERE name=?',(actor,)) 
                 actortuple = cur.fetchone()  #  Get actor id from actor table
                 cur.close()
-            if actortuple:                   #  Insert actor to movie link in actor link table
+            if actortuple:                   # Insert actor to movie link in actor link table
                 actornumb = actortuple[0]
-                ordernum += 1                #  Increment cast order
+                ordernum += 1                # Increment cast order
                 db.execute('INSERT OR REPLACE into ACTOR_LINK (actor_id, media_id, media_type, cast_order) values  \
                 (?, ?, ?, ?)', (actornumb, movieId, media_type, ordernum,))
+                cura = db.execute('SELECT art_id FROM art WHERE media_id=? and media_type=?', (actornumb, "actor",))
+                artuple = cura.fetchone()    # Check for existing artwork
+                if not artuple: 
+                    db.execute('INSERT into ART (media_id, media_type, type, url) values (?, ?, ?, ?)',             \
+                    (actornumb, "actor", "thumb", searchUrl,))
                 if media_type == 'episode' and mnativeact == 'true':
                     db.execute('INSERT OR REPLACE into ACTOR_LINK (actor_id, media_id, media_type, role, cast_order) \
                     values (?, ?, ?, ?, ?)', (actornumb, mshowId, 'tvshow', ' ', ordernum,)) 
@@ -1571,7 +1598,8 @@ def insertTags(movienumb, db, media_type, keywords):
         tagtuple = curt.fetchone()                                                   # Get tag id from tag table
         curt.close()
 
-        if "nosync" not in mtag.lower() and '###' not in mtag.lower():        # Skip nosync tags and collections
+        if "nosync" not in mtag.lower() and '###' not in mtag.lower() and 'startskip' not in mtag.lower() \
+        and 'stopskip' not in mtag.lower():                                          # Skip nosync tags, collections and skips
             if not tagtuple:                     #  If tag not in tag table insert and fetch new tag ID
                 db.execute('INSERT into TAG (name) values (?)', (mtag,))
                 cur = db.execute('SELECT tag_id FROM tag WHERE name=?',(mtag,))   
@@ -1770,7 +1798,7 @@ def insertKwords(keywords, mtype, movienumb):
             curk = db.execute('SELECT kyTitle FROM mKeywords WHERE kyTitle=? and kyType=?',(mkword, mtype,))     
             kwordtuple = curk.fetchone()                                     # Get keyword from keywords
 
-            if not kwordtuple:                                               # If keyword if not found
+            if not kwordtuple and 'skip:' not in kword.lower():              # If keyword if not found and not skip
                 if "noview" in mkword.lower():                               # Skip noviews
                     db.execute('INSERT into mKeywords (kyTitle, kyType, kyVar1) \
                     values (?, ?, ?)', (mkword, mtype, "No",))
@@ -1821,6 +1849,52 @@ def insertCollection(movienumb, db, mtype, keywords):
         msynclog ='Mezzmo problem inserting collection tags for: ' + mtype + ' ' + str(movienumb)
         #xbmc.log(msynclog, xbmc.LOGINFO)
         mezlogUpdate(msynclog)
+
+
+def insertSkips(movienumb, db, media_type, keywords):                          # Inserts / update skips in Kodi DB
+
+    try:
+        if keywords == None or  'startskip:' not in keywords:                  # Only save skips
+            #db.execute('DELETE FROM uniqueid WHERE media_type=? and media_id=?',        \
+            #(media_type, movienumb,))
+            return
+
+        xbmc.log('Mezzmo skip keywords: ' + str(keywords) + ' ' + media_type + ' ' + str(movienumb), xbmc.LOGDEBUG)
+
+        skiplist = keywords.split(',')                                         #  Convert keywords to list  
+
+        for skip in skiplist:                                 
+            mstartskip = '0'
+            xbmc.log('Mezzmo skip: ' + str(skiplist), xbmc.LOGDEBUG)  
+            if 'startskip' in skip:
+                mstartskip = skip.split(':')[1]
+                db.execute('INSERT OR REPLACE into uniqueid (media_id, media_type, value, type)   \
+                values (?, ?, ?, ?)', (movienumb, media_type, mstartskip, 'startskip',))
+
+    except Exception as e:
+        printexception()
+        msynclog ='Mezzmo problem inserting skips for: ' + media_type + ' ' + str(movienumb)
+        mezlogUpdate(msynclog)
+
+
+def checkSkips(keywords):                                                      # Checks for skip values Mezzmo keywords
+
+    try:
+        skiplist = keywords.split(',')                                         #  Convert keywords to list  
+
+        mstartskip = '0' 
+        for skip in skiplist:                                 
+            if 'startskip:' in skip:
+                mstartskip = skip.split(':')[1]
+
+        xbmc.log('Mezzmo startskip value ' + mstartskip, xbmc.LOGDEBUG)
+        return mstartskip
+
+    except Exception as e:
+        printexception()
+        msynclog ='Mezzmo problem checking skips for: ' + str(keywords)
+        mezlogUpdate(msynclog)
+        return '0'
 
 
 def nativeNotify():

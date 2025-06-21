@@ -31,8 +31,15 @@ def updateTexturesCache(contenturl):     # Update Kodi image cache timers
         from sqlite3 import dbapi2 as sqlite
     except:
         from pysqlite2 import dbapi2 as sqlite
-                      
-    DB = os.path.join(xbmcvfs.translatePath("special://database"), "Textures13.db")
+
+    dbfile = media.getteDatabaseName()
+
+    if dbfile == None:
+        mgenlog = 'Mezzmo textures could not be cleared.  No dbfile version returned.'
+        media.mgenlogUpdate(mgenlog)
+        return          
+                  
+    DB = os.path.join(xbmcvfs.translatePath("special://database"), dbfile)
     db = sqlite.connect(DB)
 
     serverport = '%' + media.getServerport(contenturl) + '%'     #  Get Mezzmo server port info
@@ -54,7 +61,14 @@ def deleteTexturesCache(contenturl, force = ''):    # do not cache texture image
         except:
             from pysqlite2 import dbapi2 as sqlite
                       
-        DB = os.path.join(xbmcvfs.translatePath("special://database"), "Textures13.db")
+        dbfile = media.getteDatabaseName()
+
+        if dbfile == None:
+            mgenlog = 'Mezzmo textures could not be deleted.  No dbfile version returned.'
+            media.mgenlogUpdate(mgenlog)
+            return          
+                  
+        DB = os.path.join(xbmcvfs.translatePath("special://database"), dbfile)
         db = sqlite.connect(DB)
     
         serverport = '%' + media.getServerport(contenturl) + '%'     #  Get Mezzmo server port info
@@ -66,6 +80,58 @@ def deleteTexturesCache(contenturl, force = ''):    # do not cache texture image
         db.commit()
         cur.close()
         db.close()
+
+
+def checkHideWatched():                                 # Check Hide Watched setting  
+
+    try:
+        hidewatch = media.settings('hidewatched')
+        if hidewatch == 'Off':                          # Hide watched checking is disabled
+            return                    
+        config_file = os.path.join(xbmcvfs.translatePath("special://profile"), 'guisettings.xml')
+        if not os.path.isfile(config_file):
+            mgenlog = "Mezzmo guisettings.xml file not found"
+            media.mgenlogUpdate(mgenlog)
+            return
+
+        hwfound = 0
+        with open(config_file, mode='r', encoding='utf-8-sig') as xml_txt:                 
+            tree = ET.fromstring((xml_txt.read().replace('&',' ').strip().encode('utf-8')), ET.XMLParser(encoding='utf-8'))
+
+            hwmovies = hwtvshows = hwmusicv = None
+            videos = tree.find('myvideos')
+            if videos != None:
+                hwmovies = videos.find('watchmodemovies')
+                hwtvshows = videos.find('watchmodetvshows')
+                hwmusicv = videos.find('watchmodemusicvideos')
+
+            if hwmovies != None and hwmovies.text != '0':
+                mgenlog = "Mezzmo Hide Watched Movies is enabled."
+                media.mgenlogUpdate(mgenlog)
+                hwfound += 1
+ 
+            if hwtvshows != None and hwtvshows.text != '0':
+                mgenlog = "Mezzmo Hide Watched TV Shows is enabled."
+                media.mgenlogUpdate(mgenlog)
+                hwfound += 1
+
+            if hwmusicv != None and hwmusicv.text != '0':
+               mgenlog = "Mezzmo Hide Watched Music Videos is enabled."
+               media.mgenlogUpdate(mgenlog)
+               hwfound += 1
+
+            if videos == None:
+                mgenlog = "Mezzmo Hide Watched Checking.  There is a format problem with the guisettings.xml file."
+                media.mgenlogUpdate(mgenlog) 
+            elif hwfound == 0:
+                mgenlog = "Mezzmo Hide Watched Checking complete.  Nothing set to hide watched."
+                media.mgenlogUpdate(mgenlog)            
+            elif hwfound > 0 and (hidewatch == 'Both'):           
+                icon = xbmcaddon.Addon().getAddonInfo("path") + '/resources/icon.png'
+                xbmcgui.Dialog().notification(media.translate(30813), media.translate(30814), icon, 5000) 
+
+    except Exception as e:
+        printsyncexception()
 
 
 def dbClose():		 # Close database and commit any pending writes on abort
@@ -571,7 +637,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                         categories_text = 'video'
                         contentType = 'videos'
                 else:
-                    movieset = album_text = ''
+                    movieset = ''
                     categories_text = 'video'
                     contentType = 'videos'
 
@@ -704,6 +770,9 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                     playcount_text, description_text)
                 tvcheckval = media.tvChecker(season_text, episode_text, koditv, mtitle, categories) # Check if Ok to add
                 mezzmocounts += 1
+                #if playcount > 0 and last_played_text != '0' and maxsetting != 'Off':   # New discovery play counter
+                if playcount > 0 and maxsetting != 'Off' and clean != 1:                 # New discovery play counter
+                    playcount = updatePlaycount(date_added_text, last_played_text, playcount, syncurl, itemid, mtitle)
                 if (tvcheckval[1] == 1 or size == 100000000000) and validf == 1 and clean == 1:   #  Update live channel
                     media.syncCount(dbsync, mtitle, "livec")
                     #xbmc.log('Mezzmo livec: ' + mtitle, xbmc.LOGINFO)       
@@ -791,7 +860,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                     media.mezlogUpdate(msynclog)
                     return(offset)
                     break                 
-                msgdialogprogress.update(percent, dialogmsg + rprocessed)
+                msgdialogprogress.update(percent, dialogmsg + rprocessed + media.translate(30809) + str(TotalMatches))
 
             xbmc.log('Mezzmo offset and request count: ' + str(offset) + ' ' + str(requestedCount), xbmc.LOGDEBUG) 
             pin = media.settings('content_pin') 
@@ -800,7 +869,42 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
         printsyncexception()
         pass
 
-        
+
+def updatePlaycount(datime, lptime, playcount, syncurl, itemid, mtitle):  # Check for new discovery playcount values
+
+    try:
+        xbmc.log('Mezzmo times are: ' + datime + '   ' + lptime + '   '  + str(len(lptime)) + '  ' + itemid, xbmc.LOGDEBUG)
+
+        FMT = '%Y-%m-%d %H:%M:%S'
+
+        if len(lptime) > 0 and lptime != '0':                             # Get time delta when played
+            td = datetime.datetime.strptime(lptime, FMT) - datetime.datetime.strptime(datime, FMT)
+        else:                                                             # Else use current time
+            currtime = datetime.datetime.now().strftime(FMT)              # Get current time as string
+            currtimed = datetime.datetime.strptime(currtime, FMT)         # Convert to datetime with format
+            disctime = datetime.datetime.strptime(datime, FMT)            # Convert date added to datetme format
+            td = currtimed - disctime                                     # Calculate difference
+        tdint = int(td.total_seconds())                                   # Convert to int
+        xbmc.log('Mezzmo time delta is: ' + str(tdint), xbmc.LOGDEBUG)
+        orgplaycount = playcount
+        if tdint < 7201 and playcount > 1:
+            if len(lptime) > 0 and lptime == '0':
+                playcount = 0
+            else:
+                playcount = 1
+            msynclog = 'Mezzmo new discovery playcount needs adjusted ' + str(orgplaycount) + ' '   \
+            + str(tdint) + ' ' + str(playcount)
+            media.mezlogUpdate(msynclog)
+            setPlaycount(syncurl, itemid, str(playcount), mtitle)
+        return playcount
+
+    except Exception as e:
+        printsyncexception()    
+        msynclog = 'Mezzmo new discovery playcount update error: ' + mtitle
+        xbmc.log(msynclog, xbmc.LOGINFO)
+        media.mezlogUpdate(msynclog, 'yes')
+   
+       
 def syncLogging(counts, mezzmorecs):
 
         nsyncount = counts[0]
