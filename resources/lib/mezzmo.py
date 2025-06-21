@@ -408,6 +408,8 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             dbfile = media.openKodiDB()                  #  Open Kodi database    
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
+                if title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon begin parsing: ' + title, xbmc.LOGINFO)
                 itemid = item.get('id')
                 icon = None
                 albumartUri = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
