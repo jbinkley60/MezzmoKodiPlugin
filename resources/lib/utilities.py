@@ -674,27 +674,29 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN musicvideo_view USING  \
         (idFile) WHERE musicvideo_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     elif mtype == 'episode':                             # Find episode bookmark
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN episode_view USING     \
         (idFile) WHERE episode_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     else:
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN movie_view USING       \
         (idFile) WHERE movie_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     if trtype.lower() == 'trailer':
         curtr = pdfile.execute('SELECT c22, c01 from movie_view WHERE uniqueid_value = ?', (imdb_id,))
         trcontext = curtr.fetchone()
+        curtr.close()                                    # New 2.2.1.7
     else:
         trcontext = None
     if mtype == 'episode' or 'tvtrailer' in  trtype.lower(): # check for TV episodes for TV trailers
         curptv= pdfile.execute('SELECT c00 FROM tvshow WHERE c00=?', (movieset,))
         tvcontext = curptv.fetchone()                    # Get TV Show from database if exists
+        curptv.close()                                   # New 2.2.1.7  
     else:
         tvcontext = None
-    curpt.close()                                        # New 2.2.1.7
-    curtr.close()                                        # New 2.2.1.7
-    curptv.close()                                       # New 2.2.1.7  
     pdfile.close()
 
     if mplaycount <= 0 and 'trailer' not in trtype.lower():  # Mezzmo playcount is 0
