@@ -102,7 +102,10 @@ def contextMenu():                                       # Display contxt menu f
             collection = tcollection[0][0].strip()
         else:
             collection = 'none'
-      
+    
+    curpc.close()                                        # New 2.2.1.7
+    curpk.close()                                        # New 2.2.1.7
+    curpt.close()                                        # New 2.2.1.7  
     pdfile.close()
     psfile.close()
 

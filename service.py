@@ -8,7 +8,7 @@ import contentrestriction
 import sync
 import media
 import json
-from server import checkSync, getContentURL
+from server import checkSync, getContentURL, getPythonVersion
 
 pos = fastsync = orgtrvol = 0
 file = ''
@@ -128,7 +128,7 @@ class XBMCPlayer(xbmc.Player):
 player = XBMCPlayer()
  
 monitor = xbmc.Monitor()
-
+getPythonVersion()                          # New 2.2.1.7
 media.checkNosyncDB()                       # Check nosync database            
  
 while True:

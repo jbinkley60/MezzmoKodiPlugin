@@ -44,6 +44,7 @@ def exportData(selectbl):                                        # CSV Output se
             outfile = folderpath + "mezzmo_" + dbase + selectname + "_" + fpart + ".csv"
             curm = dbexport.execute('SELECT * FROM '+selectname+'')
             recs = curm.fetchall()
+            curm.close()                                    # New 2.2.1.7
             headers = [i[0] for i in curm.description]
             csvFile = csv.writer(open(outfile, 'w', encoding='utf-8'),
                              delimiter=',', lineterminator='\n',
@@ -80,7 +81,7 @@ def exportData(selectbl):                                        # CSV Output se
         mgenlog = translate(30431) + selectname
         xbmcgui.Dialog().notification(translate(30432), mgenlog, addon_icon, 5000)            
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)
+        #mgenlogUpdate(mgenlog)                                # Updated 2.2.1.7
 
 
 def selectExport():                                            # Select table to export

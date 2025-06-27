@@ -68,7 +68,7 @@ def perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, pobject):  
             psfile.execute('INSERT into mperfStats (psDate, psTime, psPlaylist, psCount, pSrvTime, mSrvTime,   \
             psTTime, psDispRate) values (?, ?, ?, ?, ?, ?, ?, ?)', (currDate, currTime, ctitle, TotalMatches,  \
             pduration, sduration, tduration, displayrate))
-                          
+        objects.close()                                                            # new 2.2.1.7                  
         psfile.commit()
         psfile.close()
     except:
@@ -255,7 +255,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     itemsleft = -1
     pitemsleft = -1
     global brtime, patime
-    srtime = itemcount = 0 
+    srtime = itemcount = parseccount = 0 
     media.settings('contenturl', contenturl)
     koditv = media.settings('koditv')
     knative = media.settings('knative')
@@ -273,6 +273,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     mbackdrop = media.settings('mbackdrop')             # Checks container backdrop setting
     enhdesc = media.settings('enhdesc')                 # Enhanced description setting
     kodiart = media.settings('kodiart')                 # Additional Kodi artwork
+    parselog = media.settings('parselog')               # Additional XML parsing logging
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
     menuitem3 = addon.getLocalizedString(30372)
@@ -329,9 +330,11 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             
             #elems = xml.etree.ElementTree.fromstring(result.text.encode('utf-8'))
             elems = xml.etree.ElementTree.fromstring(result.text)
-            picnotify = 0            
+            picnotify = parsecount = 0            
             for container in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}container'):
-                title = container.find('.//{http://purl.org/dc/elements/1.1/}title').text 
+                title = container.find('.//{http://purl.org/dc/elements/1.1/}title').text
+                if parselog == 'true' and title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon begin parsing: ' + title, xbmc.LOGINFO) 
                 containerid = container.get('id')
                 
                 description_text = ''
@@ -399,16 +402,23 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 else:
                     contentType = 'folders'
                 contentType = content_mapping(contentType)
+                if parselog == 'true' and title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon end parsing: ' + title, xbmc.LOGINFO)
+                    parsecount += 1
+            if parselog == 'true' and parsecount > 0:
+                xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parsecount), xbmc.LOGINFO)
 
             piclist = []
-            clearPictures()  
+            if slideshow == 'true':                                #  Clear slideshow picture list
+                clearPictures()  
             ctitle = xbmc.getInfoLabel("ListItem.Label")           #  Get title of selected playlist
             xbmc.log('Mezzmo content title: ' + ctitle + ' ' + str(parentID) + ' ' + objectID +     \
             ' Content type: ' + contentType, xbmc.LOGDEBUG)       
-            dbfile = media.openKodiDB()                  #  Open Kodi database    
+            dbfile = media.openKodiDB()                  #  Open Kodi database
+  
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
-                if title != None and len(title) > 0:
+                if parselog == 'true' and title != None and len(title) > 0:
                     xbmc.log('Mezzmo Kodi addon begin parsing: ' + title, xbmc.LOGINFO)
                 itemid = item.get('id')
                 icon = None
@@ -498,35 +508,27 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     artist_text = artist.text
 
                 actor_list = ''
-                try:
-                    cast_dict = []    # Added cast & thumbnail display from Mezzmo server
-                    cast_dict_keys = ['name','thumbnail']
-                    actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
-                    if actors != None and imageSearchUrl != None and len(actors.text.strip()) > 2:
-                        actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
-                        if installed_version == '19':                     
-                            for a in actor_list:                  
-                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + a.lstrip().replace(" ","+")
-                                #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
-                                new_record = [ a.strip() , actorSearchUrl]
-                                cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
-                        else:
-                            for a in range(len(actor_list)):                  
-                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
-                                #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
-                                if len(actor_list[a]) > 0:
-                                    actor = xbmc.Actor(actor_list[a].strip(), '', a, actorSearchUrl)
-                                    cast_dict.append(actor)
-                                else:
-                                    mgenlog = 'Mezzmo issue with actor list in: ' + str(title)
-                                    media.mgenlogUpdate(mgenlog)
-                except Exception as e:
-                    media.printexception()                                             
-                    mgenlog = 'Mezzmo issue with actor list in: ' + str(title)
-                    media.mgenlogUpdate(mgenlog)
-                    actor_list = ''
-                    actors = None
-                    pass
+                cast_dict = []    # Added cast & thumbnail display from Mezzmo server
+                cast_dict_keys = ['name','thumbnail']
+                actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
+                if actors != None and imageSearchUrl != None and len(actors.text.strip()) > 2:
+                    actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
+                    if installed_version == '19':                     
+                        for a in actor_list:                  
+                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + a.lstrip().replace(" ","+")
+                            #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
+                            new_record = [ a.strip() , actorSearchUrl]
+                            cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
+                    else:
+                        for a in range(len(actor_list)):                  
+                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
+                            #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
+                            if len(actor_list[a]) > 0:
+                                actor = xbmc.Actor(actor_list[a].strip(), '', a, actorSearchUrl)
+                                cast_dict.append(actor)
+                            else:
+                                mgenlog = 'Mezzmo issue with actor list in: ' + str(title)
+                                media.mgenlogUpdate(mgenlog)                                
                                 
                 creator_text = ''
                 creator = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}creator')
@@ -591,13 +593,15 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 and actors.text == 'Unknown Artist':                     # TV trailer cast search
                     trcurr = dbfile.execute('select idEpisode FROM episode_view WHERE   \
                     strTitle = ? ORDER BY c12, c13 ASC LIMIT 1', (movieset,))
-                    trtuple = trcurr.fetchone()  
+                    trtuple = trcurr.fetchone()
+                    trcurr.close()                                      # New 2.2.1.7    
                     cast_dict = []
                     if trtuple != None:
                         trcurc = dbfile.execute('SELECT name FROM actor INNER JOIN actor_link  \
                         USING (actor_id) WHERE media_id = ? and media_type = ? ORDER BY        \
                         cast_order ASC LIMIT 20', (trtuple[0], 'episode',))
-                        tctuples = trcurc.fetchall()  
+                        tctuples = trcurc.fetchall()
+                        trcurc.close()                                  # New 2.2.1.7  
                         xbmc.log('Mezzmo searching Kodi for TV traileractors. ' + str(tctuples), xbmc.LOGDEBUG)
                         for a in range(len(tctuples)):                  
                             actorSearchUrl = imageSearchUrl + "?imagesearch=" + tctuples[a][0].lstrip().replace(" ","+")
@@ -609,6 +613,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                                 actor = xbmc.Actor(tctuples[a][0], '', a, actorSearchUrl)
                                 cast_dict.append(actor)
                         actor_list = '' 
+
                      
                 episode_text = ''
                 episode = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}episode')
@@ -971,10 +976,9 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         'idesc': description_text,
                     }
                     piclist.append(itemdict)
-                    if picnotify == int(NumberReturned):                   # Update picture DB
+                    if picnotify == int(NumberReturned) and slideshow == 'true':   # Update picture DB
                         updatePictures(piclist)
-                        if slideshow == 'true':                            # Slideshow display prompt
-                            picDisplay()
+                        picDisplay()
                     itemurl = build_url({'mode': 'picture', 'itemurl': itemurl})
                 if validf == 1: 
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
@@ -982,9 +986,13 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 else:
                     dialog_text = "Video file:  " + title + " is invalid. Check Mezzmo video properties for this file."
                     xbmcgui.Dialog().ok("Mezzmo", dialog_text)
+                if parselog == 'true' and title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon end parsing: ' + title, xbmc.LOGINFO)
+                    parseccount += 1
 
             itemsleft = itemsleft - int(NumberReturned) - 1
             dbfile.commit()                #  Commit writes
+
             
             xbmc.log('Mezzmo items left: ' + str(itemsleft), xbmc.LOGDEBUG) 
             if itemsleft <= 0:
@@ -1025,6 +1033,8 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             brtime2 = time.time()                       #  Additional browse begin time
             content = browse.Browse(contenturl, objectID, 'BrowseDirectChildren', offset, requestedCount, pin)        
             srtime = srtime + (time.time() - brtime2)   #  Calculate total server time
+        if parselog == 'true' and parseccount > 0:
+            xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parseccount), xbmc.LOGINFO)
     except Exception as e:
         media.printexception()
         pass
@@ -1071,6 +1081,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     sync.deleteTexturesCache(contenturl)                # Call function to delete textures cache if user enabled
     enhdesc = media.settings('enhdesc')                 # Enhanced description setting
     kodiart = media.settings('kodiart')                 # Additional Kodi artwork
+    parselog = media.settings('parselog')               # Additional XML parsing logging
     srchorder = int(media.settings('srchorder'))        # Default search result sort order (integer)
     srchcontent = media.settings('srchcontent')         # Default content type for search results
     
@@ -1168,9 +1179,12 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
             #elems = xml.etree.ElementTree.fromstring(result.text.encode('utf-8'))
             elems = xml.etree.ElementTree.fromstring(result.text)
 
-            dbfile = media.openKodiDB()               
+            dbfile = media.openKodiDB()
+            parsecount = 0               
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
+                if parselog == 'true' and title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon begin parsing: ' + title, xbmc.LOGINFO)
                 itemid = item.get('id')
                 icon = None
                 albumartUri = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
@@ -1260,7 +1274,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                 cast_dict = []        # Added cast & thumbnail display from Mezzmo server
                 cast_dict_keys = ['name','thumbnail']
                 actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
-                if actors != None and imageSearchUrl != None  and len(actors.text) > 2:
+                if actors != None and imageSearchUrl != None  and len(actors.text.strip()) > 2:
                     actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
                     if installed_version == '19':                     
                         for a in actor_list:                  
@@ -1700,6 +1714,9 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                     if len(albumsrch) == 0 or albumsrch == album_text:    # Exact match for moviesets and TV episodes
                         xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=False)
                         itemcount += 1         #  Increment item counter
+                if parselog == 'true' and title != None and len(title) > 0:
+                    xbmc.log('Mezzmo Kodi addon end parsing: ' + title, xbmc.LOGINFO)
+                    parsecount += 1
 
             xbmc.log('Mezzmo search item count: ' + str(itemcount) + ' ' + str(reqcount), xbmc.LOGDEBUG)            
             itemsleft = itemsleft - int(NumberReturned) - 1
@@ -1733,6 +1750,8 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
             
             pin = media.settings('content_pin') 
             content = browse.Search(contenturl, objectID, term, offset, requestedCount, pin)
+        if parselog == 'true' and parseccount > 0:
+            xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parseccount), xbmc.LOGINFO)
     except Exception as e:
         media.printexception()
         pass

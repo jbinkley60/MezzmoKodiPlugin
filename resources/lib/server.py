@@ -4,7 +4,7 @@ import xbmcplugin
 import urllib.request, urllib.error, urllib.parse
 import pickle
 import xml.etree.ElementTree
-import re
+import re, sys
 import xml.etree.ElementTree as ET
 import xbmcaddon
 import ssdp
@@ -22,6 +22,7 @@ def updateServers(url, name, controlurl, manufacturer, model, icon, description,
     svrfile = openNosyncDB()                                     # Open server database
     curps = svrfile.execute('SELECT srvName FROM mServers WHERE controlUrl=?', (controlurl,))
     srvrtuple = curps.fetchone()                                 # Get servers from database
+    curps.close()                                                # New 2.2.1.7
     if not srvrtuple:				                 # If not found add server
         svrfile.execute('INSERT into mServers (srvUrl, srvName, controlUrl, mSync, sManuf, sModel,  \
         sIcon, sDescr, sUdn) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', (url, name, controlurl, 'No',     \
@@ -42,6 +43,7 @@ def displayServers():
         curps = svrfile.execute('SELECT srvName, mSync, sManuf, controlUrl FROM mServers        \
         WHERE sManuf LIKE ?', ('Conceiva%',))
         srvresults = curps.fetchall()                            # Get servers from database
+        curps.close()                                            # New 2.2.1.7
         for a in range(len(srvresults)):
             if srvresults[a][1] == 'Yes':                        # Is sync server ?
                 syncserver = srvresults[a][0] + ' - [COLOR blue]Sync Server[/COLOR]'
@@ -136,7 +138,7 @@ def delServer(srvurl):                                           # Delete server
         printexception()
         mgenlog = 'Mezzmo error deleting UPnP server.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7
 
 
 def downServer(srvrtype='mezzmo'):                               # Handle downed server
@@ -173,7 +175,7 @@ def updateSync(controlurl):                                      # Set sync for 
         printexception()
         msynclog = 'Mezzmo sync server update error.'
         xbmc.log(msynclog, xbmc.LOGINFO)
-        mezlogUpdate(msynclog)
+        #mezlogUpdate(msynclog)                                  # Updatde 2.2.1.7
         return 1      
 
 
@@ -254,6 +256,7 @@ def checkMezzmoVersion():                                        # Returns Mezzm
         svrfile = openNosyncDB()                                 # Open server database
         curps = svrfile.execute('SELECT sModel FROM mServers WHERE mSync=?', ('Yes',))
         svrtuple = curps.fetchone()                              # Get server from database
+        curps.close()                                            # New 2.2.1.7
         svrfile.close()
         if svrtuple:
             model = svrtuple[0].replace('.','')            
@@ -263,7 +266,7 @@ def checkMezzmoVersion():                                        # Returns Mezzm
         printexception()
         msynclog = 'Mezzmo Mezzmo error checking sync server model number or no Mezzmo sync server selected.'
         xbmc.log(msynclog, xbmc.LOGINFO)
-        mezlogUpdate(msynclog)
+        #mezlogUpdate(msynclog)                                  # Updated 2.2.1.7
         return 0      
 
 
@@ -276,6 +279,7 @@ def onlyDiscMezzmo(srvrlist):                                    # Discover only
             svrfile = openNosyncDB()                             # Open server database
             curps = svrfile.execute('SELECT srvUrl FROM mServers WHERE sManuf LIKE ?', ('%Conceiva%',))
             svrtuples = curps.fetchall()                         # Get Mezzmo servers from database
+            curps.close()                                        # New 2.2.1.7
             svrfile.close()
             del curps 
             if not svrtuples:                                    # No Mezzmo servers found
@@ -303,7 +307,7 @@ def onlyDiscMezzmo(srvrlist):                                    # Discover only
         printexception()
         mgenlog = 'Mezzmo discover only Mezzmo server error.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7
         return srvrlist  
 
 
@@ -312,6 +316,7 @@ def checkSync(count):                                            # Check for Syn
     svrfile = openNosyncDB()                                     # Open server database    
     curps = svrfile.execute('SELECT controlUrl, srvUrl, srvName FROM mServers WHERE mSync=?', ('Yes',))
     srvrtuple = curps.fetchone()                                 # Get server from database
+    curps.close()                                                # New 2.2.1.7
     if srvrtuple:
         syncurl = srvrtuple[0]
         if count < 12 or count > 3600:                           # Don't check Mezzmo server on fast sync
@@ -332,6 +337,7 @@ def checkSync(count):                                            # Check for Syn
         curpc = svrfile.execute('SELECT srvName, sIcon FROM mServers WHERE controlUrl=?',  \
         (contenturl,))
         srvrtuple = curpc.fetchone()                             # Get server from database
+        curpc.close()                                            # New 2.2.1.7
         if srvrtuple:                                            # Auto update if Mezzmo found
             syncurl = contenturl
             sname = srvrtuple[0]
@@ -480,6 +486,7 @@ def getItemlUrl(contenturl, itemid):                             # Get itemurl f
     try:
         svrfile = openNosyncDB()                                 # Open server database    
         curps = svrfile.execute('SELECT sUdn FROM mServers WHERE controlUrl=?', (contenturl,))
+        curps.close()                                            # New 2.2.1.7
         srvrtuple = curps.fetchone()                             # Get server from database
         #xbmc.log('Mezzmo getItemUrl:' + str(srvrtuple[0]), xbmc.LOGINFO)        
         if srvrtuple:
@@ -544,7 +551,7 @@ def clearServers():                                              # Clear server 
         printexception()
         msynclog = 'Mezzmo sync server clearing error.'
         xbmc.log(msynclog, xbmc.LOGINFO)
-        mezlogUpdate(msynclog)   
+        #mezlogUpdate(msynclog)                                  # Updated 2.2.1.7   
 
 
 def clearPictures():                                             # Clear picture data
@@ -562,7 +569,7 @@ def clearPictures():                                             # Clear picture
         printexception()
         mgenlog = 'Mezzmo clearing picture error.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)   
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7   
 
 
 def updatePictures(piclist):                                     # Update picture DB with list
@@ -587,7 +594,7 @@ def updatePictures(piclist):                                     # Update pictur
         printexception()
         mgenlog = 'Mezzmo update picture error.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)       
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7       
 
     
 def getPictures():                                               # Get pictures from DB
@@ -596,6 +603,7 @@ def getPictures():                                               # Get pictures 
         picfile = openNosyncDB()                                 # Open picture DB
         curps = picfile.execute('SELECT mpTitle, mpUrl, iWidth, iHeight, iDate, iDesc FROM mPictures')
         pictuple = curps.fetchall()                              # Get pictures from database
+        curps.close()                                            # New 2.2.1.7
         piclist = []
         for a in range(len(pictuple)):
             itemdict = {
@@ -615,7 +623,7 @@ def getPictures():                                               # Get pictures 
         printexception()
         mgenlog = 'Mezzmo get picture error.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)  
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7  
 
 
 def getContentURL(contenturl):                                   # Check for manufacturer match
@@ -626,6 +634,7 @@ def getContentURL(contenturl):                                   # Check for man
         svrfile = openNosyncDB()                                 # Open server database    
         curps = svrfile.execute('SELECT sManuf FROM mServers WHERE controlUrl LIKE ?', (searchurl,))
         srvrtuple = curps.fetchone()                             # Get server from database
+        curps.close()                                            # New 2.2.1.7
         if srvrtuple:
             manufacturer = srvrtuple[0]
         else:
@@ -639,7 +648,7 @@ def getContentURL(contenturl):                                   # Check for man
         printexception()
         mgenlog = 'Mezzmo content server search error.'
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)      
+        #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7      
 
 
 class SlideWindow(xbmcgui.Window):                               # Window class for monitoring 
@@ -966,5 +975,14 @@ def displayTrailers(title, itemurl, icon, trselect):              # Display trai
         mgenlogUpdate(mgenlog)         
         trdialog = xbmcgui.Dialog()
         dialog_text = mgenlog        
-        trdialog.ok("Mezzmo Trailer Playback Error", dialog_text) 
+        trdialog.ok("Mezzmo Trailer Playback Error", dialog_text)
+
+
+def getPythonVersion():                                          # get Python version
+
+    pythinfo = sys.version_info
+    pythver = str(pythinfo[0]) + '.' + str(pythinfo[1]) + '.' + str(pythinfo[2])
+    mgenlog = 'Mezzmo Kodi addon Python vesion is: ' + pythver
+    mgenlogUpdate(mgenlog, "Yes")
+    return pythver 
 

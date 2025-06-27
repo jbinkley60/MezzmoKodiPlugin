@@ -1,3 +1,12 @@
+2.2.1.7 6/30/2025
+
+- Added WAL mode database access for addon database to avoid contention
+- Cleaned up missing database cursor close calls which are needed for some older versions of Python
+- Removed writing exception errors to addon database for addon database exceptions
+- Fixed minor actor parsing logic when dealing with whitespace characters
+- Added logging for the Python version running under Kodi
+- Added setting to enable Mezzmo addon parsing logging for troubleshooting 
+
 2.2.1.6 4/9/2025
 
 - Added support for handling Textures database refresh options with Kodi 22.  Previous versions 
