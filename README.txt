@@ -5,7 +5,8 @@
 - Removed writing exception errors to addon database for addon database exceptions
 - Fixed minor actor parsing logic when dealing with whitespace characters
 - Added logging for the Python version running under Kodi
-- Added setting to enable Mezzmo addon parsing logging for troubleshooting 
+- Added setting to enable Mezzmo addon parsing logging for troubleshooting
+- Fixed a bug if a keyword in Mezzmo contained only spaces an exception error would occur when searching 
 
 2.2.1.6 4/9/2025
 

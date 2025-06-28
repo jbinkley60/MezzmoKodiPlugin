@@ -1806,10 +1806,10 @@ def insertKwords(keywords, mtype, movienumb):
             return
 
         db = openNosyncDB()
-        kwordlist = keywords.split(',')                                      # Convert keywords to list
+        kwordlist = keywords.strip().strip(',').split(',')                   # Convert keywords to list - Updated 2.2.1.7
         xbmc.log('Mezzmo keyword list is: ' + str(kwordlist), xbmc.LOGDEBUG) # keywords insertion debugging
         for kword in kwordlist:     
-            xbmc.log('Mezzmo current keyword is: ' + str(kword), xbmc.LOGDEBUG)
+            xbmc.log('Mezzmo current keyword is: ' + str(kword) + ' ' + mtype + ' ' + str(movienumb) + ' ' + str(len(kword)), xbmc.LOGDEBUG)
             mkword = kword.strip()
             curk = db.execute('SELECT kyTitle FROM mKeywords WHERE kyTitle=? and kyType=?',(mkword, mtype,))     
             kwordtuple = curk.fetchone()                                     # Get keyword from keywords
