@@ -375,8 +375,9 @@ def getServerport(contenturl):                  #  Get Mezzmo server port info
     return(serverport)
 
 
-def syncCount(dbsync, mtitle, mtype):
+def syncCount(mtitle, mtype):
 
+    dbsync = openNosyncDB()                          #  Open Synclog database - Added 2.2.1.7
     xbmc.log('Mezzmo nosync syncCount called: ' + mtitle + ' ' + mtype, xbmc.LOGDEBUG)  
     dupes = dbsync.execute('SELECT VideoTitle FROM nosyncVideo WHERE VideoTitle=? and Type=?', \
     (mtitle, mtype))
@@ -397,6 +398,7 @@ def syncCount(dbsync, mtitle, mtype):
     dbsync.commit()        
     dupes.close()                               # Modified 2.2.1.7
     #del dupes, dupetuple                       # Modified 2.2.1.7
+    dbsync.close()                              # Added 2.2.1.7
 
 
 def countsyncCount():                           # returns count records in noSync DB 
@@ -419,7 +421,7 @@ def countsyncCount():                           # returns count records in noSyn
     return[nosynccount, liveccount, trailcount] 
 
 
-def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered, micon, imdb_id): 
+def addTrailers(mtitle, trailers, prflocaltr, myear, mpcount, mpremiered, micon, imdb_id): 
     #  Add movie trailers to Mezzmo10db
 
     try:
@@ -429,6 +431,7 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
         trlength = len(trailers)
         #xbmc.log('Mezzmo trailers: ' + str(trlength) , xbmc.LOGINFO) 
         if trlength > 0:
+            dbsync = openNosyncDB()                             # Open Synclog database - Added 2.2.1.7
             for trailer in trailers:            #  Get count of local trailers
                 if ytbase64 not in trailer:
                     localcount += 1
@@ -489,10 +492,12 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
                             str(a), "0", orgtrailer, int(myear), mpcount, mpremiered, micon, imdb_id))
                         a += 1            
             dbsync.commit()
-
+            dbsync.close()
 
     except Exception as e:
-        dbsync.commit()
+        if dbsync:
+            dbsync.commit()
+            dbsync.close()
         xbmc.log('Mezzmo problem adding trailers to db: ' + mtitle + ' ' + str(e), xbmc.LOGINFO)  
         pass
 
