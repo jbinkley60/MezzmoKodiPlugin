@@ -1085,5 +1085,5 @@ msgstr ""
 
 msgctxt "#30574"
 msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
-msgstr "Habilita registro adicional para solucionar problemas de análise de XML de resposta do servidor Mezzmo. O padrão é Desativado."
+msgstr ""
 

@@ -260,6 +260,8 @@ def openNosyncDB():                                 #  Open Mezzmo noSync databa
     DBconn = os.path.join(xbmcvfs.translatePath("special://database"), "Mezzmo10.db")  
     dbsync = sqlite.connect(DBconn)
 
+    dbsync.execute('PRAGMA journal_mode = WAL;')
+
     return(dbsync) 
 
 
@@ -490,6 +492,7 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
 
 
     except Exception as e:
+        dbsync.commit()
         xbmc.log('Mezzmo problem adding trailers to db: ' + mtitle + ' ' + str(e), xbmc.LOGINFO)  
         pass
 
@@ -689,7 +692,6 @@ def mezlogUpdate(msynclog, reduceslog = 'no'): #  Add Mezzmo sync logs to DB and
 
     try:
         msfile = openNosyncDB()                              #  Open Synclog database
-        msfile.execute('PRAGMA journal_mode = WAL;')
 
         currmsDate = datetime.now().strftime('%Y-%m-%d')
         currmsTime = datetime.now().strftime('%H:%M:%S:%f')
@@ -711,7 +713,6 @@ def mgenlogUpdate(mgenlog, reduceglog = 'no'):           #  Add Mezzmo general l
 
     try:
         mgfile = openNosyncDB()                          #  Open Synclog database
-        mgfile.execute('PRAGMA journal_mode = WAL;')
 
         currmsDate = datetime.now().strftime('%Y-%m-%d')
         currmsTime = datetime.now().strftime('%H:%M:%S:%f')

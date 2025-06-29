@@ -1086,4 +1086,4 @@ msgstr "Os monitores ocultam a configuração assistida durante o processo de si
 
 msgctxt "#30574"
 msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
-msgstr ""
+msgstr "Habilita registro adicional para solucionar problemas de análise de XML de resposta do servidor Mezzmo. O padrão é Desativado."
