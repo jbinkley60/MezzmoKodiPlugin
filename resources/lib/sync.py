@@ -495,7 +495,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                     xbmc.log('Handle browse initial icon is: ' + icon, xbmc.LOGDEBUG)             
 
             dbfile = media.openKodiDB()                   #  Open Kodi database
-            dbsync = media.openNosyncDB()                 #  Open Mezzmo nosync database
+            #dbsync = media.openNosyncDB()                 #  Open Mezzmo nosync database
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 itemid = item.get('id')
@@ -774,10 +774,10 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                 if playcount > 0 and maxsetting != 'Off' and clean != 1:                 # New discovery play counter
                     playcount = updatePlaycount(date_added_text, last_played_text, playcount, syncurl, itemid, mtitle)
                 if (tvcheckval[1] == 1 or size == 100000000000) and validf == 1 and clean == 1:   #  Update live channel
-                    media.syncCount(dbsync, mtitle, "livec")
+                    media.syncCount(mtitle, "livec")
                     #xbmc.log('Mezzmo livec: ' + mtitle, xbmc.LOGINFO)       
                 if tvcheckval[2] == 1 and validf == 1 and clean == 1:   #  Update nosync database nosync
-                    media.syncCount(dbsync, mtitle, "nosync")
+                    media.syncCount(mtitle, "nosync")
                     #xbmc.log('Mezzmo nosync: ' + mtitle, xbmc.LOGINFO)                
                 if tvcheckval[0] == 1 and validf == 1:  
                     pathcheck = media.getPath(itemurl)                  #  Get path string for media file
@@ -815,7 +815,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                     media.writeMovieStreams(filekey, video_codec_text, aspect, video_height, video_width,         \
                     audio_codec_text, audio_channels_text, audio_lang, durationsecs, mtitle, kodichange, itemurl, \
                     icon, backdropurl, dbfile, pathcheck, dupelog, knative, fsyncflag, kodiart)  # Update movie stream info 
-                    media.addTrailers(dbsync, mtitle, trailerurls, prflocaltr, release_year_text, playcount,      \
+                    media.addTrailers(mtitle, trailerurls, prflocaltr, release_year_text, playcount,      \
                     release_date_text, icon, imdb_text)                          # Update movie trailers info
                     rtrimpos = itemurl.rfind('/')
                     mobjectID = itemurl[rtrimpos+1:]                             # Get Mezzmo objectID
@@ -832,8 +832,8 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
             if itemsleft <= 0 or ((itemsleft - 100) <= 0 and clean == 1) :      # Display completion notification
                 dbfile.commit()
                 dbfile.close()             #  Final commit writes and close Kodi database
-                dbsync.commit()
-                dbsync.close()   
+                #dbsync.commit()           # updated 2.2.1.7
+                #dbsync.close()            # updated 2.2.1.7
                 if kodiclean == 'resync':
                     msgdialogprogress.close()
                     name = xbmcaddon.Addon().getAddonInfo('name')

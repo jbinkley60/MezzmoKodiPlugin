@@ -788,6 +788,10 @@ msgctxt "#30815"
 msgid "Modify search criteria"
 msgstr ""
 
+msgctxt "#30816"
+msgid "Mezzmo XML Response Parse Logging"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr ""
@@ -1077,5 +1081,9 @@ msgstr ""
 
 msgctxt "#30573"
 msgid "Monitors Hide Watched setting druing hourly background sync process.  Options are log to general logs or log and notify via GUI.  Default is Off."
+msgstr ""
+
+msgctxt "#30574"
+msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
 msgstr ""
 

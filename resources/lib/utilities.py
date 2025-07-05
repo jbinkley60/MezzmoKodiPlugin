@@ -101,7 +101,8 @@ def displayMenu():
 
             ddialog = xbmcgui.Dialog()    
             vdate = ddialog.select('Select Mezzmo Logs or Stats View', pselect)
-            xbmc.log('Mezzmo performance selection is: ' + pselect[vdate], xbmc.LOGDEBUG)    
+            xbmc.log('Mezzmo performance selection is: ' + pselect[vdate], xbmc.LOGDEBUG)
+            curpf.close()                                       # New 2.2.1.7    
             pdfile.close()
         except:
             perfdialog = xbmcgui.Dialog()
@@ -140,6 +141,7 @@ def perfStats():                                                 # Mezzmo Addon 
     ddialog = xbmcgui.Dialog()  
     vdate = ddialog.select('Select Mezzmo Performance Stats Date', pdates)
     if vdate < 0:                                                # User cancel
+        curpf.close()                                            # New 2.2.1.7
         pdfile.close()
         return
     elif (pdates[vdate]) == "Most Recent":
@@ -150,6 +152,7 @@ def perfStats():                                                 # Mezzmo Addon 
         headval = 'Mezzmo Performance Stats for:  ' + pdates[vdate][5:] + "-" + \
         pdates[vdate][:4]
     pstatslist = curpf.fetchall()
+    curpf.close()                                               # New 2.2.1.7
     pdfile.close()
     displayPerf(pstatslist, headval)
 
@@ -207,12 +210,14 @@ def perfPlaylist():                                              # Performance B
     ddialog = xbmcgui.Dialog() 
     vdate = ddialog.select('Select Mezzmo Performance Stats Playlist', plists)
     if vdate < 0:                                                # User cancel
+        curpf.close()                                            # New 2.2.1.7
         pdfile.close()
         return
     curpf = pdfile.execute('SELECT * FROM mperfStats WHERE psPlaylist=? ORDER BY psDate DESC,              \
     psTime DESC', (plists[vdate],))
     headval = 'Mezzmo Performance Stats for:  ' + plists[vdate]
-    pstatslist = curpf.fetchall() 
+    pstatslist = curpf.fetchall()
+    curpf.close()                                                # New 2.2.1.7 
     pdfile.close()
     displayPerf(pstatslist, headval)
 
@@ -227,6 +232,7 @@ def displayDupeLogs():
 
     dupdate = dlfile.execute('SELECT DISTINCT dtDate FROM dupeTrack ORDER BY dtDate DESC LIMIT 30', ) 
     mstatdates = dupdate.fetchall()                              # Get dates from database
+    dupdate.close()                                              # New 2.2.1.7
     if mstatdates:        
         for a in range(len(mstatdates)):
             dldates.append(mstatdates[a][0])                     # Convert rows to list for dialog box
@@ -244,7 +250,7 @@ def displayDupeLogs():
         displayMenu()       
     else:                                                        # No sync logs found for date selected
         textval1 = "No Mezzmo Duplicate Videos found."           # Should never happen. Safety check 
-        dialog.textviewer("Mezzmo Duplicate Videos", textval1)            
+        dialog.textviewer("Mezzmo Duplicate Videos", textval1)           
         dlfile.close()
         return
       
@@ -272,7 +278,8 @@ def displayDupeLogs():
     else:                                                        # No records found for date selected
         perfdialog = xbmcgui.Dialog()
         dialog_text = "No duplicate logs found for the selected date."        
-        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)     
+        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)
+    curdl.close()                                                # New 2.2.1.7     
     dlfile.close()
     return
 
@@ -291,6 +298,7 @@ def displaySyncLogs():
             msdates.append(mstatdates[a][0])                     # Convert rows to list for dialog box
         mdate = msdialog.select('Select Sync Logs Date', msdates)
         if mdate < 0:                                            # User cancel
+            cursync.close()                                      # New 2.2.1.7
             dsfile.close()
             return
         elif (msdates[mdate]) == "Most Recent":
@@ -302,7 +310,8 @@ def displaySyncLogs():
             headval = 'Mezzmo Sync Logs for:  ' + msdates[mdate][5:] + "-" + msdates[mdate][:4]
     else:                                                        # No sync logs found for date selected
         textval1 = "No Mezzmo sync logs found."                  # Should never happen. Safety check 
-        msdialog.textviewer("Mezzmo Sync Logs", textval1)            
+        msdialog.textviewer("Mezzmo Sync Logs", textval1) 
+        cursync.close()                                          # New 2.2.1.7           
         dsfile.close()
         return       
 
@@ -321,7 +330,8 @@ def displaySyncLogs():
     else:                                                        # No records found for date selected  
         perfdialog = xbmcgui.Dialog()
         dialog_text = "No sync logs found for the selected date."        
-        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)     
+        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)
+    cursync.close()                                              # New 2.2.1.7     
     dsfile.close()
     return
 
@@ -340,6 +350,7 @@ def displayGenLogs():
             msdates.append(mstatdates[a][0])                     # Convert rows to list for dialog box
         mdate = msdialog.select('Select General Logs Date', msdates)
         if mdate < 0:                                            # User cancel
+            cursync.close()                                      # New 2.2.1.7
             dsfile.close()
             return
         elif (msdates[mdate]) == "Most Recent":
@@ -351,7 +362,8 @@ def displayGenLogs():
             headval = 'Mezzmo General Logs for:  ' + msdates[mdate][5:] + "-" + msdates[mdate][:4]
     else:                                                        # No gen logs found for date selected
         textval1 = "No Mezzmo general logs found."               # Should never happen. Safety check 
-        msdialog.textviewer("Mezzmo General Logs", textval1)            
+        msdialog.textviewer("Mezzmo General Logs", textval1)
+        cursync.close()                                          # New 2.2.1.7            
         dsfile.close()
         return        
 
@@ -374,7 +386,8 @@ def displayGenLogs():
     else:                                                         # No records found for date selected   
         perfdialog = xbmcgui.Dialog()
         dialog_text = "No general logs found for the selected date."        
-        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)     
+        perfdialog.ok("Mezzmo Addon Database Error", dialog_text)
+    cursync.close()                                               # New 2.2.1.7       
     dsfile.close()
     return
 
@@ -411,6 +424,7 @@ def trDisplay(title, trcount, icon, imdb_id = ''):                # Play trailer
         curtrail = dsfile.execute('SELECT trUrl, trPlay, trVar1 from mTrailers WHERE trTitle = ?  \
         OR trVar2 = ? ORDER BY trID ASC LIMIT ?', (mtitle, imdb_id, trcount,))
         mtrailers = curtrail.fetchall()                            # Get trailers from database
+        curtrail.close()                                           # New 2.2.1.7
         dsfile.close()
         trselect = x = 1
         if mtrailers:        
@@ -488,7 +502,8 @@ def selectKeywords(mtype, header, callingm, contenturl):     #  Select Mezzmo ke
         pdfile = openNosyncDB()                              # Open keyword database
         curpk = pdfile.execute('SELECT kyTitle FROM mKeywords WHERE kyType=? and kyTitle not like \
         ? AND (kyVar1 <> ? OR kyVar1 IS NULL) ORDER BY kyTitle ASC', (mtype, '%###%', 'No',))
-        kcontext = curpk.fetchall()                          # Get keywords from database    
+        kcontext = curpk.fetchall()                          # Get keywords from database
+        curpk.close()                                        # New 2.2.1.7    
         pdfile.close()
 
         cselect = []
@@ -509,7 +524,7 @@ def selectKeywords(mtype, header, callingm, contenturl):     #  Select Mezzmo ke
     except:
         mgenlog ='Mezzmo problem parsing Mezzmo keywords for: ' + mtype
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        media.mgenlogUpdate(mgenlog)
+        #media.mgenlogUpdate(mgenlog)                        # Updated 2.2.1.7
         pass
 
 
@@ -552,7 +567,8 @@ def moviePreviews(mtitle, vurl, prviewct, myear, icon):      # Play Mezzmo movie
             NOT LIKE ? AND trYear=? AND trID=? AND trPlay=? AND NOT trTitle=? ORDER BY RANDOM() \
             LIMIT ?', (tartrail, taryear, '1', '0', mtitle, prviewct,))
             mptuples = mpcurr.fetchall()
-        
+     
+        mpcurr.close()                                       # New 2.2.1.7   
         mpfile.close()
 
         xbmc.log('Mezzmo Movie Previews: ' + str(taryear) + ' ' + str(len(mptuples)) + ' '  \
@@ -596,7 +612,7 @@ def moviePreviews(mtitle, vurl, prviewct, myear, icon):      # Play Mezzmo movie
     except:
         mgenlog ='Mezzmo problem with Mezzmo Movie Previews for: ' + str(myear)
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        media.mgenlogUpdate(mgenlog)
+        #media.mgenlogUpdate(mgenlog)                        # Updated 2.2.1.7
 
 
 def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, contenturl, \
@@ -647,7 +663,9 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         keytarget = mtype  
     curpk = pdfile.execute('SELECT count (kyTitle) FROM mKeywords WHERE kyType=? and kyTitle \
     not like ? AND (kyVar1 <> ? OR kyVar1 IS NULL)', (keytarget, '%###%', 'No',))
-    kcontext = curpk.fetchone()                          # Get keyword count from database  
+    kcontext = curpk.fetchone()                          # Get keyword count from database
+    curpt.close()                                        # New 2.2.1.7
+    curpk.close()                                        # New 2.2.1.7
     pdfile.close()
 
     pdfile = openKodiDB()                                # Open Kodi DB
@@ -656,24 +674,29 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN musicvideo_view USING  \
         (idFile) WHERE musicvideo_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     elif mtype == 'episode':                             # Find episode bookmark
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN episode_view USING     \
         (idFile) WHERE episode_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     else:
         curpt = pdfile.execute('SELECT idBookmark FROM bookmark INNER JOIN movie_view USING       \
         (idFile) WHERE movie_view.c00=?', (mtitle,))
         bcontext = curpt.fetchone()                      # Get bookmark from database
+        curpt.close()                                    # New 2.2.1.7
     if trtype.lower() == 'trailer':
         curtr = pdfile.execute('SELECT c22, c01 from movie_view WHERE uniqueid_value = ?', (imdb_id,))
         trcontext = curtr.fetchone()
+        curtr.close()                                    # New 2.2.1.7
     else:
         trcontext = None
     if mtype == 'episode' or 'tvtrailer' in  trtype.lower(): # check for TV episodes for TV trailers
         curptv= pdfile.execute('SELECT c00 FROM tvshow WHERE c00=?', (movieset,))
         tvcontext = curptv.fetchone()                    # Get TV Show from database if exists
+        curptv.close()                                   # New 2.2.1.7  
     else:
-        tvcontext = None  
+        tvcontext = None
     pdfile.close()
 
     if mplaycount <= 0 and 'trailer' not in trtype.lower():  # Mezzmo playcount is 0

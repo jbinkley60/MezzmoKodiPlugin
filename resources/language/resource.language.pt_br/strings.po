@@ -788,6 +788,10 @@ msgctxt "#30815"
 msgid "Modify search criteria"
 msgstr "Modifique os critérios de pesquisa"
 
+msgctxt "#30816"
+msgid "Registro de análise de resposta XML do Mezzmo"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr "Defina o atraso do marcador de 0 a 30 segundos atrás da posição de reprodução atual."
@@ -1079,3 +1083,7 @@ msgstr "Retornar à tela inicial da biblioteca Kodi"
 msgctxt "#30573"
 msgid "Monitors Hide Watched setting druing hourly background sync process.  Options are log to general logs or log and notify via GUI.  Default is Off."
 msgstr "Os monitores ocultam a configuração assistida durante o processo de sincronização em segundo plano de hora em hora.  As opções são registrar em logs gerais ou registrar e notificar via GUI.  O padrão é desativado."
+
+msgctxt "#30574"
+msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
+msgstr "Habilita registro adicional para solucionar problemas de análise de XML de resposta do servidor Mezzmo. O padrão é Desativado."

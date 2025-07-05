@@ -32,6 +32,7 @@ def priorSearch():                                    # Check for prior searches
         pselect = []
         curps = pdfile.execute('SELECT msSearch FROM mSearch order by msDate desc LIMIT ?', (srchlimit,))
         psrchtext = curps.fetchall()                  # Get previous from search database
+        curps.close()                                 # New 2.2.1.7
         if psrchtext:                                 # If prior searches in search table 
             pselect = ["[COLOR blue]Enter new search[/COLOR]"]
             for x in range(len(psrchtext)):
@@ -53,7 +54,7 @@ def priorSearch():                                    # Check for prior searches
     except:
         mgenlog ='Mezzmo problem getting prior searches from DB: '
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)
+        #mgenlogUpdate(mgenlog)                       # Updated 2.2.1.7
         return('')
         pass          
 
@@ -72,7 +73,7 @@ def addSearch(stext):                                  # Add new searches
     except:
         mgenlog ='Mezzmo problem writing new search to DB: ' + str(stext)
         xbmc.log(mgenlog, xbmc.LOGINFO)
-        mgenlogUpdate(mgenlog)          
+        #mgenlogUpdate(mgenlog)                       # Updated 2.2.1.7          
         pass
 
 
@@ -259,6 +260,8 @@ def openNosyncDB():                                 #  Open Mezzmo noSync databa
     DBconn = os.path.join(xbmcvfs.translatePath("special://database"), "Mezzmo10.db")  
     dbsync = sqlite.connect(DBconn)
 
+    dbsync.execute('PRAGMA journal_mode = WAL;')
+
     return(dbsync) 
 
 
@@ -372,8 +375,9 @@ def getServerport(contenturl):                  #  Get Mezzmo server port info
     return(serverport)
 
 
-def syncCount(dbsync, mtitle, mtype):
+def syncCount(mtitle, mtype):
 
+    dbsync = openNosyncDB()                          #  Open Synclog database - Added 2.2.1.7
     xbmc.log('Mezzmo nosync syncCount called: ' + mtitle + ' ' + mtype, xbmc.LOGDEBUG)  
     dupes = dbsync.execute('SELECT VideoTitle FROM nosyncVideo WHERE VideoTitle=? and Type=?', \
     (mtitle, mtype))
@@ -392,8 +396,9 @@ def syncCount(dbsync, mtitle, mtype):
         dbsync.execute('INSERT into nosyncVideo (VideoTitle, Type) values (?, ?)', (mtitle, mtype))    
 
     dbsync.commit()        
-    #dupes.close()
-    del dupes, dupetuple
+    dupes.close()                               # Modified 2.2.1.7
+    #del dupes, dupetuple                       # Modified 2.2.1.7
+    dbsync.close()                              # Added 2.2.1.7
 
 
 def countsyncCount():                           # returns count records in noSync DB 
@@ -416,7 +421,7 @@ def countsyncCount():                           # returns count records in noSyn
     return[nosynccount, liveccount, trailcount] 
 
 
-def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered, micon, imdb_id): 
+def addTrailers(mtitle, trailers, prflocaltr, myear, mpcount, mpremiered, micon, imdb_id): 
     #  Add movie trailers to Mezzmo10db
 
     try:
@@ -426,6 +431,7 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
         trlength = len(trailers)
         #xbmc.log('Mezzmo trailers: ' + str(trlength) , xbmc.LOGINFO) 
         if trlength > 0:
+            dbsync = openNosyncDB()                             # Open Synclog database - Added 2.2.1.7
             for trailer in trailers:            #  Get count of local trailers
                 if ytbase64 not in trailer:
                     localcount += 1
@@ -438,6 +444,7 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
                 dupes = dbsync.execute('SELECT count (trUrl), mPcount FROM mTrailers WHERE trTitle=?', \
                 (mtitle,))
             dupetuple = dupes.fetchone()
+            dupes.close()                                       # New 2.2.1.7
             xbmc.log('Mezzmo trailers: ' + str(trlength) + ' ' + str(dupetuple[0]) + ' ' +               \
             str(localcount) + ' ' + mtitle, xbmc.LOGDEBUG)
 
@@ -485,9 +492,12 @@ def addTrailers(dbsync, mtitle, trailers, prflocaltr, myear, mpcount, mpremiered
                             str(a), "0", orgtrailer, int(myear), mpcount, mpremiered, micon, imdb_id))
                         a += 1            
             dbsync.commit()
-
+            dbsync.close()
 
     except Exception as e:
+        if dbsync:
+            dbsync.commit()
+            dbsync.close()
         xbmc.log('Mezzmo problem adding trailers to db: ' + mtitle + ' ' + str(e), xbmc.LOGINFO)  
         pass
 
@@ -556,7 +566,10 @@ def countKodiRecs(contenturl):                  # returns count records in Kodi 
     msynclog = 'Mezzmo total Kodi DB record count: ' + str(recscount)
     mezlogUpdate(msynclog)
 
-    del curm, cure, curmv  
+    #del curm, cure, curmv                       # Modified 2.2.1.7
+    curm.close()                                 # New 2.2.1.7
+    cure.close()                                 # New 2.2.1.7
+    curmv.close()                                # New 2.2.1.7  
     db.close()
     return(recscount) 
 
@@ -666,6 +679,7 @@ def checkDupes(filenumb, lastcount, mtitle):             #  Add Duplicate logs t
     currdlDate = datetime.now().strftime('%Y-%m-%d')
     curdl = dlfile.execute('SELECT * FROM dupeTrack WHERE dtDate=? and dtTitle=?',(currdlDate, mtitle))
     dupltuple = curdl.fetchone()
+    curdl.close()                                        # New 2.2.1.7
     if not dupltuple:				         # If not found add dupe log
         dlfile.execute('INSERT into dupeTrack(dtDate, dtFnumb, dtLcount, dtTitle, dtType) values      \
         (?, ?, ?, ?, ?)', (currdlDate, filenumb, lastcount, mtitle, "V"))
@@ -726,6 +740,7 @@ def getSyncURL():                                      # Get Sync srver URL
     svrfile = openNosyncDB()                           # Open server database    
     curps = svrfile.execute('SELECT controlUrl FROM mServers WHERE mSync=?', ('Yes',))
     srvrtuple = curps.fetchone()                       # Get server from database
+    curps.close()                                      # New 2.2.1.7
     if srvrtuple:
         syncurl = srvrtuple[0]
     else:                                              # Sync srver not set yet
@@ -846,7 +861,8 @@ def kodiCleanDB(force):
             dbsync.close()
             if msgdialogprogress: msgdialogprogress.close()  
             mgenlog = translate(30445)
-            mgenlogUpdate(mgenlog)
+            #mgenlogUpdate(mgenlog)                             # Updated 2.2.1.7
+            xbmc.log(mgenlog, xbmc.LOGINFO)                     # New 2.2.1.7 
             name = xbmcaddon.Addon().getAddonInfo('name')
             icon = xbmcaddon.Addon().getAddonInfo("path") + '/resources/icon.png'
             xbmcgui.Dialog().notification(name, mgenlog, icon)
@@ -865,6 +881,7 @@ def getSyncUrl():                                                # Get current s
         svrfile = openNosyncDB()                                 # Open server database    
         curps = svrfile.execute('SELECT controlUrl FROM mServers WHERE mSync=?', ('Yes',))
         srvrtuple = curps.fetchone()                             # Get server from database
+        curps.close()                                            # New 2.2.1.7
         if srvrtuple:
             syncurl = srvrtuple[0]
         else:
@@ -875,7 +892,8 @@ def getSyncUrl():                                                # Get current s
     except Exception as e:
         printexception()
         msynclog = 'Mezzmo error getting sync URL.'
-        mezlogUpdate(msynclog, 'yes')
+        #mezlogUpdate(msynclog, 'yes')                           # Updated 2.2.1.7
+        xbmc.log(msynclog, xbmc.LOGINFO)                         # New 2.2.1.7                          
         return ('None')
 
 
@@ -993,6 +1011,7 @@ def checkDBpath(itemurl, mtitle, mplaycount, db, mpath, mserver, mseason, mepiso
         curd = db.execute('SELECT idFile FROM files WHERE strFilename=? and idPath=?',         \
         (filecheck, pathnumb,))                                    # 2nd duplicate files table only check
         dfiletuple = curd.fetchone()
+        curd.close()                                               # New 2.2.1.7
 
         if not dfiletuple:                                         # Not found in files table by name & path
             if mcategory == 'episode' and mplaycount == 0:  # Adjust for Kodi expecting NULL vs. 0
@@ -1327,6 +1346,7 @@ def writeActorsToDb(actors, movieId, imageSearchUrl, mtitle, db, fileId, mnative
                 (?, ?, ?, ?)', (actornumb, movieId, media_type, ordernum,))
                 cura = db.execute('SELECT art_id FROM art WHERE media_id=? and media_type=?', (actornumb, "actor",))
                 artuple = cura.fetchone()    # Check for existing artwork
+                cura.close()                 # New 2.2.1.7
                 if not artuple: 
                     db.execute('INSERT into ART (media_id, media_type, type, url) values (?, ?, ?, ?)',             \
                     (actornumb, "actor", "thumb", searchUrl,))
@@ -1493,6 +1513,8 @@ def insertArt(movienumb, db, media_type, murl, micon, kodiart='false'):
             curctuple = curc.fetchone()
             xbmc.log('Movie art info: ' +  str(len(curtuple)) + '  ' + str(curctuple[0]) \
             + '  ' + str(movienumb), xbmc.LOGDEBUG)
+            curc.close()                                      # New 2.2.1.7
+            curt.close()                                      # New 2.2.1.7
             if len(curtuple) > 0 and int(curctuple[0]) < 10:
                 newurl = murl[:murl.rfind("/")] + '/image' + kodiArtTitle(curtuple[0][0])
                 cleararturl = newurl + '+clearart'
@@ -1790,10 +1812,10 @@ def insertKwords(keywords, mtype, movienumb):
             return
 
         db = openNosyncDB()
-        kwordlist = keywords.split(',')                                      # Convert keywords to list
+        kwordlist = keywords.strip().strip(',').split(',')                   # Convert keywords to list - Updated 2.2.1.7
         xbmc.log('Mezzmo keyword list is: ' + str(kwordlist), xbmc.LOGDEBUG) # keywords insertion debugging
         for kword in kwordlist:     
-            xbmc.log('Mezzmo current keyword is: ' + str(kword), xbmc.LOGDEBUG)
+            xbmc.log('Mezzmo current keyword is: ' + str(kword) + ' ' + mtype + ' ' + str(movienumb) + ' ' + str(len(kword)), xbmc.LOGDEBUG)
             mkword = kword.strip()
             curk = db.execute('SELECT kyTitle FROM mKeywords WHERE kyTitle=? and kyType=?',(mkword, mtype,))     
             kwordtuple = curk.fetchone()                                     # Get keyword from keywords

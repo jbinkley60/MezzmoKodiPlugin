@@ -62,11 +62,13 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     if mtype == 'musicvideo' and musicvid == 'true':     # Find musicvideo file number
         curb = db.execute('select files.idFile, c04, c13 from files inner join musicvideo on           \
         files.idFile=musicvideo.idFile where c00=?', (mtitle,))      
-        mtuple = curb.fetchone()                         # Check for existing musicvideo    
+        mtuple = curb.fetchone()                         # Check for existing musicvideo
+        curb.close()                                     # New 2.2.1.7    
         if mtuple:                                       # create bookmark
             #xbmc.log('Mezzmo musicvideo found: ' + str(mtuple[0]) + ' ' + str(pos) + ' ' + str(len(mtitle)), xbmc.LOGINFO)
             curm = db.execute('select idBookmark from bookmark where idFile=?', (mtuple[0],))
             mbtuple = curm.fetchone()
+            curm.close()                                 # New 2.2.1.7  
             if not mbtuple and len(mtitle) > 2 and int(pos) > 0:  # Not found.  Create new bookmark.
                 xbmc.log('Mezzmo musicvideo not bookmark found: ' + str(mtuple[0]), xbmc.LOGDEBUG)
                 db.execute('INSERT into bookmark (idFile, timeInSeconds, totalTimeInSeconds, player, type) \
@@ -86,11 +88,13 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     elif mtype == 'episode':                           # Find episode bookmark
         curb = db.execute('select files.idFile, c09, c18 from files inner join episode on           \
         files.idFile=episode.idFile where c00=?', (mtitle,))      
-        mtuple = curb.fetchone()                       # Check for existing episode    
+        mtuple = curb.fetchone()                       # Check for existing episode
+        curb.close()                                   # New 2.2.1.7      
         if mtuple:                                     # create bookmark
             #xbmc.log('Mezzmo episode found: ' + str(mtuple[0]) + ' ' + str(pos) + ' ' + str(len(mtitle)), xbmc.LOGINFO)
             curm = db.execute('select idBookmark from bookmark where idFile=?', (mtuple[0],))
             mbtuple = curm.fetchone()
+            curm.close()                               # New 2.2.1.7  
             if not mbtuple and len(mtitle) > 2 and int(pos) > 0:  # Not found.  Create new bookmark.
                 xbmc.log('Mezzmo episode not bookmark found: ' + str(mtuple[0]), xbmc.LOGDEBUG)
                 db.execute('INSERT into bookmark (idFile, timeInSeconds, totalTimeInSeconds, player, type) \
@@ -110,11 +114,13 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     else:                                              # Find movie bookmark
         curb = db.execute('select files.idFile, c11, c22 from files inner join movie on           \
         files.idFile=movie.idFile where c00=?', (mtitle,))      
-        mtuple = curb.fetchone()                       # Check for existing movie    
+        mtuple = curb.fetchone()                       # Check for existing movie
+        curb.close()                                   # New 2.2.1.7      
         if mtuple:                                     # create bookmark
             #xbmc.log('Mezzmo movie found: ' + str(mtuple[0]) + ' ' + str(pos) + ' ' + str(len(mtitle)), xbmc.LOGINFO)
             curm = db.execute('select idBookmark from bookmark where idFile=?', (mtuple[0],))
             mbtuple = curm.fetchone()
+            curm.close()                               # New 2.2.1.7  
             if not mbtuple and len(mtitle) > 2 and int(pos) > 0:  # Not found.  Create new bookmark.
                 xbmc.log('Mezzmo movie not bookmark found: ' + str(mtuple[0]), xbmc.LOGDEBUG)
                 db.execute('INSERT into bookmark (idFile, timeInSeconds, totalTimeInSeconds, player, type) \
