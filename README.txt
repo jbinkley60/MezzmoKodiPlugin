@@ -1,4 +1,9 @@
-2.2.1.7 6/30/2025
+2/.2.1.7a
+
+- Improved whitelist actor length testing to fix a bug where an actor name that contained only white
+spaces could cause an exception error.
+
+2.2.1.7 7/5/2025
 
 - Added WAL mode database access for addon database to avoid contention
 - Cleaned up missing database cursor close calls which are needed for some older versions of Python
