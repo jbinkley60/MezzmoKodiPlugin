@@ -521,10 +521,11 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                             cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
                     else:
                         for a in range(len(actor_list)):                  
-                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
+                            #actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
                             #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
                             actname = actor_list[a].strip()                        #  Updated v2.2.1.7
                             if len(actname) > 0:                                   #  Updated v2.2.1.7
+                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + actname.replace(" ","+")
                                 actor = xbmc.Actor(actname, '', a, actorSearchUrl)
                                 cast_dict.append(actor)
                             else:
@@ -1285,10 +1286,11 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                             cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
                     else:
                         for a in range(len(actor_list)):                  
-                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
+                            #actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
                             #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
                             actname = actor_list[a].strip()                        #  Updated v2.2.1.7
                             if len(actname) > 0:                                   #  Updated v2.2.1.7
+                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + actname.replace(" ","+")
                                 actor = xbmc.Actor(actname, '', a, actorSearchUrl)
                                 cast_dict.append(actor)
                             else:

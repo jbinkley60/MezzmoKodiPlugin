@@ -216,7 +216,7 @@ def getDatabaseName():
     elif installed_version == '21':
         return "MyVideos131.db"
     elif installed_version == '22':
-        return "MyVideos133.db"
+        return "MyVideos135.db"
       
     return ""
 

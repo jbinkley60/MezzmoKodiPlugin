@@ -1,7 +1,10 @@
-2/.2.1.7a
+2/.2.1.7b
 
 - Improved whitelist actor length testing to fix a bug where an actor name that contained only white
 spaces could cause an exception error.
+- Added support for the latest versions of Kodi 22 Piers MyVideos135.db
+- Fixed bug introduced in v2.2.1.7 that would cause some local trailers not to be written to the 
+addon database.
 
 2.2.1.7 7/5/2025
 
