@@ -508,10 +508,10 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     artist_text = artist.text
 
                 actor_list = ''
-                cast_dict = []    # Added cast & thumbnail display from Mezzmo server
+                cast_dict = []        # Added cast & thumbnail display from Mezzmo server
                 cast_dict_keys = ['name','thumbnail']
                 actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
-                if actors != None and imageSearchUrl != None and len(actors.text.strip()) > 2:
+                if actors != None and imageSearchUrl != None  and len(actors.text) > 2:
                     actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
                     if installed_version == '19':                     
                         for a in actor_list:                  
@@ -521,14 +521,16 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                             cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
                     else:
                         for a in range(len(actor_list)):                  
-                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
+                            #actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
                             #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
-                            if len(actor_list[a]) > 0:
-                                actor = xbmc.Actor(actor_list[a].strip(), '', a, actorSearchUrl)
+                            actname = actor_list[a].strip()                        #  Updated v2.2.1.7
+                            if len(actname) > 0:                                   #  Updated v2.2.1.7
+                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + actname.replace(" ","+")
+                                actor = xbmc.Actor(actname, '', a, actorSearchUrl)
                                 cast_dict.append(actor)
                             else:
                                 mgenlog = 'Mezzmo issue with actor list in: ' + str(title)
-                                media.mgenlogUpdate(mgenlog)                                
+                                media.mgenlogUpdate(mgenlog)  
                                 
                 creator_text = ''
                 creator = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}creator')
@@ -1274,7 +1276,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                 cast_dict = []        # Added cast & thumbnail display from Mezzmo server
                 cast_dict_keys = ['name','thumbnail']
                 actors = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}artist')
-                if actors != None and imageSearchUrl != None  and len(actors.text.strip()) > 2:
+                if actors != None and imageSearchUrl != None  and len(actors.text) > 2:
                     actor_list = actors.text.replace(', Jr.' , ' Jr.').replace(', Sr.' , ' Sr.').split(',')
                     if installed_version == '19':                     
                         for a in actor_list:                  
@@ -1284,10 +1286,12 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                             cast_dict.append(dict(list(zip(cast_dict_keys, new_record))))
                     else:
                         for a in range(len(actor_list)):                  
-                            actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
+                            #actorSearchUrl = imageSearchUrl + "?imagesearch=" + actor_list[a].lstrip().replace(" ","+")
                             #xbmc.log('search URL: ' + actorSearchUrl, xbmc.LOGINFO)  # uncomment for thumbnail debugging
-                            if len(actor_list[a]) > 0:
-                                actor = xbmc.Actor(actor_list[a].strip(), '', a, actorSearchUrl)
+                            actname = actor_list[a].strip()                        #  Updated v2.2.1.7
+                            if len(actname) > 0:                                   #  Updated v2.2.1.7
+                                actorSearchUrl = imageSearchUrl + "?imagesearch=" + actname.replace(" ","+")
+                                actor = xbmc.Actor(actname, '', a, actorSearchUrl)
                                 cast_dict.append(actor)
                             else:
                                 mgenlog = 'Mezzmo issue with actor list in: ' + str(title)

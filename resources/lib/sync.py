@@ -815,7 +815,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                     media.writeMovieStreams(filekey, video_codec_text, aspect, video_height, video_width,         \
                     audio_codec_text, audio_channels_text, audio_lang, durationsecs, mtitle, kodichange, itemurl, \
                     icon, backdropurl, dbfile, pathcheck, dupelog, knative, fsyncflag, kodiart)  # Update movie stream info 
-                    media.addTrailers(mtitle, trailerurls, prflocaltr, release_year_text, playcount,      \
+                    media.addTrailers(mtitle, trailerurls, prflocaltr, release_year_text, playcount,              \
                     release_date_text, icon, imdb_text)                          # Update movie trailers info
                     rtrimpos = itemurl.rfind('/')
                     mobjectID = itemurl[rtrimpos+1:]                             # Get Mezzmo objectID
@@ -832,8 +832,8 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
             if itemsleft <= 0 or ((itemsleft - 100) <= 0 and clean == 1) :      # Display completion notification
                 dbfile.commit()
                 dbfile.close()             #  Final commit writes and close Kodi database
-                #dbsync.commit()           # updated 2.2.1.7
-                #dbsync.close()            # updated 2.2.1.7
+                #dbsync.commit()
+                #dbsync.close()   
                 if kodiclean == 'resync':
                     msgdialogprogress.close()
                     name = xbmcaddon.Addon().getAddonInfo('name')
