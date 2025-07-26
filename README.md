@@ -76,7 +76,7 @@ Visit the Mezzmo Kodi addon <a href="https://github.com/jbinkley60/MezzmoKodiPlu
 
 <b>GUI Mode</b>
 
-<img src="(https://github.com/user-attachments/assets/497757bf-75d0-42f3-af64-588be2f26bdb)" width="100%">
+<img src="(https://private-user-images.githubusercontent.com/63779136/402700101-497757bf-75d0-42f3-af64-588be2f26bdb.jpg?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTM1MTI5NjAsIm5iZiI6MTc1MzUxMjY2MCwicGF0aCI6Ii82Mzc3OTEzNi80MDI3MDAxMDEtNDk3NzU3YmYtNzVkMC00MmYzLWFmNjQtNTg4YmUyZjI2YmRiLmpwZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA3MjYlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNzI2VDA2NTEwMFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWY1M2Q1MzFjNGJlMWEzYWM3Nzg0NDJiNzlmZTNhMWU1MmE5NjU5ZGUzYjJmNGVlYzc1MWEwM2ViNjI1ZWI0YzYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.HmnW4WxYtkICCNBM35pR0UxnzYyCmBS7N06aqoPF1cc)" width="100%">
 
 <b>Native Mode</b>
 
