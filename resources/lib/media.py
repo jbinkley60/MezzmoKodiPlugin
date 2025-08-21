@@ -1715,8 +1715,19 @@ def insertVversion(fileId, movienumb, db, mediatype, kversion):                 
         if kversion < 21:
             return
 
+        curv = db.execute('SELECT itemType from videoVersionType where id = 40400')      # Updated for v2.2.1.9
+        vtuple = curv.fetchone()
+
+        if vtuple:
+            itype = vtuple[0]
+        elif kversion == 21:
+            itype = 0
+        else:
+            itype = 1
+        curv.close()          
+
         db.execute('INSERT OR REPLACE into videoversion (idFile, idMedia, media_type, itemType, idType) \
-        values  (?, ?, ?, ?, ?)', (fileId, movienumb, mediatype, 0, 40400,))
+        values  (?, ?, ?, ?, ?)', (fileId, movienumb, mediatype, itype, 40400,)) 
 
     except Exception as e:
         printexception()

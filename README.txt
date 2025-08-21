@@ -1,4 +1,9 @@
-2/.2.1.8 7/9/2025
+2.2.1.9 8/21/2025
+
+- Improve compatibility with Kodi 22 Piers movie version feature which was causing movies synchronized 
+from Mezzmo to not properly display in Kodi native mode.
+
+2.2.1.8 7/9/2025
 
 - Improved whitelist actor length testing to fix a bug where an actor name that contained only white
 spaces could cause an exception error when browsing the playlist that contained the bad entry..
