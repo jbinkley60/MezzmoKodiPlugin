@@ -440,7 +440,7 @@ def trDisplay(title, trcount, icon, imdb_id = ''):                # Play trailer
                     ytcolor = "[COLOR " +  media.settings('ytcolor').lower() + "]"
                     if int(mtrailers[a][1]) > 0:
                         traillist.append("Trailer  #" + str(x) + "     " + plcolor + "Played[/COLOR]") 
-                    elif '\imdb_' in str(mtrailers[a][2]):
+                    elif '\\imdb_' in str(mtrailers[a][2]):
                         traillist.append("Trailer  #" + str(x) + "     " + imcolor + "Local IMDB[/COLOR]")
                     elif 'www.youtube' not in str(mtrailers[a][2]):
                         traillist.append("Trailer  #" + str(x) + "     " + ytcolor + "Local YouTube[/COLOR]")  

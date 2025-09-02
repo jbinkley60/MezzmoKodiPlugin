@@ -1,6 +1,12 @@
+2.2.2.0 9/2/2025
+
+- Updated support for Kodi Piers 22 alpha 1 MyVideos137 database file
+- Fixed error message when viewing multiple Kodi trailers with newer versions of Python now included in 
+the Kodi Piers 22 Windows builds.
+
 2.2.1.9 8/21/2025
 
-- Improve compatibility with Kodi 22 Piers movie version feature which was causing movies synchronized 
+- Improved compatibility with Kodi 22 Piers movie version feature which was causing movies synchronized 
 from Mezzmo to not properly display in Kodi native mode.
 
 2.2.1.8 7/9/2025
