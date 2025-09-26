@@ -1669,6 +1669,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="emptydis" type="boolean" label="30817" help="30575">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="maxplayc" type="string" label="30804" help="30564">
 					<level>0</level>
 					<default>Off</default>

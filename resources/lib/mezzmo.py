@@ -274,6 +274,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     enhdesc = media.settings('enhdesc')                 # Enhanced description setting
     kodiart = media.settings('kodiart')                 # Additional Kodi artwork
     parselog = media.settings('parselog')               # Additional XML parsing logging
+    emptydis =  media.settings('emptydis')              # Disable empty folder checking
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
     menuitem3 = addon.getLocalizedString(30372)
@@ -304,7 +305,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
 
             xbmc.log('Mezzmo items: ' + NumberReturned + ' ' + objectID, xbmc.LOGDEBUG)
             
-            if int(NumberReturned) == 0:
+            if int(NumberReturned) == 0 and emptydis == "false":
                 dialog_text = media.translate(30421) + '\n' + xbmc.getInfoLabel("ListItem.Label")
                 xbmcgui.Dialog().ok(media.translate(30423), dialog_text)
                 xbmc.executebuiltin('Action(ParentDir)')
@@ -1086,6 +1087,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     parselog = media.settings('parselog')               # Additional XML parsing logging
     srchorder = int(media.settings('srchorder'))        # Default search result sort order (integer)
     srchcontent = media.settings('srchcontent')         # Default content type for search results
+    emptydis =  media.settings('emptydis')              # Disable empty folder checking
     
     try:
         while True:
@@ -1103,7 +1105,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
 
             xbmc.log('Handle search items found: ' + str(TotalMatches) + ' ' + str(NumberReturned), xbmc.LOGDEBUG) 
             
-            if int(NumberReturned) == 0:
+            if int(NumberReturned) == 0 and emptydis == "false":
                 dialog_text = media.translate(30414)
                 xbmcgui.Dialog().ok(media.translate(30420), dialog_text)
                 searchsave = media.settings('searchsave', 'None')       # Clear search criteria when no results

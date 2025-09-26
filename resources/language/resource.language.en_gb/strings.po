@@ -792,6 +792,10 @@ msgctxt "#30816"
 msgid "Mezzmo XML Response Parse Logging"
 msgstr ""
 
+msgctxt "#30817"
+msgid "Disable Empty Folder Checking"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr ""
@@ -1087,3 +1091,6 @@ msgctxt "#30574"
 msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
 msgstr ""
 
+msgctxt "#30575"
+msgid "When enabled no checking for emtpy folders from Mezzmo will occur.  Instead emtpy folders will be displayed vs. the popup message. Enabling can help troubleshoot empty folders.  Default is Off."
+msgstr ""

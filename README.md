@@ -78,7 +78,7 @@ Visit the Mezzmo Kodi addon <a href="https://github.com/jbinkley60/MezzmoKodiPlu
 
 <b>GUI Mode</b>
 
-<img src="http://www.conceiva.com/images/moviedetails.png" width="100%">
+<img src="https://github.com/user-attachments/assets/5d89332b-8a1d-458f-8b08-fe4ace12cb84" width="100%">
 
 <b>Native Mode</b>
 

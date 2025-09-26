@@ -789,8 +789,12 @@ msgid "Modify search criteria"
 msgstr "Modifique os critérios de pesquisa"
 
 msgctxt "#30816"
-msgid "Registro de análise de resposta XML do Mezzmo"
-msgstr ""
+msgid "Mezzmo XML Response Parse Logging"
+msgstr "Registro de análise de resposta XML do Mezzmo"
+
+msgctxt "#30817"
+msgid "Disable Empty Folder Checking"
+msgstr "Desativar verificação de pasta vazia"
 
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
@@ -1087,3 +1091,7 @@ msgstr "Os monitores ocultam a configuração assistida durante o processo de si
 msgctxt "#30574"
 msgid "Enables additional logging for troubleshooting Mezzmo server response XML parsing issues. Default is Off."
 msgstr "Habilita registro adicional para solucionar problemas de análise de XML de resposta do servidor Mezzmo. O padrão é Desativado."
+
+msgctxt "#30575"
+msgid "When enabled no checking for emtpy folders from Mezzmo will occur.  Instead emtpy folders will be displayed vs. the popup message. Enabling can help troubleshoot empty folders.  Default is Off."
+msgstr "Quando habilitado, não haverá verificação de pastas vazias pelo Mezzmo. Em vez disso, as pastas vazias serão exibidas em vez da mensagem pop-up. Habilitar pode ajudar a solucionar problemas de pastas vazias. O padrão é Desativado."
