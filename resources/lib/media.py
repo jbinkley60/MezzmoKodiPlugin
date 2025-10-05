@@ -216,7 +216,7 @@ def getDatabaseName():
     elif installed_version == '21':
         return "MyVideos131.db"
     elif installed_version == '22':
-        return "MyVideos137.db"
+        return "MyVideos139.db"
       
     return ""
 
@@ -1960,7 +1960,7 @@ def enhancedDesc(last_played_text, playcount_text, description_text):          #
 def kodiArtTitle(movietitle):                                                # Remove extra characters from Kodi art URL
 
     try:        
-        newtitle = "?imagesearch=" + re.sub('[\W_]+', ' ',movietitle).lower().strip().replace(' ' , '+')
+        newtitle = "?imagesearch=" + re.sub('[\\W_]+', ' ',movietitle).lower().strip().replace(' ' , '+')
         return newtitle
 
     except Exception as e:

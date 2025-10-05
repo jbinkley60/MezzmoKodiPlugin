@@ -1,3 +1,9 @@
+2.2.2.1 10/4/2025
+
+- Added feature to disable empty folder checking to aid in troubleshooting.
+- Fixed escape character artwork URL parsing error for newer versions of Kodi Python in MS Windows
+- Updated support for Kodi Piers 22 alpha 1 MyVideos139 database file for the latest nightly builds
+
 2.2.2.0 9/2/2025
 
 - Updated support for Kodi Piers 22 alpha 1 MyVideos137 database file
