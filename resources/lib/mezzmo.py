@@ -51,10 +51,11 @@ def perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, pobject):  
 
     try:
         psfile = media.openNosyncDB()                                    # Open Perf Stats database
-        xbmc.log('Mezzmo perfstats: ' + str(ctitle) + ' ' + str(pobject), xbmc.LOGDEBUG)
+        xbmc.log('Mezzmo perfstats: ' + str(len(ctitle)) + ' ' + str(pobject) + ' ' + str(brtime), xbmc.LOGDEBUG)
         currDate = datetime.datetime.now().strftime('%Y-%m-%d')
         currTime = datetime.datetime.now().strftime('%H:%M:%S')
-        if ctitle != ".." and ctitle != "":                              # Do not save Go up and refresh actions
+        #if ctitle != ".." and ctitle != "":                              # Do not save Go up, refresh and play video actions
+        if len(ctitle) > 0:                                              # Do not save Go up, refresh and video play video actions
             sduration = '{:.2f}'.format(sduration)  + "s"
             pduration = '{:.2f}'.format(pduration)  + "s"
             tduration = '{:.2f}'.format(tduration)  + "s"
@@ -68,7 +69,7 @@ def perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, pobject):  
             psfile.execute('INSERT into mperfStats (psDate, psTime, psPlaylist, psCount, pSrvTime, mSrvTime,   \
             psTTime, psDispRate) values (?, ?, ?, ?, ?, ?, ?, ?)', (currDate, currTime, ctitle, TotalMatches,  \
             pduration, sduration, tduration, displayrate))
-        objects.close()                                                            # new 2.2.1.7                  
+            objects.close()                                               # new 2.2.1.7  - fixed 2.2.2.2                
         psfile.commit()
         psfile.close()
     except:

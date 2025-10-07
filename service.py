@@ -9,6 +9,7 @@ import sync
 import media
 import json
 from server import checkSync, getContentURL, getPythonVersion
+from playcount import setPlaycount
 
 pos = fastsync = orgtrvol = 0
 file = ''
@@ -25,17 +26,20 @@ class XBMCPlayer(xbmc.Player):
     def __init__(self, *args):
         self.paflag = 0
         self.mtitle = ''
+        self.cpount = ''
         pass
  
     def onPlayBackStarted(self):
         try:
             global mtype, orgtrvol
             mtype = ''
+            pcount = ''
             file = xbmc.Player().getPlayingFile()
             xbmc.sleep(500)
             if xbmc.Player().isPlayingVideo():
                 finfo = xbmc.Player().getVideoInfoTag()
                 mtype = finfo.getMediaType()
+                self.pcount = str(finfo.getPlayCount())
                 self.mtitle = media.displayTitles(finfo.getTitle())
                 seekpos = finfo.getUniqueID('startskip')
                 pos = int(xbmc.Player().getTime())
@@ -104,6 +108,9 @@ class XBMCPlayer(xbmc.Player):
         'cva_extract' not in file:                     # Ensure Mezzmo server has been selected
             bookmark.SetBookmark(contenturl, objectID, str(pos))
             bookmark.updateKodiBookmark(objectID, pos, self.mtitle, mtype)
+            newcount = str(int(self.pcount) + 1)
+            xbmc.log('The current playcount is now: ' + newcount, xbmc.LOGDEBUG)
+            setPlaycount(contenturl, objectID, newcount, self.mtitle)
             if media.settings('prvrefresh') == 'true' and media.settings('movieprvw') == 'true':
                 xbmc.executebuiltin('Container.Refresh')
                 media.settings('movieprvw', 'false')

@@ -49,6 +49,7 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
     media.settings('contenturl', contenturl)
     slideshow = media.settings('slideshow')             # Check if slideshow is enabled
     udynlist =  media.settings('udynlist')              # Check if Dynamic Lists are enabled
+    emptydis =  media.settings('emptydis')              # Disable empty folder checking
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
     menuitem3 = addon.getLocalizedString(30372)
@@ -75,7 +76,7 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
             NumberReturned = browseresponse.find('NumberReturned').text
             TotalMatches = browseresponse.find('TotalMatches').text
             
-            if int(NumberReturned) == 0:
+            if int(NumberReturned) == 0 and emptydis == "false":
                 dialog_text = media.translate(30421) + '\n' + xbmc.getInfoLabel("ListItem.Label")
                 xbmcgui.Dialog().ok(media.translate(30424), dialog_text)
                 xbmc.executebuiltin('Action(ParentDir)')
