@@ -11,7 +11,7 @@ def SetBookmark(url, objectID, pos):
     srvrtime = int(media.settings('srvrtime'))
     if not srvrtime:
         srvrtime = 60
-    
+    xbmc.log('Setting Mezzmo bookmark: ' + str(pos), xbmc.LOGDEBUG)
     headers = {'content-type': 'text/xml', 'accept': '*/*', 'SOAPACTION' : '"urn:schemas-upnp-org:service:ContentDirectory:1#X_SetBookmark"', 'User-Agent': 'Kodi (Mezzmo Addon)'}
     body = '''<?xml version="1.0"?>
     <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
@@ -42,7 +42,10 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     if media.settings('kbooksync') == 'false':           # Kodi bookmark sync disabled
         return
 
-    if mtype == 'audiom':                                #  Don't update Kodi for music
+    xbmc.log('Mezzmo Kodi bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(title) + ' '  + mtype + '  ' \
+    + str(len(mtype)) + ' ' + str(title.encode('utf-8')), xbmc.LOGDEBUG)
+
+    if mtype.lower() in ['audiom', 'song'] or len(mtype) == 0: #  Don't update Kodi for music or when mtype is not set
         return
 
     if dbfile == 1:
@@ -55,8 +58,8 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     mtitle = title
 
     #xbmc.log('Mezzmo media type: ' + mtype, xbmc.LOGINFO) 
-    xbmc.log('Mezzmo bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(mtitle) + ' '  \
-    + str(title.encode('utf-8')), xbmc.LOGDEBUG)
+    #xbmc.log('Mezzmo bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(mtitle) + ' '  + mtype + '  ' \
+    #+ str(title.encode('utf-8')), xbmc.LOGINFO)
 
     musicvid = media.settings('musicvid')                # Check if musicvideo sync is enabled
     if mtype == 'musicvideo' and musicvid == 'true':     # Find musicvideo file number

@@ -1674,6 +1674,11 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="endvinc" type="boolean" label="30818" help="30576">
+					<level>0</level>
+					<default>false</default>
+					<control type="toggle"/>
+				</setting>
 				<setting id="maxplayc" type="string" label="30804" help="30564">
 					<level>0</level>
 					<default>Off</default>
@@ -1684,7 +1689,7 @@
                                                         <option>100 Log</option>
                                                         <option>250 Log</option>
                                                         <option>500 Log</option>
-                                                        <option>1000 Log</option>                                                                                                       <option>50 LastPlayed</option>
+                                                        <option>1000 Log</option>                                                                                                       							<option>50 LastPlayed</option>
                                                         <option>100 LastPlayed</option>
                                                         <option>250 LastPlayed</option>
                                                         <option>500 LastPlayed</option>

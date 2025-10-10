@@ -411,8 +411,8 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parsecount), xbmc.LOGINFO)
 
             piclist = []
-            if slideshow == 'true':                                #  Clear slideshow picture list
-                clearPictures()  
+            #if slideshow == 'true':                                #  Clear slideshow picture list
+            #    clearPictures()                                    #  Moved v2.2.2.2 to improve performance
             ctitle = xbmc.getInfoLabel("ListItem.Label")           #  Get title of selected playlist
             xbmc.log('Mezzmo content title: ' + ctitle + ' ' + str(parentID) + ' ' + objectID +     \
             ' Content type: ' + contentType, xbmc.LOGDEBUG)       
@@ -734,7 +734,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                             break
                                    
                 mediaClass_text = 'video'
-                mediaClass = item.find('.//{urn:schemas-sony-com:av}mediaClass')
+                mediaClass = item.find('.//{urn:schemas-sony-com:av}mediaClass')           
                 if mediaClass != None:
                     mediaClass_text = mediaClass.text
                     if mediaClass_text == 'V':
@@ -770,7 +770,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})                        
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
-                    mtype = categories_text                 
+                    mtype = categories_text             
                     li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),   \
                     (menuitem10, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
                     ("plugin.video.mezzmo", "context", pctitle, itemurl, season_text, episode_text, playcount,     \
@@ -817,7 +817,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         'channels': int(audio_channels_text)})
                         li.addStreamInfo('subtitle', {'language': subtitle_lang})
                         li.setCast(cast_dict)
-                    else:
+                    else: 
                         vinfo = li.getVideoInfoTag()
                         vinfo.setDuration(durationsecs)
                         if genre_text is not None: vinfo.setGenres(genre_text.split(','))
@@ -897,6 +897,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                              
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title
+                    xbmc.log('Mezzmo music type: ' + mtitle, xbmc.LOGINFO)
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
                     offsetmenu = 'Resume from ' + time.strftime("%H:%M:%S", time.gmtime(int(dcmInfo_text)))
@@ -981,6 +982,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     }
                     piclist.append(itemdict)
                     if picnotify == int(NumberReturned) and slideshow == 'true':   # Update picture DB
+                        clearPictures()                                            # Moved v2.2.2.2 to improve performance
                         updatePictures(piclist)
                         picDisplay()
                     itemurl = build_url({'mode': 'picture', 'itemurl': itemurl})

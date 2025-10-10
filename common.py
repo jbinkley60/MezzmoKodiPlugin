@@ -23,8 +23,8 @@ class printDebug:
         self.DEBUG_INFO=1
         self.DEBUG_DEBUG=2
         self.DEBUG_DEBUGPLUS=3
-        self.token_regex=re.compile('-Token=[a-z|0-9].*[&|$]')
-        self.ip_regex=re.compile('\.\d{1,3}\.\d{1,3}\.')        
+        #self.token_regex=re.compile('-Token=[a-z|0-9].*[&|$]')
+        #self.ip_regex=re.compile('\.\d{1,3}\.\d{1,3}\.')        
 
         self.DEBUG_MAP={ self.DEBUG_OFF       : "off",
                          self.DEBUG_INFO      : "info",

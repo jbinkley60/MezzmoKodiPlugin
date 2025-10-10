@@ -2,6 +2,11 @@
 
 - Fixed a minor bug introduced in v2.2.1.7 which was causing errant log messages regarding perfstats 
   in the Kodi logfile when video playback ended.
+- Added new setting to enable a feature to detect end of video file playback to increment play counter.
+  This functionality it normally handled by the Mezzmo server.  This feature provides additional control.  
+- Fixed exception error for common.py file due to improper regex parsing.  This was cosmetic.
+- Minor performance improvement when displaying music and video playlists by moving some slideshow
+  code into pictures only.
 
 2.2.2.1 10/4/2025
 
