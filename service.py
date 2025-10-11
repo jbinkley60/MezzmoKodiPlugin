@@ -34,15 +34,14 @@ class XBMCPlayer(xbmc.Player):
     def onPlayBackStarted(self):
         try:
             global orgtrvol, file, mtype
-            #mtype = ''
+            mtype = ''
             #pcount = ''
             file = xbmc.Player().getPlayingFile()
             xbmc.sleep(500)
             if xbmc.Player().isPlayingVideo():
-                xbmc.sleep(500)
+                #xbmc.sleep(500)
                 finfo = xbmc.Player().getVideoInfoTag()
                 mtype = finfo.getMediaType()
-                #xbmc.log('Mezzmo video playback started: ' + mtype, xbmcLOGINFO)
                 self.pcount = str(finfo.getPlayCount())
                 self.mtitle = media.displayTitles(finfo.getTitle())
                 seekpos = finfo.getUniqueID('startskip')
@@ -73,7 +72,7 @@ class XBMCPlayer(xbmc.Player):
                 #xbmc.log('Mezzmo volume reset: ' + str(orgtrvol), xbmc.LOGDEBUG)
                 xbmc.executebuiltin('SetVolume(%d)' % (orgtrvol))        
             xbmc.log("Playback started - " + file , xbmc.LOGDEBUG)
-            xbmc.log('Mezzmo playback started with no player events', xbmc.LOGINFO)
+            xbmc.log('Mezzmo playback started with no player events', xbmc.LOGDEBUG)
         except:
             file = 'File playing is not video or audio'
             pass

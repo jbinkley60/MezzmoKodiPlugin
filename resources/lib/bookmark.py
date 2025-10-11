@@ -58,8 +58,8 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
     mtitle = title
 
     #xbmc.log('Mezzmo media type: ' + mtype, xbmc.LOGINFO) 
-    #xbmc.log('Mezzmo bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(mtitle) + ' '  + mtype + '  ' \
-    #+ str(title.encode('utf-8')), xbmc.LOGINFO)
+    xbmc.log('Mezzmo bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(mtitle) + ' '  + mtype + '  ' \
+    + str(title.encode('utf-8')), xbmc.LOGDEBUG)
 
     musicvid = media.settings('musicvid')                # Check if musicvideo sync is enabled
     if mtype == 'musicvideo' and musicvid == 'true':     # Find musicvideo file number
