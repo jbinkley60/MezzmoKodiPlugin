@@ -396,7 +396,7 @@
 					</constraints>
 					<control type="spinner" format="string"/>
 				</setting>
-				<setting id="mbackdrop" type="string" label="30806" help="30542">
+				<setting id="mbackdrop" type="string" label="30806" help="30566">
 					<level>0</level>
 					<default>Mezzmo</default>
 					<constraints>

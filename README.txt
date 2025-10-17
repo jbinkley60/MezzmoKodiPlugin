@@ -7,6 +7,9 @@
 - Fixed exception error for common.py file due to improper regex parsing.  This was cosmetic.
 - Minor performance improvement when displaying music and video playlists by moving some slideshow
   code into pictures only.
+- Improved clearing of Mezzmo content bookmarks in Kodi when playback goes to the end of a file. Previously,
+  under certain circumstances, a bookmark / resume pointer may not have gotten deleted properly.
+- Fixed help message for addon setting selecting playlist nackdrop type. 
 
 2.2.2.1 10/4/2025
 
@@ -28,7 +31,7 @@ from Mezzmo to not properly display in Kodi native mode.
 2.2.1.8 7/9/2025
 
 - Improved whitelist actor length testing to fix a bug where an actor name that contained only white
-spaces could cause an exception error when browsing the playlist that contained the bad entry..
+spaces could cause an exception error when browsing the playlist that contained the bad entry.
 - Added support for the latest versions of Kodi 22 Piers MyVideos135.db
 - Fixed bug introduced in v2.2.1.7 that would cause some local trailers not to be written to the 
 addon database.

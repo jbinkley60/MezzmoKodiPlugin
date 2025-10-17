@@ -94,7 +94,7 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
         mtuple = curb.fetchone()                       # Check for existing episode
         curb.close()                                   # New 2.2.1.7      
         if mtuple:                                     # create bookmark
-            #xbmc.log('Mezzmo episode found: ' + str(mtuple[0]) + ' ' + str(pos) + ' ' + str(len(mtitle)), xbmc.LOGINFO)
+            xbmc.log('Mezzmo episode found: ' + str(mtuple[0]) + ' ' + str(pos) + ' ' + str(len(mtitle)), xbmc.LOGDEBUG)
             curm = db.execute('select idBookmark from bookmark where idFile=?', (mtuple[0],))
             mbtuple = curm.fetchone()
             curm.close()                               # New 2.2.1.7  
@@ -133,7 +133,7 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
                 return
             elif int(pos) > 0 and len(mtitle) > 2:     # Movie bookmark found
                 xbmc.log('Mezzmo movie bookmark found: ' + str(mbtuple[0]) + ' ' + str(pos), xbmc.LOGDEBUG)
-                db.execute('UPDATE bookmark SET timeInSeconds=? WHERE idBookmark=?', (pos, mbtuple[0],))  
+                db.execute('UPDATE bookmark SET timeInSeconds=? WHERE idBookmark=?', (pos, mtuple[0],))  
             elif int(pos) == 0 and len(mtitle) > 2:    # Movie bookmark found to delete
                 #xbmc.log('Mezzmo movie bookmark found2: ' + str(mbtuple[0]) + ' ' + str(pos), xbmc.LOGINFO)
                 db.execute('DELETE from bookmark WHERE idFile=?', (mtuple[0],))

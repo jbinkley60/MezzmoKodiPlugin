@@ -897,7 +897,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                              
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title
-                    xbmc.log('Mezzmo music type: ' + mtitle, xbmc.LOGINFO)
+                    xbmc.log('Mezzmo music type: ' + mtitle, xbmc.LOGDEBUG)
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
                     offsetmenu = 'Resume from ' + time.strftime("%H:%M:%S", time.gmtime(int(dcmInfo_text)))
