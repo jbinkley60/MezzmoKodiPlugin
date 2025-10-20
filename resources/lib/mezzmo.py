@@ -20,7 +20,7 @@ import media
 import sync
 from server import updateServers, getContentURL, picDisplay, showSingle, delServer
 from server import clearPictures, updatePictures, addServers, checkSync, downServer
-from server import onlyDiscMezzmo
+from server import onlyDiscMezzmo, updateVideoList
 from views import content_mapping, setViewMode
 from generic import ghandleBrowse, gBrowse
 
@@ -276,6 +276,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     kodiart = media.settings('kodiart')                 # Additional Kodi artwork
     parselog = media.settings('parselog')               # Additional XML parsing logging
     emptydis =  media.settings('emptydis')              # Disable empty folder checking
+    vidplbmk = media.settings('vidplbmk')               # Enable full playlist bookmarks and playcounts
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
     menuitem3 = addon.getLocalizedString(30372)
@@ -332,7 +333,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             
             #elems = xml.etree.ElementTree.fromstring(result.text.encode('utf-8'))
             elems = xml.etree.ElementTree.fromstring(result.text)
-            picnotify = parsecount = 0            
+            picnotify = parsecount = vidnotify = 0            
             for container in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}container'):
                 title = container.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 if parselog == 'true' and title != None and len(title) > 0:
@@ -399,6 +400,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=True)
 
                 picnotify += 1
+                vidnotify += 1
                 if parentID == '0':
                     contentType = 'top'
                 else:
@@ -411,6 +413,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parsecount), xbmc.LOGINFO)
 
             piclist = []
+            vidlist = []
             #if slideshow == 'true':                                #  Clear slideshow picture list
             #    clearPictures()                                    #  Moved v2.2.2.2 to improve performance
             ctitle = xbmc.getInfoLabel("ListItem.Label")           #  Get title of selected playlist
@@ -893,7 +896,22 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         media.writeMovieStreams(filekey, video_codec_text, aspect, video_height, video_width,        \
                         audio_codec_text, audio_channels_text, audio_lang, durationsecs, mtitle, kodichange, itemurl,\
                         icon, backdropurl, dbfile, pathcheck, 'false', knative)         # Update movie stream info 
-                        xbmc.log('The movie name is: ' + mtitle, xbmc.LOGDEBUG)  
+                        xbmc.log('The movie name is: ' + mtitle, xbmc.LOGDEBUG)
+                        #xbmc.log('Playlist setting: ' + str(vidplbmk), xbmc.LOGINFO)
+                    if vidplbmk == 'true':
+                        vidnotify += 1
+                        itemdict = {
+                            'title': title,
+                            'url': itemurl,
+                            'idesc': description_text,
+                            'playcount': playcount,
+                        }
+                        vidlist.append(itemdict)
+                        #xbmc.log('Video playcount counts: ' + str(vidnotify) + ' ' + NumberReturned, sbmc.LOGINFO)
+                        if vidnotify == int(NumberReturned):                        # Update video bookmark table
+                            #xbmc.log('Video playcount list: ' + str(len(vidlist)) + ' ' + str(vidlist), xbmc.LOGINFO)
+                            updateVideoList(vidlist)                                    # Updateo Videolist table
+ 
                              
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title

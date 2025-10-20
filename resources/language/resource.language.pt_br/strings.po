@@ -800,6 +800,18 @@ msgctxt "#30818"
 msgid "End of Video Playcount Increment"
 msgstr "Incremento de contagem de reprodução do final do vídeo"
 
+msgctxt "#30819"
+msgid "Enable Playlist Bookmarks and Playcounts"
+msgstr "Habilitar marcadores de lista de reprodução e contagens de reprodução"
+
+msgctxt "#30820"
+msgid "Bookmarks & Playcounts"
+msgstr "Marcadores e contagens de reprodução"
+
+msgctxt "#30821"
+msgid "Autoclear Kodi Bookmarks"
+msgstr "Limpar automaticamente os favoritos do Kodi"
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr "Defina o atraso do marcador de 0 a 30 segundos atrás da posição de reprodução atual."
@@ -1103,3 +1115,11 @@ msgstr "Quando habilitado, não haverá verificação de pastas vazias pelo Mezz
 msgctxt "#30576"
 msgid "When enabled the playcoount of a video file will be incremented when the end of file is reached.  Normally this function is handled by the Mezzmo server.  Default is Off."
 msgstr "Quando ativada, a contagem de reproduções de um arquivo de vídeo será incrementada quando o final do arquivo for atingido. Normalmente, esta função é gerenciada pelo servidor Mezzmo. O padrão é Desativado."
+
+msgctxt "#30577"
+msgid "When enabled this setting will add a context menu option for setting / clearing bookmarks and playcounts for an entire video playlist or folder.  Default is Off."
+msgstr "Quando ativada, esta configuração adicionará uma opção de menu de contexto para definir/limpar favoritos e contagens de reprodução para uma playlist ou pasta de vídeos inteira. O padrão é Desativado."
+
+msgctxt "#30578"
+msgid "For GUI mode use only.  When enabled this setting will automatically clear all Mezzmo bookmarks in Kodi when video playback is stopped or ended.  Default is Off."
+msgstr "Somente para uso no modo GUI. Quando ativada, esta configuração limpará automaticamente todos os favoritos do Mezzmo no Kodi quando a reprodução do vídeo for interrompida ou encerrada. O padrão é Desativado."

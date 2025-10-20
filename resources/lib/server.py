@@ -596,6 +596,27 @@ def updatePictures(piclist):                                     # Update pictur
         xbmc.log(mgenlog, xbmc.LOGINFO)
         #mgenlogUpdate(mgenlog)                                  # Updated 2.2.1.7       
 
+
+def updateVideoList(vidlist):                                     # Update Video list table
+
+        vidfile = openNosyncDB()                                  # Open vdieo DB
+        vidfile.execute('DELETE FROM mVidList',)  
+        a = 0
+        while a < len(vidlist):
+            title = str(vidlist[a]['title'])
+            url = str(vidlist[a]['url'])
+            rtrimpos = url.rfind('/')
+            object = url[rtrimpos+1:]                             #  Get Mezzmo objectID
+            #object = vidlist[a]['url'] 
+            pcount = vidlist[a]['playcount'] 
+            desc = vidlist[a]['idesc']  
+            vidfile.execute('INSERT into mVidList (mvTitle, mvUrl, mvObjectID, mvPlaycount, mvDesc)  \
+            values (?, ?, ?, ?, ?)', (title, url, object, pcount, desc))
+            a += 1     
+        vidfile.commit()
+        vidfile.close()
+
+
     
 def getPictures():                                               # Get pictures from DB
 

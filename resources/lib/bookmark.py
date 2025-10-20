@@ -57,6 +57,7 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
 
     mtitle = title
 
+
     #xbmc.log('Mezzmo media type: ' + mtype, xbmc.LOGINFO) 
     xbmc.log('Mezzmo bookmark info: ' + str(file) + ' ' + str(pos) + ' ' + str(mtitle) + ' '  + mtype + '  ' \
     + str(title.encode('utf-8')), xbmc.LOGDEBUG)
@@ -139,4 +140,25 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
                 db.execute('DELETE from bookmark WHERE idFile=?', (mtuple[0],))
             if dbflag == 1: db.commit(); db.close() 
             return
+
+
+def clearKodiBookmarks(pos, title, mtype, murl):
+
+    xbmc.log('Mezzmo clear Kodi bookmark: ' + murl + ' ' + mtype, xbmc.LOGINFO)
+    if mtype.lower() in ['audiom', 'song'] or len(mtype) == 0: #  Don't update Kodi for music or when mtype is not set
+        return
+
+    if media.settings('clrkodibmk') == 'true':
+        #server = media.getServerport(murl)
+        rfpos = murl.find('/', 8)
+        server = murl[:rfpos+1]
+        xbmc.log('Mezzmo bookmark URL: ' + server, xbmc.LOGINFO)
+        server = '%' + server + '%'
+        db = media.openKodiDB()
+
+        db.execute('delete from bookmark where bookmark.idFile in (select bookmark.idFile from bookmark inner join files on \
+        bookmark.idFile = files.idFile inner join path on path.idPath = files.idPath where strPath like ?)', (server,))
+         
+        db.commit()
+        db.close()        
 

@@ -642,6 +642,7 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
     mplaycount = int(playcount)
     currpos = int(bmposition)
     lastvpl = int(media.settings('lastvpl'))                        # Last played setting
+
     if mtype == 'movie' or mtype == 'musicvideo' or mtype == 'episode' :  # Check for collection tag
         collection = checkGuiTags(taglist, mtitle)
     else:
@@ -730,7 +731,7 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         cselect.append(menuitem11)
 
     if tvcontext != None :                               # If TV Episodes exist for TV Trailer
-        cselect.append(menuitem14)    
+        cselect.append(menuitem14) 
 
     cselect.append(menuitem2)                            # Logs & Stats
 
@@ -739,6 +740,10 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
 
     if media.settings('caching')  == 'Demand':           # Clear Kodi cache
         cselect.append(menuitem15)        
+
+    if  media.settings('vidplbmk')  == 'true':           # Enable full playlist bookmarks and playcounts
+        cselect.append('Playlist Bookmarks & Playcounts')   
+
 
     ddialog = xbmcgui.Dialog()    
     vcontext = ddialog.select(addon.getLocalizedString(30471), cselect)

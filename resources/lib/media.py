@@ -309,6 +309,11 @@ def checkNosyncDB():                                 #  Verify Mezzmo noSync dat
     dbsync.execute('CREATE INDEX IF NOT EXISTS mpicture_2 ON mPictures (mpUrl)')
     dbsync.commit()
 
+    dbsync.execute('CREATE table IF NOT EXISTS mVidList (mvTitle TEXT, mvUrl TEXT,   \
+    mvObjectID TEXT, mvPlaycount TEXT, mvDesc TEXT, mEpisode TEXT, mSeason TEXT,     \
+    mSeries TEXT, mType TEXT, mvVar1 TEXT, mvVar2 TEXT, mvVar3 TEXT)')
+
+
     dbsync.execute('CREATE table IF NOT EXISTS mTrailers (trTitle TEXT, trUrl TEXT,   \
     trID TEXT, trPlay TEXT, trVar1 TEXT, trVar2 TEXT)')
     dbsync.execute('CREATE INDEX IF NOT EXISTS mtrailer_1 ON mTrailers (trTitle)')

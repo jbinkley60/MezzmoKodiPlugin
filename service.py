@@ -100,7 +100,7 @@ class XBMCPlayer(xbmc.Player):
             mtype = finfo.getMediaType()
             self.mtitle = media.displayTitles(finfo.getTitle())
             #xbmc.log("Mezzmo Playback resumed - LED ON" , xbmc.LOGDEBUG)
-            xbmc.log("Mezzmo Playback resumed: " + file + ' ' + mtype | ' ' + self.mtitle, xbmc.LOGINFO)
+            xbmc.log("Mezzmo Playback resumed: " + file + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGDEBUG)
         except:
             file = 'File playing is not video or audio'
             pass
@@ -114,11 +114,12 @@ class XBMCPlayer(xbmc.Player):
         objectID = getObjectID(file)
         pos = 0
         self.paflag = 0
-        xbmc.log("Mezzmo Playback ended: " + file + ' ' + manufacturer  + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGINFO)
+        xbmc.log("Mezzmo Playback ended: " + file + ' ' + manufacturer  + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGDEBUG)
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                     # Ensure Mezzmo server has been selected
             bookmark.SetBookmark(contenturl, objectID, str(pos))
-            bookmark.updateKodiBookmark(objectID, pos, self.mtitle, mtype)
+            #bookmark.updateKodiBookmark(objectID, pos, self.mtitle, mtype)
+            bookmark.clearKodiBookmarks(pos, self.mtitle, mtype, contenturl)
             if media.settings('endvinc') == "true":
                 newcount = str(int(self.pcount) + 1)
                 xbmc.log('The current playcount is now: ' + newcount, xbmc.LOGDEBUG)
@@ -139,7 +140,8 @@ class XBMCPlayer(xbmc.Player):
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                    # Ensure Mezzmo server has been selected
             bookmark.SetBookmark(contenturl, objectID, str(pos + bmdelay))
-            bookmark.updateKodiBookmark(objectID, pos + bmdelay - 15, self.mtitle, mtype)
+            #bookmark.updateKodiBookmark(objectID, pos + bmdelay - 15, self.mtitle, mtype)
+            bookmark.clearKodiBookmarks(pos, self.mtitle, mtype, contenturl)
             if media.settings('prvrefresh') == 'true' and media.settings('movieprvw') == 'true':
                 xbmc.executebuiltin('Container.Refresh')
                 media.settings('movieprvw', 'false')
