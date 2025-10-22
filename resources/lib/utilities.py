@@ -636,7 +636,8 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
     menuitem13 = addon.getLocalizedString(30494)                     # Play movie from mezzmo
     menuitem14 = addon.getLocalizedString(30495)                     # Show TV Episodes
     menuitem15 = addon.getLocalizedString(30498)  
-    menuitem16 = addon.getLocalizedString(30812)	             # Last Played        
+    menuitem16 = addon.getLocalizedString(30812)	             # Last Played 
+    menuitem17 = addon.getLocalizedString(30822)	             # Playlist Bookmarks & Playcounts        
     trcount = media.settings('trcount')
     prviewct = int(media.settings('prviewct'))    
     mplaycount = int(playcount)
@@ -741,9 +742,8 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
     if media.settings('caching')  == 'Demand':           # Clear Kodi cache
         cselect.append(menuitem15)        
 
-    if  media.settings('vidplbmk')  == 'true':           # Enable full playlist bookmarks and playcounts
-        cselect.append('Playlist Bookmarks & Playcounts')   
-
+    if  media.settings('vidplbmk')  == 'true' and 'trailer' not in trtype.lower():           # Enable full playlist bookmarks and playcounts
+        cselect.append(menuitem17)   
 
     ddialog = xbmcgui.Dialog()    
     vcontext = ddialog.select(addon.getLocalizedString(30471), cselect)
@@ -802,6 +802,50 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
     elif (cselect[vcontext]) == menuitem16:              # Display last played video items
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
         ';mode=lastvpl;source=browse;count=' + str(lastvpl)))   
+    elif (cselect[vcontext]) == menuitem17:              # Playlist bookmarks and playcounts
+        playlistsBookmarks(contenturl)
+
+
+def playlistsBookmarks(contenturl):                                  # Playlist level bookmrk and playcount updates
+
+        addon = xbmcaddon.Addon()
+        menuitem1 = addon.getLocalizedString(30823)	             # Mark Playlist Unwatched   
+        menuitem2 = addon.getLocalizedString(30824)	             # Mark Playlist Watched 
+        menuitem3 = addon.getLocalizedString(30825)	             # Clear Playlist Bookmarks 
+        pbdialog = xbmcgui.Dialog()
+        cselect = [menuitem1, menuitem2, menuitem3]    
+        vcontext = pbdialog.select(addon.getLocalizedString(30822), cselect)
+
+        if vcontext < 0:                                             # User cancel
+            xbmc.executebuiltin('Dialog.Close(all, true)') 
+            return
+
+        db = openNosyncDB()                                          # Open NoSync database
+        piccurp = db.execute('select mvTitle, mvUrl, mvObjectID, mvPlaycount, mvDesc, mEpisode, mSeason,    \
+        mSeries, mType from mVidList')
+        pictuples = piccurp.fetchall()
+        piccurp.close()                             
+        db.close()          
+
+        xbmc.log('Mezzmo number of video items in list: '  + str(len(pictuples)), xbmc.LOGDEBUG)
+
+        if len(pictuples) == 0:
+            return
+        elif (cselect[vcontext]) == menuitem1:
+            for v in range(len(pictuples)):
+                playcount.setPlaycount(contenturl, pictuples[v][2], '0', pictuples[v][0])
+                playcount.updateKodiPlaycount(1, pictuples[v][0], pictuples[v][1], pictuples[v][6],        \
+                pictuples[v][5], pictuples[v][7], pictuples[v][8])
+        elif (cselect[vcontext]) == menuitem2:
+            for v in range(len(pictuples)):
+                playcount.setPlaycount(contenturl, pictuples[v][2], '1', pictuples[v][0])
+                playcount.updateKodiPlaycount(0, pictuples[v][0], pictuples[v][1], pictuples[v][6],        \
+                pictuples[v][5], pictuples[v][7], pictuples[v][8])  
+        elif (cselect[vcontext]) == menuitem3:
+            for v in range(len(pictuples)):
+                bookmark.SetBookmark(contenturl, pictuples[v][2], '0')
+  
+        xbmc.executebuiltin('Container.Refresh()') 
 
 
 def trPlayMovie(title, itemurl, icon, mplot):                      # Display trailer movie

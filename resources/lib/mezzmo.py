@@ -905,6 +905,10 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                             'url': itemurl,
                             'idesc': description_text,
                             'playcount': playcount,
+                            'season': season_text,
+                            'episode': episode_text,
+                            'series': showtitle,
+                            'type': categories_text,
                         }
                         vidlist.append(itemdict)
                         #xbmc.log('Video playcount counts: ' + str(vidnotify) + ' ' + NumberReturned, sbmc.LOGINFO)
@@ -1109,6 +1113,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     srchorder = int(media.settings('srchorder'))        # Default search result sort order (integer)
     srchcontent = media.settings('srchcontent')         # Default content type for search results
     emptydis =  media.settings('emptydis')              # Disable empty folder checking
+    vidplbmk = media.settings('vidplbmk')               # Enable full playlist bookmarks and playcounts
     
     try:
         while True:
@@ -1117,6 +1122,8 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                 downServer()				# Down server response          
                 break;     #sanity check  
 
+            vidnotify = 0
+            vidlist = []
             e = xml.etree.ElementTree.fromstring(content)          
             body = e.find('.//{http://schemas.xmlsoap.org/soap/envelope/}Body')
             browseresponse = body.find('.//{urn:schemas-upnp-org:service:ContentDirectory:1}SearchResponse')
@@ -1658,7 +1665,25 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                         icon, backdropurl, dbfile, pathcheck, 'false', knative)      # Update movie stream info 
                         #xbmc.log('The movie name is: ' + mtitle, xbmc.LOGINFO)
                         #dbfile.commit()
-                        #dbfile.close() 
+                        #dbfile.close()
+                    if vidplbmk == 'true':
+                        vidnotify += 1
+                        itemdict = {
+                            'title': title,
+                            'url': itemurl,
+                            'idesc': description_text,
+                            'playcount': playcount,
+                            'season': season_text,
+                            'episode': episode_text,
+                            'series': showtitle,
+                            'type': categories_text,
+                        }
+                        if len(albumsrch) == 0 or albumsrch == album_text:          # Exact match for moviesets and TV episodes
+                            vidlist.append(itemdict)
+                        #xbmc.log('Video playcount counts: ' + str(vidnotify) + ' ' + NumberReturned, sbmc.LOGINFO)
+                        if vidnotify == int(NumberReturned):                        # Update video bookmark table
+                            #xbmc.log('Video playcount list: ' + str(len(vidlist)) + ' ' + str(vidlist), xbmc.LOGINFO)
+                            updateVideoList(vidlist)                                    # Updateo Videolist table 
                       
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title

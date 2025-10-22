@@ -812,6 +812,22 @@ msgctxt "#30821"
 msgid "Autoclear Kodi Bookmarks"
 msgstr "Limpar automaticamente os favoritos do Kodi"
 
+msgctxt "#30822"
+msgid "Playlist Bookmarks & Playcounts"
+msgstr "Favoritos da lista de reprodução e contagens de reprodução"
+
+msgctxt "#30823"
+msgid "Mark Playlist Unwatched"
+msgstr "Marcar lista de reprodução como não assistida"
+
+msgctxt "#30824"
+msgid "Mark Playlist Watched"
+msgstr "Marcar lista de reprodução assistida"
+
+msgctxt "#30825"
+msgid "Clear Playlist Bookmarks"
+msgstr "Limpar favoritos da lista de reprodução"
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr "Defina o atraso do marcador de 0 a 30 segundos atrás da posição de reprodução atual."

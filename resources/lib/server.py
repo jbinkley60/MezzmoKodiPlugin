@@ -607,11 +607,15 @@ def updateVideoList(vidlist):                                     # Update Video
             url = str(vidlist[a]['url'])
             rtrimpos = url.rfind('/')
             object = url[rtrimpos+1:]                             #  Get Mezzmo objectID
-            #object = vidlist[a]['url'] 
             pcount = vidlist[a]['playcount'] 
-            desc = vidlist[a]['idesc']  
-            vidfile.execute('INSERT into mVidList (mvTitle, mvUrl, mvObjectID, mvPlaycount, mvDesc)  \
-            values (?, ?, ?, ?, ?)', (title, url, object, pcount, desc))
+            desc = vidlist[a]['idesc']
+            mseason = vidlist[a]['season'] 
+            mepisode = vidlist[a]['episode']
+            mseries = vidlist[a]['series']
+            mtype = vidlist[a]['type']
+            vidfile.execute('INSERT into mVidList (mvTitle, mvUrl, mvObjectID, mvPlaycount, mvDesc, mEpisode,    \
+            mSeason, mSeries, mType) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', (title, url, object, pcount, desc,     \
+            mepisode, mseason, mseries, mtype))
             a += 1     
         vidfile.commit()
         vidfile.close()

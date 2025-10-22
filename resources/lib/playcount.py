@@ -99,8 +99,8 @@ def setPlaycount(url, objectID, count, mtitle):            #  Set Mezzmo play co
         xbmc.log( 'EXCEPTION IN SetBookmark: ' + str(e), xbmc.LOGINFO)
         pass
 
-    mgenlog ='Mezzmo server playcount set to ' + count + ' for: ' +  mtitle
-    xbmc.log(mgenlog, xbmc.LOGINFO)
+    #mgenlog ='Mezzmo server playcount set to ' + count + ' for: ' +  mtitle
+    #xbmc.log(mgenlog, xbmc.LOGINFO)
     mgenlog = '###' + mtitle
     media.mgenlogUpdate(mgenlog)   
     mgenlog ='Mezzmo server playcount set to ' + count + ' for: '
