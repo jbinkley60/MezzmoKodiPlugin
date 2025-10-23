@@ -9,7 +9,9 @@
   code into pictures only.
 - Improved clearing of Mezzmo content bookmarks in Kodi when playback goes to the end of a file. Previously,
   under certain circumstances, a bookmark / resume pointer may not have gotten deleted properly.
-- Fixed help message for addon setting selecting playlist nackdrop type. 
+- Fixed help message for addon setting selecting playlist backdrop type. 
+- Added new setting and feature to allow marking entire playlists as watched, unwatched or clearing
+  bookmarks / resume pointers. 
 
 2.2.2.1 10/4/2025
 

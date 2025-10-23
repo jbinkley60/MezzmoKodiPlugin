@@ -144,15 +144,14 @@ def updateKodiBookmark(file, pos, title, mtype, dbfile=1):    # Update Kodi book
 
 def clearKodiBookmarks(pos, title, mtype, murl):
 
-    xbmc.log('Mezzmo clear Kodi bookmark: ' + murl + ' ' + mtype, xbmc.LOGINFO)
+    xbmc.log('Mezzmo clear Kodi bookmark: ' + murl + ' ' + mtype, xbmc.LOGDEBUG)
     if mtype.lower() in ['audiom', 'song'] or len(mtype) == 0: #  Don't update Kodi for music or when mtype is not set
         return
 
     if media.settings('clrkodibmk') == 'true':
-        #server = media.getServerport(murl)
         rfpos = murl.find('/', 8)
         server = murl[:rfpos+1]
-        xbmc.log('Mezzmo bookmark URL: ' + server, xbmc.LOGINFO)
+        xbmc.log('Mezzmo bookmark URL: ' + server, xbmc.LOGDEBUG)
         server = '%' + server + '%'
         db = media.openKodiDB()
 

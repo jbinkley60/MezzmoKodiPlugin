@@ -599,6 +599,7 @@ def updatePictures(piclist):                                     # Update pictur
 
 def updateVideoList(vidlist):                                     # Update Video list table
 
+    try:
         vidfile = openNosyncDB()                                  # Open vdieo DB
         vidfile.execute('DELETE FROM mVidList',)  
         a = 0
@@ -620,6 +621,9 @@ def updateVideoList(vidlist):                                     # Update Video
         vidfile.commit()
         vidfile.close()
 
+    except Exception as e:
+        printexception()
+        xbmc.log('Mezzmo error updating video list table.', xbmc.LOGINFO)
 
     
 def getPictures():                                               # Get pictures from DB
