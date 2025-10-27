@@ -1,3 +1,25 @@
+2.2.2.2  10/27/2025
+
+- Fixed a minor bug introduced in v2.2.1.7 which was causing errant log messages regarding perfstats 
+  in the Kodi logfile when video playback ended.
+- Added new setting to enable a feature to detect end of video file playback to increment play counter.
+  This functionality it normally handled by the Mezzmo server.  This feature provides additional control.  
+- Fixed exception error for common.py file due to improper regex parsing.  This was cosmetic.
+- Minor performance improvement when displaying music and video playlists by moving some slideshow
+  code into pictures only.
+- Improved clearing of Mezzmo content bookmarks in Kodi when playback goes to the end of a file. Previously,
+  under certain circumstances, a bookmark / resume pointer may not have gotten deleted properly.
+- Fixed help message for addon setting selecting playlist backdrop type. 
+- Added new setting and feature to allow marking entire playlists as watched, unwatched or clearing
+  bookmarks / resume pointers.
+- Fixed minor erroneous logging issue where a media file could indicate a metadata change when a keyword was
+  found in a recently added video library item.  This was a false positive logging issue. 
+- Fixed minor erroneous nosync logging issue where Kodi logs would indicate a nosync duplicate which wasn't a
+  duplicate during the daily sync window
+- Improved nosync media updating to run with each hourly sync and not just during daily sync.  nosync media
+  is media which doesn't not sync to Kodi from Mezzmo (i.e. live channels, streams and other things you don't
+   want in the Kodi database) to allow simple file browser functionality with all Mezzmo metadata.   
+
 2.2.2.1 10/4/2025
 
 - Added feature to disable empty folder checking to aid in troubleshooting.
@@ -18,7 +40,7 @@ from Mezzmo to not properly display in Kodi native mode.
 2.2.1.8 7/9/2025
 
 - Improved whitelist actor length testing to fix a bug where an actor name that contained only white
-spaces could cause an exception error when browsing the playlist that contained the bad entry..
+spaces could cause an exception error when browsing the playlist that contained the bad entry.
 - Added support for the latest versions of Kodi 22 Piers MyVideos135.db
 - Fixed bug introduced in v2.2.1.7 that would cause some local trailers not to be written to the 
 addon database.

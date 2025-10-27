@@ -309,6 +309,11 @@ def checkNosyncDB():                                 #  Verify Mezzmo noSync dat
     dbsync.execute('CREATE INDEX IF NOT EXISTS mpicture_2 ON mPictures (mpUrl)')
     dbsync.commit()
 
+    dbsync.execute('CREATE table IF NOT EXISTS mVidList (mvTitle TEXT, mvUrl TEXT,   \
+    mvObjectID TEXT, mvPlaycount TEXT, mvDesc TEXT, mEpisode TEXT, mSeason TEXT,     \
+    mSeries TEXT, mType TEXT, mvVar1 TEXT, mvVar2 TEXT, mvVar3 TEXT)')
+
+
     dbsync.execute('CREATE table IF NOT EXISTS mTrailers (trTitle TEXT, trUrl TEXT,   \
     trID TEXT, trPlay TEXT, trVar1 TEXT, trVar2 TEXT)')
     dbsync.execute('CREATE INDEX IF NOT EXISTS mtrailer_1 ON mTrailers (trTitle)')
@@ -375,12 +380,12 @@ def getServerport(contenturl):                  #  Get Mezzmo server port info
     return(serverport)
 
 
-def syncCount(mtitle, mtype):
+def syncCount(mtitle, mtype, idFile):
 
     dbsync = openNosyncDB()                          #  Open Synclog database - Added 2.2.1.7
-    xbmc.log('Mezzmo nosync syncCount called: ' + mtitle + ' ' + mtype, xbmc.LOGDEBUG)  
-    dupes = dbsync.execute('SELECT VideoTitle FROM nosyncVideo WHERE VideoTitle=? and Type=?', \
-    (mtitle, mtype))
+    xbmc.log('Mezzmo nosync syncCount called: ' + mtitle + ' ' + mtype + ' ' + idFile, xbmc.LOGDEBUG)  
+    dupes = dbsync.execute('SELECT VideoTitle FROM nosyncVideo WHERE VideoTitle=? and Type=?   \
+    and idFile == ?',  (mtitle, mtype, idFile))
     dupetuple = dupes.fetchone() 
     if dupetuple and settings('mdupelog') == 'true': #  Check for nosync duplicate 
         currdlDate = datetime.now().strftime('%Y-%m-%d')
@@ -393,10 +398,14 @@ def syncCount(mtitle, mtype):
         if settings('reduceslog') == 'false':
             xbmc.log(msynclog, xbmc.LOGINFO)
     elif not dupetuple:                       #  Insert into nosync table if not dupe
-        dbsync.execute('INSERT into nosyncVideo (VideoTitle, Type) values (?, ?)', (mtitle, mtype))    
+        dupes2 = dbsync.execute('SELECT VideoTitle FROM nosyncVideo WHERE VideoTitle=? and Type=?',  (mtitle, mtype,))
+        dupetuple2 = dupes2.fetchone()
+        if not dupetuple2: 
+            dbsync.execute('INSERT into nosyncVideo (VideoTitle, Type, idFile) values (?, ?, ?)', (mtitle, mtype, idFile,))    
 
     dbsync.commit()        
     dupes.close()                               # Modified 2.2.1.7
+    dupes2.close()                              # Modified 2.2.1.2
     #del dupes, dupetuple                       # Modified 2.2.1.7
     dbsync.close()                              # Added 2.2.1.7
 
@@ -1124,7 +1133,8 @@ def writeMovieToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, m
             insertStudios(movienumb, db, 'movie', mstudio, knative)
             insertVversion(fileId[0], movienumb, db, 'movie', kversion) # Insert Kodi video version 
             if mdupelog == 'false' and fsyncflag == 'no':
-                if mkeywords == None or 'startskip:' not in mkeywords:
+                #if mkeywords == None or 'startskip:' not in mkeywords:
+                if mkeywords == None:                                 # Version 2.2.2.2 fixed extra logging
                     msynclog = '###' + mtitle
                     mezlogUpdate(msynclog)
                     msynclog ='There was a Mezzmo metadata change detected: '
@@ -1199,7 +1209,8 @@ def writeMusicVToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, myear, 
             insertDirectors(movienumb, db, 'musicvideo', mdirector, imageSearchUrl, kdirector)
             insertStudios(movienumb, db, 'musicvideo', mstudio, kdirector)    
             if mdupelog == 'false' and fsyncflag == 'no':
-                if mkeywords == None or 'startskip:' not in mkeywords:
+                #if mkeywords == None or 'startskip:' not in mkeywords:
+                if mkeywords == None:                                 # Version 2.2.2.2 fixed extra logging
                     msynclog = '###' + mtitle
                     mezlogUpdate(msynclog)
                     msynclog ='There was a Mezzmo metadata change detected: '
@@ -1290,7 +1301,8 @@ def writeEpisodeToDb(fileId, mtitle, mplot, mtagline, mwriter, mdirector, maired
             insertDirectors(movienumb, db, 'episode', mdirector, imageSearchUrl, kdirector)
             insertWriters(movienumb, db, 'episode', mwriter, imageSearchUrl, kdirector) 
             if mdupelog == 'false' and fsyncflag == 'no':
-                if mkeywords == None or 'startskip:' not in mkeywords:
+                #if mkeywords == None or 'startskip:' not in mkeywords:
+                if mkeywords == None:                                 # Version 2.2.2.2 fixed extra logging
                     msynclog = '###' + mtitle
                     mezlogUpdate(msynclog)
                     msynclog ='There was a Mezzmo metadata change detected: '

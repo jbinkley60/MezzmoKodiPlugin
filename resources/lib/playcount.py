@@ -8,7 +8,7 @@ import urllib.request, urllib.error, urllib.parse
 import urllib.request, urllib.parse, urllib.error
 from datetime import datetime, timedelta
 
-def updateKodiPlaycount(mplaycount, mtitle, murl, mseason, mepisode, mseries, mtype):
+def updateKodiPlaycount(mplaycount, mtitle, murl, mseason, mepisode, mseries, mtype, logging = 'yes'):
 
     db = media.openKodiDB()
 
@@ -52,14 +52,14 @@ def updateKodiPlaycount(mplaycount, mtitle, murl, mseason, mepisode, mseries, mt
             db.execute('UPDATE files SET playCount=NULL, lastPlayed=NULL WHERE idFile=?', (filenumb,))  
         elif mplaycount > 0 and filenumb > 0:              #  Set playcount to 0
             db.execute('UPDATE files SET playCount=?, lastPlayed=NULL WHERE idFile=?', (newcount, filenumb,))   
-    elif filenumb == 0:   
+    elif filenumb == 0 and logging == 'yes':
         mgenlog ='Mezzmo no watched action taken.  File not found in Kodi DB.  Please wait for sync. ' +  mtitle
         xbmc.log(mgenlog, xbmc.LOGINFO)
         mgenlog = '###' + mtitle
         media.mgenlogUpdate(mgenlog)   
         mgenlog ='Mezzmo no watched action taken.  File not found in Kodi DB.  Please wait for sync.'
         media.mgenlogUpdate(mgenlog)  
-    if filenumb > 0:
+    if filenumb > 0 and logging == 'yes':
         mgenlog ='Mezzmo Kodi playcount set to ' + newcount + ' for: ' + mtitle
         xbmc.log(mgenlog, xbmc.LOGINFO)
         mgenlog = '###' + mtitle
@@ -71,7 +71,7 @@ def updateKodiPlaycount(mplaycount, mtitle, murl, mseason, mepisode, mseries, mt
     db.close()
 
 
-def setPlaycount(url, objectID, count, mtitle):            #  Set Mezzmo play count
+def setPlaycount(url, objectID, count, mtitle, logging = 'yes'):            #  Set Mezzmo play count
 
     srvrtime = int(media.settings('srvrtime'))
     if not srvrtime:
@@ -99,13 +99,13 @@ def setPlaycount(url, objectID, count, mtitle):            #  Set Mezzmo play co
         xbmc.log( 'EXCEPTION IN SetBookmark: ' + str(e), xbmc.LOGINFO)
         pass
 
-    mgenlog ='Mezzmo server playcount set to ' + count + ' for: ' +      \
-    mtitle
-    xbmc.log(mgenlog, xbmc.LOGINFO)
-    mgenlog = '###' + mtitle
-    media.mgenlogUpdate(mgenlog)   
-    mgenlog ='Mezzmo server playcount set to ' + count + ' for: '
-    media.mgenlogUpdate(mgenlog)             
+    #mgenlog ='Mezzmo server playcount set to ' + count + ' for: ' +  mtitle
+    #xbmc.log(mgenlog, xbmc.LOGINFO)
+    if  logging == 'yes':
+        mgenlog = '###' + mtitle
+        media.mgenlogUpdate(mgenlog)   
+        mgenlog ='Mezzmo server playcount set to ' + count + ' for: '
+        media.mgenlogUpdate(mgenlog)             
 
     return response
 

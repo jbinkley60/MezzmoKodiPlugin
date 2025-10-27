@@ -428,6 +428,7 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
     enhdesc = media.settings('enhdesc')              # Enhanced description setting
     kodiart = media.settings('kodiart')              # Additional Kodi artwork 
     installed_version = media.get_installedversion()
+    nosync_idFile = datetime.datetime.now().strftime('%Y%m%d%H%M%S')   #  2.2.2.2 add date / time marker to avoid false duplicate nosync entries
 
     if maxrecords == 10 or maxrecords == 30:         # fast sync flag to reduce logging
         fsyncflag = 'yes'
@@ -773,11 +774,13 @@ def syncContent(content, syncurl, objectId, syncpin, syncoffset, maxrecords, cle
                 #if playcount > 0 and last_played_text != '0' and maxsetting != 'Off':   # New discovery play counter
                 if playcount > 0 and maxsetting != 'Off' and clean != 1:                 # New discovery play counter
                     playcount = updatePlaycount(date_added_text, last_played_text, playcount, syncurl, itemid, mtitle)
-                if (tvcheckval[1] == 1 or size == 100000000000) and validf == 1 and clean == 1:   #  Update live channel
-                    media.syncCount(mtitle, "livec")
+                #if (tvcheckval[1] == 1 or size == 100000000000) and validf == 1 and clean == 1:   #  Update live channel
+                if (tvcheckval[1] == 1 or size == 100000000000) and validf == 1:   # v2.2.2.2 allow realtime live channel updates 
+                    media.syncCount(mtitle, "livec", nosync_idFile)
                     #xbmc.log('Mezzmo livec: ' + mtitle, xbmc.LOGINFO)       
-                if tvcheckval[2] == 1 and validf == 1 and clean == 1:   #  Update nosync database nosync
-                    media.syncCount(mtitle, "nosync")
+                #if tvcheckval[2] == 1 and validf == 1 and clean == 1:   #  Update nosync database nosync
+                if tvcheckval[2] == 1 and validf == 1:                  #  v2.2.2.2 allow realtime nosync updates
+                    media.syncCount(mtitle, "nosync", nosync_idFile)
                     #xbmc.log('Mezzmo nosync: ' + mtitle, xbmc.LOGINFO)                
                 if tvcheckval[0] == 1 and validf == 1:  
                     pathcheck = media.getPath(itemurl)                  #  Get path string for media file

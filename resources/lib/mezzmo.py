@@ -20,7 +20,7 @@ import media
 import sync
 from server import updateServers, getContentURL, picDisplay, showSingle, delServer
 from server import clearPictures, updatePictures, addServers, checkSync, downServer
-from server import onlyDiscMezzmo
+from server import onlyDiscMezzmo, updateVideoList
 from views import content_mapping, setViewMode
 from generic import ghandleBrowse, gBrowse
 
@@ -51,10 +51,11 @@ def perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, pobject):  
 
     try:
         psfile = media.openNosyncDB()                                    # Open Perf Stats database
-        xbmc.log('Mezzmo perfstats: ' + str(ctitle) + ' ' + str(pobject), xbmc.LOGDEBUG)
+        xbmc.log('Mezzmo perfstats: ' + str(len(ctitle)) + ' ' + str(pobject) + ' ' + str(brtime), xbmc.LOGDEBUG)
         currDate = datetime.datetime.now().strftime('%Y-%m-%d')
         currTime = datetime.datetime.now().strftime('%H:%M:%S')
-        if ctitle != ".." and ctitle != "":                              # Do not save Go up and refresh actions
+        #if ctitle != ".." and ctitle != "":                              # Do not save Go up, refresh and play video actions
+        if len(ctitle) > 0:                                              # Do not save Go up, refresh and video play video actions
             sduration = '{:.2f}'.format(sduration)  + "s"
             pduration = '{:.2f}'.format(pduration)  + "s"
             tduration = '{:.2f}'.format(tduration)  + "s"
@@ -68,7 +69,7 @@ def perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, pobject):  
             psfile.execute('INSERT into mperfStats (psDate, psTime, psPlaylist, psCount, pSrvTime, mSrvTime,   \
             psTTime, psDispRate) values (?, ?, ?, ?, ?, ?, ?, ?)', (currDate, currTime, ctitle, TotalMatches,  \
             pduration, sduration, tduration, displayrate))
-        objects.close()                                                            # new 2.2.1.7                  
+            objects.close()                                               # new 2.2.1.7  - fixed 2.2.2.2                
         psfile.commit()
         psfile.close()
     except:
@@ -275,6 +276,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     kodiart = media.settings('kodiart')                 # Additional Kodi artwork
     parselog = media.settings('parselog')               # Additional XML parsing logging
     emptydis =  media.settings('emptydis')              # Disable empty folder checking
+    vidplbmk = media.settings('vidplbmk')               # Enable full playlist bookmarks and playcounts
     menuitem1 = addon.getLocalizedString(30347)
     menuitem2 = addon.getLocalizedString(30346)
     menuitem3 = addon.getLocalizedString(30372)
@@ -331,7 +333,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             
             #elems = xml.etree.ElementTree.fromstring(result.text.encode('utf-8'))
             elems = xml.etree.ElementTree.fromstring(result.text)
-            picnotify = parsecount = 0            
+            picnotify = parsecount = vidnotify = 0            
             for container in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}container'):
                 title = container.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 if parselog == 'true' and title != None and len(title) > 0:
@@ -398,6 +400,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     xbmcplugin.addDirectoryItem(handle=addon_handle, url=itemurl, listitem=li, isFolder=True)
 
                 picnotify += 1
+                vidnotify += 1
                 if parentID == '0':
                     contentType = 'top'
                 else:
@@ -410,8 +413,9 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                 xbmc.log('Mezzmo Kodi addon items parsed: ' + str(parsecount), xbmc.LOGINFO)
 
             piclist = []
-            if slideshow == 'true':                                #  Clear slideshow picture list
-                clearPictures()  
+            vidlist = []
+            #if slideshow == 'true':                                #  Clear slideshow picture list
+            #    clearPictures()                                    #  Moved v2.2.2.2 to improve performance
             ctitle = xbmc.getInfoLabel("ListItem.Label")           #  Get title of selected playlist
             xbmc.log('Mezzmo content title: ' + ctitle + ' ' + str(parentID) + ' ' + objectID +     \
             ' Content type: ' + contentType, xbmc.LOGDEBUG)       
@@ -733,7 +737,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                             break
                                    
                 mediaClass_text = 'video'
-                mediaClass = item.find('.//{urn:schemas-sony-com:av}mediaClass')
+                mediaClass = item.find('.//{urn:schemas-sony-com:av}mediaClass')           
                 if mediaClass != None:
                     mediaClass_text = mediaClass.text
                     if mediaClass_text == 'V':
@@ -769,7 +773,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})                        
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
-                    mtype = categories_text                 
+                    mtype = categories_text             
                     li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),   \
                     (menuitem10, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
                     ("plugin.video.mezzmo", "context", pctitle, itemurl, season_text, episode_text, playcount,     \
@@ -816,7 +820,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         'channels': int(audio_channels_text)})
                         li.addStreamInfo('subtitle', {'language': subtitle_lang})
                         li.setCast(cast_dict)
-                    else:
+                    else: 
                         vinfo = li.getVideoInfoTag()
                         vinfo.setDuration(durationsecs)
                         if genre_text is not None: vinfo.setGenres(genre_text.split(','))
@@ -892,10 +896,30 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         media.writeMovieStreams(filekey, video_codec_text, aspect, video_height, video_width,        \
                         audio_codec_text, audio_channels_text, audio_lang, durationsecs, mtitle, kodichange, itemurl,\
                         icon, backdropurl, dbfile, pathcheck, 'false', knative)         # Update movie stream info 
-                        xbmc.log('The movie name is: ' + mtitle, xbmc.LOGDEBUG)  
+                        xbmc.log('The movie name is: ' + mtitle, xbmc.LOGDEBUG)
+                        #xbmc.log('Playlist setting: ' + str(vidplbmk), xbmc.LOGINFO)
+                    if vidplbmk == 'true':
+                        vidnotify += 1
+                        itemdict = {
+                            'title': title,
+                            'url': itemurl,
+                            'idesc': description_text,
+                            'playcount': playcount,
+                            'season': season_text,
+                            'episode': episode_text,
+                            'series': showtitle,
+                            'type': categories_text,
+                        }
+                        vidlist.append(itemdict)
+                        #xbmc.log('Video playcount counts: ' + str(vidnotify) + ' ' + NumberReturned, sbmc.LOGINFO)
+                        if vidnotify == int(NumberReturned):                        # Update video bookmark table
+                            #xbmc.log('Video playcount list: ' + str(len(vidlist)) + ' ' + str(vidlist), xbmc.LOGINFO)
+                            updateVideoList(vidlist)                                    # Updateo Videolist table
+ 
                              
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title
+                    xbmc.log('Mezzmo music type: ' + mtitle, xbmc.LOGDEBUG)
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
                     offsetmenu = 'Resume from ' + time.strftime("%H:%M:%S", time.gmtime(int(dcmInfo_text)))
@@ -980,6 +1004,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     }
                     piclist.append(itemdict)
                     if picnotify == int(NumberReturned) and slideshow == 'true':   # Update picture DB
+                        clearPictures()                                            # Moved v2.2.2.2 to improve performance
                         updatePictures(piclist)
                         picDisplay()
                     itemurl = build_url({'mode': 'picture', 'itemurl': itemurl})
@@ -1088,6 +1113,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     srchorder = int(media.settings('srchorder'))        # Default search result sort order (integer)
     srchcontent = media.settings('srchcontent')         # Default content type for search results
     emptydis =  media.settings('emptydis')              # Disable empty folder checking
+    vidplbmk = media.settings('vidplbmk')               # Enable full playlist bookmarks and playcounts
     
     try:
         while True:
@@ -1096,6 +1122,8 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                 downServer()				# Down server response          
                 break;     #sanity check  
 
+            vidnotify = 0
+            vidlist = []
             e = xml.etree.ElementTree.fromstring(content)          
             body = e.find('.//{http://schemas.xmlsoap.org/soap/envelope/}Body')
             browseresponse = body.find('.//{urn:schemas-upnp-org:service:ContentDirectory:1}SearchResponse')
@@ -1637,7 +1665,25 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                         icon, backdropurl, dbfile, pathcheck, 'false', knative)      # Update movie stream info 
                         #xbmc.log('The movie name is: ' + mtitle, xbmc.LOGINFO)
                         #dbfile.commit()
-                        #dbfile.close() 
+                        #dbfile.close()
+                    if vidplbmk == 'true':
+                        vidnotify += 1
+                        itemdict = {
+                            'title': title,
+                            'url': itemurl,
+                            'idesc': description_text,
+                            'playcount': playcount,
+                            'season': season_text,
+                            'episode': episode_text,
+                            'series': showtitle,
+                            'type': categories_text,
+                        }
+                        if len(albumsrch) == 0 or albumsrch == album_text:          # Exact match for moviesets and TV episodes
+                            vidlist.append(itemdict)
+                        #xbmc.log('Video playcount counts: ' + str(vidnotify) + ' ' + NumberReturned, sbmc.LOGINFO)
+                        if vidnotify == int(NumberReturned):                        # Update video bookmark table
+                            #xbmc.log('Video playcount list: ' + str(len(vidlist)) + ' ' + str(vidlist), xbmc.LOGINFO)
+                            updateVideoList(vidlist)                                    # Updateo Videolist table 
                       
                 elif mediaClass_text == 'music':
                     mtitle = media.displayTitles(title)					#  Normalize title

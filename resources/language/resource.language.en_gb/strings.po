@@ -782,7 +782,7 @@ msgstr ""
 
 msgctxt "#30814"
 msgid "Mezzmo Hide Watched Checking Enabled.  Check General Logs for details."
-msgstr ""]
+msgstr ""
 
 msgctxt "#30815"
 msgid "Modify search criteria"
@@ -794,6 +794,38 @@ msgstr ""
 
 msgctxt "#30817"
 msgid "Disable Empty Folder Checking"
+msgstr ""
+
+msgctxt "#30818"
+msgid "End of Video Playcount Increment"
+msgstr ""
+
+msgctxt "#30819"
+msgid "Enable Playlist Bookmarks and Playcounts"
+msgstr ""
+
+msgctxt "#30820"
+msgid "Bookmarks & Playcounts"
+msgstr ""
+
+msgctxt "#30821"
+msgid "Autoclear Kodi Bookmarks"
+msgstr ""
+
+msgctxt "#30822"
+msgid "Playlist Bookmarks & Playcounts"
+msgstr ""
+
+msgctxt "#30823"
+msgid "Mark Playlist Unwatched"
+msgstr ""
+
+msgctxt "#30824"
+msgid "Mark Playlist Watched"
+msgstr ""
+
+msgctxt "#30825"
+msgid "Clear Playlist Bookmarks"
 msgstr ""
 
 msgctxt "#30501"
@@ -1093,4 +1125,16 @@ msgstr ""
 
 msgctxt "#30575"
 msgid "When enabled no checking for emtpy folders from Mezzmo will occur.  Instead emtpy folders will be displayed vs. the popup message. Enabling can help troubleshoot empty folders.  Default is Off."
+msgstr ""
+
+msgctxt "#30576"
+msgid "When enabled the playcoount of a video file will be incremented when the end of file is reached.  Normally this function is handled by the Mezzmo server.  Default is Off."
+msgstr ""
+
+msgctxt "#30577"
+msgid "When enabled this setting will add a context menu option for setting / clearing bookmarks and playcounts for an entire video playlist or folder.  Default is Off."
+msgstr ""
+
+msgctxt "#30578"
+msgid "For GUI mode use only.  When enabled this setting will automatically clear all Mezzmo bookmarks in Kodi when video playback is stopped or ended.  Default is Off."
 msgstr ""
