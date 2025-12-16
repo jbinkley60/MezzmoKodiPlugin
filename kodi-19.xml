@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addons>
+
+
+    <addon  id="plugin.video.mezzmo" name="Mezzmo" version="2.2.2.3" provider-name="jbinkley60">
+      <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+      </requires>        
+      <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <path>Kodi-19-v2.2.2.3/plugin.video.mezzmo-kodi19-v2.2.2.3.zip</path>
+        <summary lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</summary>
+        <description lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</description>
+      </extension>
+    </addon>
+
+    <addon  id="plugin.video.mezzmo" name="Mezzmo" version="2.2.2.2" provider-name="jbinkley60">
+      <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+      </requires>        
+      <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <path>Kodi-19-v2.2.2.2/plugin.video.mezzmo-kodi19-v2.2.2.2.zip</path>
+        <summary lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</summary>
+        <description lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</description>
+      </extension>
+    </addon>
+
+
+    <addon  id="plugin.video.mezzmo" name="Mezzmo" version="2.2.2.1" provider-name="jbinkley60">
+      <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+      </requires>        
+      <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <path>Kodi-19-v2.2.2.1/plugin.video.mezzmo-kodi19-v2.2.2.1.zip</path>
+        <summary lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</summary>
+        <description lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</description>
+      </extension>
+    </addon>
+
+
+    <addon  id="plugin.video.mezzmo" name="Mezzmo" version="2.2.2.0" provider-name="jbinkley60">
+      <requires>
+        <import addon="xbmc.python" version="3.0.0"/>
+      </requires>        
+      <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <path>Kodi-19-v2.2.2.0/plugin.video.mezzmo-kodi19-v2.2.2.0.zip</path>
+        <summary lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</summary>
+        <description lang="en_GB">Browse and play local video, music and photo media files managed by Mezzmo Media Server.</description>
+      </extension>
+    </addon>
+
+</addons>
