@@ -235,8 +235,10 @@ def listServers(force):
         else:
             xbmc.sleep(100)              
     msgdialogprogress.close()  
-    setViewMode('servers')
+    #setViewMode('servers')
     xbmcplugin.endOfDirectory(addon_handle, updateListing=force )
+    xbmc.sleep(100)
+    setViewMode('servers')  
     if sselect == 1:                            # Reset UPnP delete flag after listing
         sselect = 0
     if contenturl != None:
@@ -420,7 +422,6 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             xbmc.log('Mezzmo content title: ' + ctitle + ' ' + str(parentID) + ' ' + objectID +     \
             ' Content type: ' + contentType, xbmc.LOGDEBUG)       
             dbfile = media.openKodiDB()                  #  Open Kodi database
-  
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 if parselog == 'true' and title != None and len(title) > 0:
@@ -1025,7 +1026,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
             xbmc.log('Mezzmo items left: ' + str(itemsleft), xbmc.LOGDEBUG) 
             if itemsleft <= 0:
                 dbfile.commit()            
-                dbfile.close()             #  Final commit writes and close Kodi database  
+                dbfile.close()             #  Final commit writes and close Kodi database
                 if int(TotalMatches) > 49 and perflog == "true":
                     endtime = time.time()
                     perfStats(TotalMatches, brtime, endtime, patime, srtime, ctitle, objectID)
@@ -1066,11 +1067,9 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     except Exception as e:
         media.printexception()
         pass
-    setViewMode(contentType)
+    contentView = contentType
     if contentType == 'top' or contentType == 'folders':
         contentType = ''
-    if reqcount > 0:
-        xbmc.executebuiltin('Container.SetSortMethod(0)')
     xbmcplugin.setContent(addon_handle, contentType)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_UNSORTED)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DATE)
@@ -1078,8 +1077,14 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_VIDEO_YEAR)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_GENRE)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DURATION)
-    xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_TRACKNUM)
+    xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_TRACKNUM) 
     xbmcplugin.endOfDirectory(addon_handle)
+    if reqcount > 0:
+        #xbmc.sleep(100)
+        xbmc.executebuiltin('Container.SetSortMethod(0)')
+    #xbmc.sleep(100)   
+    setViewMode(contentView)
+
 
 
 def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch = ''):
@@ -1811,19 +1816,23 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_UNSORTED)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_TITLE_IGNORE_THE)
+    xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_VIDEO_SORT_TITLE)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_VIDEO_YEAR)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_GENRE)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DURATION)
     if srchcontent != 'None':                      # Set default content type for search results
         contentType = srchcontent
-    setViewMode(contentType)
+
     #xbmc.log('Search order value is: ' + str(srchorder) + ' ' + searchcontrol2, xbmc.LOGINFO) 
     if searchcontrol2 == 'movieset':               # Sort moviesets by year
-        xbmc.executebuiltin('Container.SetSortMethod(16)')
-    else:                                          # Sort everything else by sort order setting
-        xbmc.executebuiltin('Container.SetSortMethod(%d)' % (srchorder))
+        srchorder = 16
+        #xbmc.log('Mezzmo Movieset Search order value 16', xbmc.LOGINFO) 
+    #else:                                          # Sort everything else by sort order setting
     xbmcplugin.endOfDirectory(addon_handle)
-    
+    xbmc.sleep(100)
+    setViewMode(contentType)
+    xbmc.executebuiltin('Container.SetSortMethod(%d)' % (srchorder))
+    #xbmc.executebuiltin('Container.Refresh')   
     #xbmc.executebuiltin("Dialog.Close(busydialog)")
 
 def getUPnPClass():

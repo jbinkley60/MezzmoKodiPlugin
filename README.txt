@@ -1,3 +1,27 @@
+2.2.2.4 3/25/2026
+
+- Fixed a bug which caused the view mode and sort order intermittently to not operate properly.
+- Fixed Sort Title default search results sort order option not working
+- Added new feature to allow custom trailers, featurettes and similar.  The actual file names will be
+displayed when viewing the Mezzmo Trailers option for multiple trailers.
+- Fixed a bug where multiple trailers for a video would fail if there was no year value for the parent 
+video / movie.
+- Added full custom trailer support for videos, home movies and similar (things not in IMDB etc..) when
+using multiple trailers.
+- Removed unsupported view mode settings for the Estuary skin for Top, Folder and Episodes. 
+ 
+2.2.2.3 12/16/2025
+
+- Fixed an extremely obscure bug which could be triggered by v2.2.2.2 on a system which originally had
+  the Kodi 18 version of the addon installed and was upgraded in place to Kodi 19 and is leveraging the
+  nosync video feature.  The Kodi 19 version of the addon has an extra column in the nosyncvideo able. 
+  This fix will detect and fix the missing column.  This bug could cause syn failures with Mezzmo.
+- Added an index column to the nosyncvideo table to speed up performance when using a large volume of
+  nosync videos.
+- Moved the Context Menu Confirmations setting from the Content Control to the Bookmarks & Playlist tab
+- Added support for Context Menu Confirmations to work with both individual playlist items and the new
+  mark entire playlist watched feature introduced in v2.2.2.2.
+
 2.2.2.2  10/27/2025
 
 - Fixed a minor bug introduced in v2.2.1.7 which was causing errant log messages regarding perfstats 

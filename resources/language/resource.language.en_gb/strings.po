@@ -828,6 +828,10 @@ msgctxt "#30825"
 msgid "Clear Playlist Bookmarks"
 msgstr ""
 
+msgctxt "#30826"
+msgid "Local Custom Trailer Color"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr ""

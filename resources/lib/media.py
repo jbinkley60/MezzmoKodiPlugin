@@ -367,6 +367,15 @@ def checkNosyncDB():                                 #  Verify Mezzmo noSync dat
     except:
         xbmc.log('Mezzmo check nosync DB. No column iWidth: ' , xbmc.LOGDEBUG)  
 
+    try:
+        dbsync.execute('ALTER TABLE nosyncVideo ADD COLUMN idFile INTEGER')
+    except:
+        xbmc.log('Mezzmo check nosync DB. No column idFile: ' , xbmc.LOGDEBUG)
+
+    dbsync.execute('CREATE UNIQUE INDEX IF NOT EXISTS nosync_3 ON nosyncVideo     \
+    (VideoTitle, type, idFile)')
+     
+
     dbsync.commit()
     dbsync.close()
 
@@ -441,6 +450,8 @@ def addTrailers(mtitle, trailers, prflocaltr, myear, mpcount, mpremiered, micon,
         #xbmc.log('Mezzmo trailers: ' + str(trlength) , xbmc.LOGINFO) 
         if trlength > 0:
             dbsync = openNosyncDB()                             # Open Synclog database - Added 2.2.1.7
+            if len(myear) == 0:
+                myear = '0' 
             for trailer in trailers:            #  Get count of local trailers
                 if ytbase64 not in trailer:
                     localcount += 1

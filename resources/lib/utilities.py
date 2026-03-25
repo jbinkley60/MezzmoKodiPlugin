@@ -427,7 +427,11 @@ def trDisplay(title, trcount, icon, imdb_id = ''):                # Play trailer
         curtrail.close()                                           # New 2.2.1.7
         dsfile.close()
         trselect = x = 1
-        if mtrailers:        
+        if mtrailers:
+            plcolor = "[COLOR " + media.settings('playcolor').lower() + "]"
+            cucolor = "[COLOR " + media.settings('cucolor').lower() + "]" 
+            imcolor = "[COLOR " + media.settings('imcolor').lower() + "]"
+            ytcolor = "[COLOR " +  media.settings('ytcolor').lower() + "]"        
             for a in range(len(mtrailers)):                        # Convert rows to list for dialog box
                 if media.settings('entrailer') == 'false':
                     if int(mtrailers[a][1]) == 0:
@@ -435,11 +439,12 @@ def trDisplay(title, trcount, icon, imdb_id = ''):                # Play trailer
                     else:
                         traillist.append("Trailer  #" + str(x) + "     [COLOR blue]Played[/COLOR]") 
                 else:
-                    plcolor = "[COLOR " + media.settings('playcolor').lower() + "]" 
-                    imcolor = "[COLOR " + media.settings('imcolor').lower() + "]"
-                    ytcolor = "[COLOR " +  media.settings('ytcolor').lower() + "]"
                     if int(mtrailers[a][1]) > 0:
-                        traillist.append("Trailer  #" + str(x) + "     " + plcolor + "Played[/COLOR]") 
+                        traillist.append("Trailer  #" + str(x) + "     " + plcolor + "Played[/COLOR]")
+                    elif '\\cust_' in str(mtrailers[a][2]):
+                        trailer_title = str(mtrailers[a][2]).split('cust_')
+                        trailer_title_split = trailer_title[1].rsplit('.')
+                        traillist.append("Trailer  #" + str(x) + "     " + cucolor + trailer_title_split[0]  + "[/COLOR]")
                     elif '\\imdb_' in str(mtrailers[a][2]):
                         traillist.append("Trailer  #" + str(x) + "     " + imcolor + "Local IMDB[/COLOR]")
                     elif 'www.youtube' not in str(mtrailers[a][2]):
@@ -837,18 +842,24 @@ def playlistsBookmarks(contenturl):                                  # Playlist 
         if len(pictuples) == 0:
             return
         elif (cselect[vcontext]) == menuitem1:
+            if checkItemChange(addon.getLocalizedString(30822), cselect[vcontext]) < 1:
+                return 
             for v in range(len(pictuples)):
                 playcount.setPlaycount(contenturl, pictuples[v][2], '0', pictuples[v][0], 'no')
                 playcount.updateKodiPlaycount(1, pictuples[v][0], pictuples[v][1], pictuples[v][6],        \
                 pictuples[v][5], pictuples[v][7], pictuples[v][8], 'no')
             mgenlog = 'Mezzmo playlist set to unwatched for '
         elif (cselect[vcontext]) == menuitem2:
+            if checkItemChange(addon.getLocalizedString(30822), cselect[vcontext]) < 1:
+                return 
             for v in range(len(pictuples)):
                 playcount.setPlaycount(contenturl, pictuples[v][2], '1', pictuples[v][0], 'no')
                 playcount.updateKodiPlaycount(0, pictuples[v][0], pictuples[v][1], pictuples[v][6],        \
                 pictuples[v][5], pictuples[v][7], pictuples[v][8], 'no')
             mgenlog = 'Mezzmo playlist set to watched for '  
         elif (cselect[vcontext]) == menuitem3:
+            if checkItemChange(addon.getLocalizedString(30822), cselect[vcontext]) < 1:
+                return 
             for v in range(len(pictuples)):
                 bookmark.SetBookmark(contenturl, pictuples[v][2], '0')
             mgenlog = 'Mezzmo playlist bookmarks cleared for '

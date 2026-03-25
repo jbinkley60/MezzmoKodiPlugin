@@ -828,6 +828,10 @@ msgctxt "#30825"
 msgid "Clear Playlist Bookmarks"
 msgstr "Limpar favoritos da lista de reprodução"
 
+msgctxt "#30826"
+msgid "Local Custom Trailer Color"
+msgstr "Cor Personalizada do Reboque (Local)"
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-30 secs behind current playback position."
 msgstr "Defina o atraso do marcador de 0 a 30 segundos atrás da posição de reprodução atual."
