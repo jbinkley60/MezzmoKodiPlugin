@@ -1,3 +1,13 @@
+2.2.2.5 4/3/2026
+
+- Fixed another bug which caused the view mode intermittently to not operate properly when browsing
+folders on the Mezzmo server.
+- Fixed an operational logic bug which would cause the prior search to execute when cancelling out of 
+a new search vs. when executing a new search.
+- Improved search cancel logic when in native mode to return to Kodi home screen when cancelling out of 
+a search action.
+- Updated video database number to 144 for Kodi 22 Piers Alpha 3 support
+
 2.2.2.4 3/25/2026
 
 - Fixed a bug which caused the view mode and sort order intermittently to not operate properly.

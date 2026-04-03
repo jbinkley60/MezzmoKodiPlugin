@@ -237,7 +237,7 @@ def listServers(force):
     msgdialogprogress.close()  
     #setViewMode('servers')
     xbmcplugin.endOfDirectory(addon_handle, updateListing=force )
-    xbmc.sleep(100)
+    xbmc.sleep(50)
     setViewMode('servers')  
     if sselect == 1:                            # Reset UPnP delete flag after listing
         sselect = 0
@@ -1079,11 +1079,12 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_DURATION)
     xbmcplugin.addSortMethod(addon_handle, xbmcplugin.SORT_METHOD_TRACKNUM) 
     xbmcplugin.endOfDirectory(addon_handle)
+    xbmc.sleep(50)   
+    setViewMode(contentView)
     if reqcount > 0:
         #xbmc.sleep(100)
         xbmc.executebuiltin('Container.SetSortMethod(0)')
-    #xbmc.sleep(100)   
-    setViewMode(contentView)
+
 
 
 
@@ -1829,7 +1830,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
         #xbmc.log('Mezzmo Movieset Search order value 16', xbmc.LOGINFO) 
     #else:                                          # Sort everything else by sort order setting
     xbmcplugin.endOfDirectory(addon_handle)
-    xbmc.sleep(100)
+    xbmc.sleep(50)
     setViewMode(contentType)
     xbmc.executebuiltin('Container.SetSortMethod(%d)' % (srchorder))
     #xbmc.executebuiltin('Container.Refresh')   
@@ -1900,17 +1901,24 @@ def getSearchCriteria(term):
 
     return searchCriteria
     
-def promptSearch():
+def promptSearch(searchsource):
     term = ''
     term = media.priorSearch()
+    xbmc.log('Mezzmo prior search is: ' + term, xbmc.LOGDEBUG)
+    xbmc.log('Mezzmo prompt search source is: ' + searchsource, xbmc.LOGDEBUG)
     if term == 'cancel':
+        media.settings('searchsave', 'None')
+        if searchsource == 'native':
+            xbmc.executebuiltin('Dialog.Close(all)')
+            xbmc.executebuiltin('ReplaceWindow(%s)' % ('10000'))
         return               #  User cancel
-    if len(term) == 0:
+    elif len(term) == 0:
         kb = xbmc.Keyboard('', 'Search')
         kb.setHeading('Enter Search text')
         kb.doModal()
         if (kb.isConfirmed()):
             term = kb.getText()
+
     if len(term) > 0:
         media.addSearch(term)
         upnpClass = getUPnPClass()
@@ -2000,10 +2008,10 @@ elif mode[0] == 'home':
     #"params":{"window":"home"},"id":1}') 
 
 elif mode[0] == 'search':
-    source = args.get('source', 'browse')
+    source = args.get('source', ['browse'])
     searchcontrol = source[0]
     searchcontrol2 = mode[0]
-    promptSearch()
+    promptSearch(source[0])    
 
 elif mode[0] == 'newsearch':
     source = args.get('source', 'browse')
@@ -2021,7 +2029,6 @@ elif mode[0] == 'newsearch':
         'objectID': cobjectID})
     xbmc.executebuiltin('Container.Update(%s)' % (itemurl2))
     
-
 elif mode[0] == 'movieset':
     contenturl = args.get('contentdirectory', '')
     movieset = args.get('searchset')
@@ -2079,7 +2086,7 @@ elif mode[0] == 'lastvpl':
         downServer()
 
 searchsave = media.settings('searchsave')
-if searchcontrol2 == 'search' and searchsave != 'None' and 'native' not in source:   #  Catchall search re-entry from shell 
+if searchcontrol2 == 'search' and searchsave != 'None' and 'native' not in source and 'http' in searchsave:   #  Catchall search re-entry from shell 
     pin = media.settings('content_pin')
     url = media.settings('contenturl')
     maxsearch = int(media.settings('maxsearch'))
