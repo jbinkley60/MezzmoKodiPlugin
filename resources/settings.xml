@@ -285,6 +285,18 @@
 					<default>false</default>
 					<control type="toggle"/>
 				</setting>
+				<setting id="vdbnumber" type="string" label="30828" help="30580">
+					<level>0</level>
+					<default>Default</default>
+					<dependencies>
+						<dependency type="enable">
+							<condition visible="is" setting="knative">true</condition>
+						</dependency>
+					</dependencies>
+					<control type="edit" format="string">
+						<heading>30828</heading>
+					</control>
+				</setting>
 				<setting id="mselsync" type="string" label="30461" help="30542">
 					<level>0</level>
 					<default>All</default>
@@ -1587,7 +1599,19 @@
 					<constraints>
 						<minimum>0</minimum>
 						<step>1</step>
-						<maximum>30</maximum>
+						<maximum>60</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
+				<setting id="resrewind" type="integer" label="30827" help="30579">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<minimum>0</minimum>
+						<step>1</step>
+						<maximum>60</maximum>
 					</constraints>
 					<control type="slider" format="integer">
 						<popup>false</popup>

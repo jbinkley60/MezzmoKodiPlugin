@@ -233,7 +233,7 @@ msgid "Music Info"
 msgstr ""
 
 msgctxt "#30377"
-msgid "Bookmark Delay 0-30 (secs)"
+msgid "Stop Playback Rewind 0-60 (secs)"
 msgstr ""
 
 msgctxt "#30378"
@@ -832,8 +832,20 @@ msgctxt "#30826"
 msgid "Local Custom Trailer Color"
 msgstr ""
 
+msgctxt "#30827"
+msgid "Resume Playback Rewind 0-60 (secs)"
+msgstr ""
+
+msgctxt "#30828"
+msgid "Kodi Video Database number"
+msgstr ""
+
+msgctxt "#30829"
+msgid "Mezzmo Kodi Database Error"
+msgstr ""
+
 msgctxt "#30501"
-msgid "Set bookmark delay 0-30 secs behind current playback position."
+msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr ""
 
 msgctxt "#30502"
@@ -1141,4 +1153,24 @@ msgstr ""
 
 msgctxt "#30578"
 msgid "For GUI mode use only.  When enabled this setting will automatically clear all Mezzmo bookmarks in Kodi when video playback is stopped or ended.  Default is Off."
+msgstr ""
+
+msgctxt "#30579"
+msgid "Automatic resume playback rewind 0-60 secs behind current paused playback position when resuming playback from a pause."
+msgstr ""
+
+msgctxt "#30580"
+msgid "This option provides the ability to override the standard Kodi Video Database numbers.  This can be useful for Kodi Alpha and Beta code testing.  An error will occur if the database selected does not exist and this setting will revert to default.  Default is the normal setting."
+msgstr ""
+
+msgctxt "#30581"
+msgid "Mezzmo Kodi video database file not found: "
+msgstr ""
+
+msgctxt "#30582"
+msgid "Mezzmo Kodi video database file set to Default."
+msgstr ""
+
+msgctxt "#30583"
+msgid "Mezzmo Kodi invalid video database file found: "
 msgstr ""

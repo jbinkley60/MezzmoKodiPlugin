@@ -233,8 +233,8 @@ msgid "Music Info"
 msgstr "Info Música"
 
 msgctxt "#30377"
-msgid "Bookmark Delay 0-30 (secs)"
-msgstr "Atraso nos Marcadores 0-30 (segs)"
+msgid "Stop Playback Rewind 0-60 (secs)"
+msgstr "Parar Reprodução — Retroceder 0-60 (segundos)"
 
 msgctxt "#30378"
 msgid "Performance Logging Enabled"
@@ -832,9 +832,21 @@ msgctxt "#30826"
 msgid "Local Custom Trailer Color"
 msgstr "Cor Personalizada do Reboque (Local)"
 
+msgctxt "#30827"
+msgid "Resume Playback Rewind 0-60 (secs)"
+msgstr "Retomar reprodução — Retroceder 0-60 (segundos)"
+
+msgctxt "#30828"
+msgid "Kodi Video Database number"
+msgstr "Número do banco de dados de vídeo do Kodi"
+
+msgctxt "#30829"
+msgid "Mezzmo Kodi Database Error"
+msgstr "Erro no banco de dados do Mezzmo Kodi"
+
 msgctxt "#30501"
-msgid "Set bookmark delay 0-30 secs behind current playback position."
-msgstr "Defina o atraso do marcador de 0 a 30 segundos atrás da posição de reprodução atual."
+msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
+msgstr "Defina um atraso de 0 a 60 segundos em relação à posição atual de reprodução ao retomar a reprodução a partir de um marcador."
 
 msgctxt "#30502"
 msgid "Disable Kodi caching always during Mezzmo browsing otherwise cache times are updated devery 30 minutes.  Disabling can slow down performance."
@@ -1143,3 +1155,24 @@ msgstr "Quando ativada, esta configuração adicionará uma opção de menu de c
 msgctxt "#30578"
 msgid "For GUI mode use only.  When enabled this setting will automatically clear all Mezzmo bookmarks in Kodi when video playback is stopped or ended.  Default is Off."
 msgstr "Somente para uso no modo GUI. Quando ativada, esta configuração limpará automaticamente todos os favoritos do Mezzmo no Kodi quando a reprodução do vídeo for interrompida ou encerrada. O padrão é Desativado."
+
+msgctxt "#30579"
+msgid "Automatic resume playback rewind 0-60 secs behind current paused playback position when resuming playback from a pause."
+msgstr "A reprodução automática retoma com um retrocesso de 0 a 60 segundos em relação à posição atual de pausa, ao retomar a reprodução após uma pausa."
+
+msgctxt "#30580"
+msgid "This option provides the ability to override the standard Kodi Video Database numbers.  This can be useful for Kodi Alpha and Beta code testing.  An error will occur if the database selected does not exist and this setting will revert to default.  Default is the normal setting."
+msgstr "Esta opção permite substituir os números padrão do banco de dados de vídeo do Kodi. Isso pode ser útil para testar o código das versões Alpha e Beta do Kodi. Ocorrerá um erro caso o banco de dados selecionado não exista, e esta configuração retornará ao padrão. O padrão corresponde à configuração normal."
+
+msgctxt "#30581"
+msgid "Mezzmo Kodi video database file not found: "
+msgstr "Arquivo de banco de dados de vídeo do Mezzmo Kodi não encontrado: "
+
+msgctxt "#30582"
+msgid "Arquivo do banco de dados de vídeo do Mezzmo Kodi definido como Padrão."
+msgstr ""
+
+msgctxt "#30583"
+msgid "Mezzmo Kodi: Arquivo de banco de dados de vídeo inválido encontrado: "
+msgstr ""
+

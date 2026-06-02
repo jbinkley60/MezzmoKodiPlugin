@@ -209,14 +209,17 @@ def get_installedversion():
 
 def getDatabaseName():
     installed_version = get_installedversion()
-    if installed_version == '19':
+    vdbnumber = settings('vdbnumber')
+    if vdbnumber != 'Default':
+        return "MyVideos" + vdbnumber + ".db"
+    elif installed_version == '19':
         return "MyVideos119.db"
     elif installed_version == '20':
         return "MyVideos121.db"
     elif installed_version == '21':
         return "MyVideos131.db"
     elif installed_version == '22':
-        return "MyVideos144.db"
+        return "MyVideos145.db"
       
     return ""
 
@@ -233,6 +236,29 @@ def getteDatabaseName():
         return "Textures14.db"
     else:     
         return None  
+
+
+def checkKodiDBfile():
+
+    
+    dbfile = os.path.join(xbmcvfs.translatePath("special://database"), getDatabaseName())
+    if not os.path.isfile(dbfile):
+        mgenlog = translate(30581) + dbfile
+        mgenlogUpdate(mgenlog, 'yes')
+        settings('vdbnumber', 'Default')
+        mgenlog = translate(30582)
+        mgenlogUpdate(mgenlog, 'yes')
+        xbmcgui.Dialog().ok(translate(30829), translate(30581) + dbfile + "\n" + translate(30582))
+    elif os.path.getsize(dbfile) < 1024:    
+        mgenlog = translate(30583) + dbfile
+        mgenlogUpdate(mgenlog, 'yes')
+        settings('vdbnumber', 'Default')
+        mgenlog = translate(30582)
+        mgenlogUpdate(mgenlog, 'yes')
+        xbmcgui.Dialog().ok(translate(30829), translate(30583) + dbfile + "\n" + translate(30582))
+    else:
+        mgenlog = 'Mezzmo using Kodi database file: ' + getDatabaseName()
+        mgenlogUpdate(mgenlog, 'yes')
 
 
 def openKodiDB():                                   #  Open Kodi database

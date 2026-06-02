@@ -1,3 +1,19 @@
+2.2.2.7 6/2/2026
+
+- Added setting to set Kodi Video database number to nonstandard value during alpha and beta code testing.
+- Updated default Kodi 22 video database to 145 for Alpha 3 release
+
+2.2.2.6 5/1/2026
+
+- Fixed a bug where an exception would occur if playback was paused or stopped at a position which was 
+less than the rewind timer.  This would cause an attempt to write a negative bookmark position to the
+Mezzmo server, which would cause an exception.
+- Fixed similar negative bookmark position when updating Kodi native bookmarks
+- Added a new setting to have a pause rewind timer separate from the stop playback rewind timer.  Now
+if you pause playback and resume watching playback can automatically be rewound up to 60 seconds.
+-  Extended stopped playback rewind setting from 0-30 second to 0-60 seconds.
+- Improved logging for rewind actions to clearly log the video and amount of rewind time
+
 2.2.2.5 4/3/2026
 
 - Fixed another bug which caused the view mode intermittently to not operate properly when browsing

@@ -36,29 +36,25 @@ class XBMCPlayer(xbmc.Player):
             global orgtrvol, file, mtype
             mtype = ''
             #pcount = ''
-            file = xbmc.Player().getPlayingFile()
+            file = self.getPlayingFile()
             xbmc.sleep(500)
-            if xbmc.Player().isPlayingVideo():
+            if self.isPlayingVideo():
                 #xbmc.sleep(500)
-                finfo = xbmc.Player().getVideoInfoTag()
+                finfo = self.getVideoInfoTag()
                 mtype = finfo.getMediaType()
                 self.pcount = str(finfo.getPlayCount())
                 self.mtitle = media.displayTitles(finfo.getTitle())
                 seekpos = finfo.getUniqueID('startskip')
-                pos = int(xbmc.Player().getTime())
+                pos = int(self.getTime())
                 if len(seekpos) > 0:
                     seekpos = int(seekpos)
                     xbmc.log('Mezzmo skip position: ' + str(pos) + '   '  + str(seekpos), xbmc.LOGDEBUG)
                     if pos < seekpos:
-                        seeksecs = seekpos % 60
-                        seekmins = int(seekpos / 60)
-                        xbmc.log('Mezzmo seektimes: ' + str(pos) + '   '  + str(seeksecs) + '  ' + str(seekmins), xbmc.LOGDEBUG)
-                        json_query = xbmc.executeJSONRPC('{"jsonrpc":"2.0", "method":"Player.Seek", "params":{"playerid":1, \
-                        "value":{"time": {"minutes":%d, "seconds":%d }}},"id":1}' % (seekmins, seeksecs))
+                        self.seekTime(seekpos)
                         mgenlog = 'Mezzmo start skip ' + str(seekpos) + 's for: ' +  self.mtitle
                         media.mgenlogUpdate(mgenlog)
-            elif xbmc.Player().isPlayingAudio():
-                finfo = xbmc.Player().getMusicInfoTag()
+            elif self.isPlayingAudio():
+                finfo = self.getMusicInfoTag()
                 mtype = 'audiom'      # For future music sync
                 self.mtitle = media.displayTitles(finfo.getTitle())
                 #xbmc.log('Mezzmo audio playback started: ' + mtype, xbmcLOGINFO)
@@ -85,21 +81,44 @@ class XBMCPlayer(xbmc.Player):
         manufacturer = getContentURL(contenturl)
         objectID = getObjectID(file)
         bmdelay = 15 - int(media.settings('bmdelay'))
+        if pos + bmdelay < 0:
+            saveposition = 0
+        else:
+            saveposition = pos + bmdelay
         #xbmc.log("Mezzmo Playback paused: " + file + ' ' + manufacturer  + ' ' + mtype, xbmc.LOGINFO)
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                       # Ensure Mezzmo server has been selected
-            bookmark.SetBookmark(contenturl, objectID, str(pos + bmdelay))
+            bookmark.SetBookmark(contenturl, objectID, str(saveposition))
             if media.getMServer(contenturl) in file:     #  Check for paused Mezzmo files
                 self.paflag = 1
-                bookmark.updateKodiBookmark(objectID, pos + bmdelay - 15, self.mtitle, mtype)
+                if saveposition - 15 < 0:
+                    kodiposition = 0
+                else:
+                    kodiposition = saveposition - 15
+                bookmark.updateKodiBookmark(objectID, kodiposition, self.mtitle, mtype)
  
     def onPlayBackResumed(self):
         try:
             global file, mtype
             file = self.getPlayingFile()
+            finfo = self.getVideoInfoTag()
+            self.pcount = str(finfo.getPlayCount())
+            self.mtitle = media.displayTitles(finfo.getTitle())
+            pos = int(self.getTime())
             mtype = finfo.getMediaType()
             self.mtitle = media.displayTitles(finfo.getTitle())
-            #xbmc.log("Mezzmo Playback resumed - LED ON" , xbmc.LOGDEBUG)
+            if self.isPlayingVideo():
+               resrewind = int(media.settings('resrewind'))
+               if resrewind > 0:
+                   position = self.getTime()
+                   if position - resrewind < 0:
+                       newposition = 0
+                   else:
+                       newposition = int(position - resrewind)
+                   self.seekTime(newposition)
+                   xbmc.log("Mezzmo paused playback rewind new position: " + str(newposition), xbmc.LOGDEBUG)
+                   mgenlog = 'Mezzmo resume rewind new position: ' + str(newposition) + ' for: ' +  self.mtitle
+                   media.mgenlogUpdate(mgenlog)     
             xbmc.log("Mezzmo Playback resumed: " + file + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGDEBUG)
         except:
             file = 'File playing is not video or audio'
@@ -133,15 +152,26 @@ class XBMCPlayer(xbmc.Player):
         contenturl = media.settings('contenturl')
         manufacturer = getContentURL(contenturl)
         objectID = getObjectID(file)
-        bmdelay = 15 - int(media.settings('bmdelay'))
+        sbmdelay = media.settings('bmdelay')
+        bmdelay = 15 - int(sbmdelay)
+        if pos + bmdelay < 0:
+            saveposition = 0
+        else:
+            saveposition = pos + bmdelay
         xbmc.log("Mezzmo Playback stopped at " + str(pos  + bmdelay) + " in " + objectID, xbmc.LOGDEBUG)
         self.paflag = 0
         #xbmc.log("Mezzmo Playback stopped: " + file + ' ' + manufacturer  + ' ' + mtype, xbmc.LOGINFO)
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                    # Ensure Mezzmo server has been selected
-            bookmark.SetBookmark(contenturl, objectID, str(pos + bmdelay))
-            #bookmark.updateKodiBookmark(objectID, pos + bmdelay - 15, self.mtitle, mtype)
-            bookmark.clearKodiBookmarks(pos, self.mtitle, mtype, contenturl)
+            bookmark.SetBookmark(contenturl, objectID, str(saveposition))
+            if saveposition - 15 < 0:
+                kodiposition = 0
+            else:
+                kodiposition = saveposition - 15
+            bookmark.updateKodiBookmark(objectID, kodiposition, self.mtitle, mtype)
+            #bookmark.clearKodiBookmarks(pos, self.mtitle, mtype, contenturl)
+            mgenlog = 'Mezzmo stopped playback rewind ' + sbmdelay + ' secs for: ' +  self.mtitle
+            media.mgenlogUpdate(mgenlog)   
             if media.settings('prvrefresh') == 'true' and media.settings('movieprvw') == 'true':
                 xbmc.executebuiltin('Container.Refresh')
                 media.settings('movieprvw', 'false')
@@ -151,7 +181,8 @@ player = XBMCPlayer()
  
 monitor = xbmc.Monitor()
 getPythonVersion()                          # New 2.2.1.7
-media.checkNosyncDB()                       # Check nosync database            
+media.checkNosyncDB()                       # Check nosync database
+media.checkKodiDBfile()			    # Verify Kodi video database file.  New v2.2.2.7
  
 while True:
     if xbmc.Player().isPlaying():
@@ -163,15 +194,23 @@ while True:
                 manufacturer = getContentURL(contenturl)
                 objectID = getObjectID(file)
                 bmdelay = 15 - int(media.settings('bmdelay'))
+                if pos + bmdelay < 0:
+                    saveposition = 0
+                else:
+                    saveposition = pos + bmdelay
                 if contenturl != 'none' and 'Conceiva' in manufacturer and     \
                 'cva_extract' not in file:   # Ensure Mezzmo server has been selected            
-                    bookmark.SetBookmark(contenturl, objectID, str(pos + bmdelay))   
+                    bookmark.SetBookmark(contenturl, objectID, str(saveposition))   
                     if xbmc.Player().isPlayingVideo():
                         finfo = xbmc.Player().getVideoInfoTag()
                         mtype = finfo.getMediaType()
-                        mtitle = media.displayTitles(finfo.getTitle()) 
-                        #xbmc.log('Mezzmo monitor loop set video bookmark: ' + str(pos) + ' ' + mtype, xbmc.LOGINFO)
-                        bookmark.updateKodiBookmark(objectID, pos + bmdelay - 15, mtitle, mtype)
+                        mtitle = media.displayTitles(finfo.getTitle())
+                        if saveposition - 15 < 0:
+                            kodiposition = 0
+                        else:
+                            kodiposition = saveposition - 15
+                        #xbmc.log('Mezzmo monitor loop set video bookmark: ' + str(kodiposition) + ' ' + mtype, xbmc.LOGINFO)
+                        bookmark.updateKodiBookmark(objectID, kodiposition, mtitle, mtype)
                     elif xbmc.Player().isPlayingAudio():
                         finfo = xbmc.Player().getMusicInfoTag()
                         mtype = finfo.getMediaType()
