@@ -1,3 +1,14 @@
+2.2.2.8 7/2/2026
+
+- Updated pause rewind feature introduced in v2.2.2.6 to set rewind value on pause vs. resume playback.  
+This avoids issue with skipping and pause rewind timer conflicting.
+- Updated default Kodi 22 video database to 146 for beta 1 support
+- Added new setting / feature to automatically position on last played item in Moviesets and TV Episodes.
+This will persist across Kodi restarts and is skin independent.  This will make it easier to pickup where 
+you left off watching moviesets and TV series episodes..  
+- Fixed a bug where viewing all TV episodes and movie collections which contained an ampersand would return
+no items due to an incomplete SOAP call to the Mezzmo server. 
+
 2.2.2.7 6/2/2026
 
 - Added setting to set Kodi Video database number to nonstandard value during alpha and beta code testing.

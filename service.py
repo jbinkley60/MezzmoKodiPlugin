@@ -28,6 +28,7 @@ class XBMCPlayer(xbmc.Player):
         self.paflag = 0
         self.mtitle = ''
         self.pcount = 0
+        self.currpos = 0
         #self.mtype = ''
         pass
  
@@ -80,12 +81,15 @@ class XBMCPlayer(xbmc.Player):
         contenturl = media.settings('contenturl')
         manufacturer = getContentURL(contenturl)
         objectID = getObjectID(file)
-        bmdelay = 15 - int(media.settings('bmdelay'))
+        pos = int(self.getTime())
+        resrewind = int(media.settings('resrewind'))
+        bmdelay = 15 - resrewind
         if pos + bmdelay < 0:
             saveposition = 0
         else:
             saveposition = pos + bmdelay
-        #xbmc.log("Mezzmo Playback paused: " + file + ' ' + manufacturer  + ' ' + mtype, xbmc.LOGINFO)
+
+        xbmc.log("Mezzmo Playback paused debug: " + str(saveposition) + ' ' + str(pos) + ' ' + mtype, xbmc.LOGDEBUG)
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                       # Ensure Mezzmo server has been selected
             bookmark.SetBookmark(contenturl, objectID, str(saveposition))
@@ -95,31 +99,23 @@ class XBMCPlayer(xbmc.Player):
                     kodiposition = 0
                 else:
                     kodiposition = saveposition - 15
-                bookmark.updateKodiBookmark(objectID, kodiposition, self.mtitle, mtype)
+                bookmark.updateKodiBookmark(objectID, kodiposition, self.mtitle, mtype)                
+                if resrewind > 0 and pos - resrewind > 0:  # Set rewind position if pause rewind > 0
+                    self.currpos = pos - resrewind
+                xbmc.log("Mezzmo Playback paused rewind: " + file + ' ' + manufacturer  + ' ' + mtype + ' ' + str(pos) + ' ' + str(self.currpos), xbmc.LOGDEBUG) 
  
     def onPlayBackResumed(self):
         try:
             global file, mtype
             file = self.getPlayingFile()
-            finfo = self.getVideoInfoTag()
-            self.pcount = str(finfo.getPlayCount())
-            self.mtitle = media.displayTitles(finfo.getTitle())
-            pos = int(self.getTime())
             mtype = finfo.getMediaType()
             self.mtitle = media.displayTitles(finfo.getTitle())
-            if self.isPlayingVideo():
-               resrewind = int(media.settings('resrewind'))
-               if resrewind > 0:
-                   position = self.getTime()
-                   if position - resrewind < 0:
-                       newposition = 0
-                   else:
-                       newposition = int(position - resrewind)
-                   self.seekTime(newposition)
-                   xbmc.log("Mezzmo paused playback rewind new position: " + str(newposition), xbmc.LOGDEBUG)
-                   mgenlog = 'Mezzmo resume rewind new position: ' + str(newposition) + ' for: ' +  self.mtitle
-                   media.mgenlogUpdate(mgenlog)     
             xbmc.log("Mezzmo Playback resumed: " + file + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGDEBUG)
+            resrewind = int(media.settings('resrewind'))
+            xbmc.log("Mezzmo Playback resumed debug: " + str(resrewind) + ' ' + str(self.currpos), xbmc.LOGDEBUG)            
+            if self.currpos > 0 and resrewind > 0:
+                self.seekTime(self.currpos)
+                xbmc.log('Mezzmo resume playback rewind position: '  + str(self.currpos) + 's for: ' +  self.mtitle, xbmc.LOGINFO)
         except:
             file = 'File playing is not video or audio'
             pass
@@ -133,6 +129,7 @@ class XBMCPlayer(xbmc.Player):
         objectID = getObjectID(file)
         pos = 0
         self.paflag = 0
+        self.currpos = 0
         xbmc.log("Mezzmo Playback ended: " + file + ' ' + manufacturer  + ' ' + mtype + ' ' + self.mtitle, xbmc.LOGDEBUG)
         if len(mtype) > 0 and len(contenturl) > 5 and 'Conceiva' in manufacturer and     \
         'cva_extract' not in file:                     # Ensure Mezzmo server has been selected
@@ -158,6 +155,7 @@ class XBMCPlayer(xbmc.Player):
             saveposition = 0
         else:
             saveposition = pos + bmdelay
+        self.currpos = 0
         xbmc.log("Mezzmo Playback stopped at " + str(pos  + bmdelay) + " in " + objectID, xbmc.LOGDEBUG)
         self.paflag = 0
         #xbmc.log("Mezzmo Playback stopped: " + file + ' ' + manufacturer  + ' ' + mtype, xbmc.LOGINFO)

@@ -844,6 +844,10 @@ msgctxt "#30829"
 msgid "Mezzmo Kodi Database Error"
 msgstr ""
 
+msgctxt "#30830"
+msgid "Automatic Next Play Position"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr ""
@@ -1174,3 +1178,8 @@ msgstr ""
 msgctxt "#30583"
 msgid "Mezzmo Kodi invalid video database file found: "
 msgstr ""
+
+msgctxt "#30584"
+msgid "This option will have Kodi position on the next item to play in a movieset, collection or TV Episode listing.  This is skin independent and carries across Kodi restarts. Default is disabled."
+msgstr ""
+

@@ -1218,7 +1218,8 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
             elems = xml.etree.ElementTree.fromstring(result.text)
 
             dbfile = media.openKodiDB()
-            parsecount = 0               
+            parsecount = 0
+            
             for item in elems.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}item'):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 if parselog == 'true' and title != None and len(title) > 0:
@@ -1411,7 +1412,7 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                 if playcountElem != None:
                     playcount_text = playcountElem.text
                     playcount = int(playcount_text)
-                    
+    
                 last_played_text = ''
                 last_played = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}last_played')
                 if last_played != None:
@@ -1832,9 +1833,26 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
     xbmcplugin.endOfDirectory(addon_handle)
     xbmc.sleep(50)
     setViewMode(contentType)
+    xbmc.sleep(150)
     xbmc.executebuiltin('Container.SetSortMethod(%d)' % (srchorder))
     #xbmc.executebuiltin('Container.Refresh')   
     #xbmc.executebuiltin("Dialog.Close(busydialog)")
+
+    if searchcontrol2 == 'movieset' and media.settings('autonext') == 'true':  
+        xbmc.sleep(300)
+        num_items = xbmc.getInfoLabel('Container.NumItems')
+        win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
+        focusid = win.getFocusId()
+        #xbmc.log('Mezzmo focus id is: ' + str(focusid), xbmc.LOGINFO)
+        for i in range(1, int(num_items)):
+            itemget = f'Container.ListItemAbsolute({i}).PlayCount'
+            fpcount = xbmc.getInfoLabel(itemget)
+            if len(fpcount) == 0:
+                itemfocus = f'Control.SetFocus({focusid}, {i}, absolute)'
+                xbmc.executebuiltin(itemfocus)
+                break
+    xbmc.log('Mezzmo searchcontrol2 is: ' + searchcontrol2, xbmc.LOGDEBUG)
+
 
 def getUPnPClass():
 
@@ -2037,7 +2055,7 @@ elif mode[0] == 'movieset':
     scontrol = args.get('source', 'browse')
     searchcontrol = scontrol[0]
     searchcontrol2 = mode[0]   
-    searchCriteria = "upnp:album=&quot;" + smovieset + "&quot;"
+    searchCriteria = "upnp:album=&quot;" + smovieset  + "&quot;"           # Address ampersand in movieset name
     upnpClass = "upnp:class derivedfrom &quot;object.item.videoItem&quot;"
     searchCriteria = "(" + searchCriteria + ") and (" + upnpClass + ")"
     xbmc.log('Mezzmo movieset search criteria: ' + searchCriteria, xbmc.LOGDEBUG)      

@@ -198,10 +198,10 @@ def contextMenu():                                       # Display contxt menu f
         ';mode=search;source=native'))
     elif (cselect[vcontext]) == menuitem8:               # Mezzmo movie sets
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
-        ';mode=movieset;source=native;searchset=' + movieset))        
+        ';mode=movieset;source=native;searchset=' + movieset.replace('&','%26')))        
     elif (cselect[vcontext]) == menuitem9 or (cselect[vcontext]) == menuitem10 : # Mezzmo display collections          
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
-        ';mode=collection;source=native;searchset=' + collection)) 
+        ';mode=collection;source=native;searchset=' + collection.replace('&','%26'))) 
     elif (cselect[vcontext]) == menuitem11:              # Mezzmo display keywords  
         utilities.selectKeywords(mtype, menuitem11, 'native', contenturl)
     elif (cselect[vcontext]) == menuitem15:              # Clear Kodi cache  

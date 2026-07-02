@@ -844,6 +844,10 @@ msgctxt "#30829"
 msgid "Mezzmo Kodi Database Error"
 msgstr "Erro no banco de dados do Mezzmo Kodi"
 
+msgctxt "#30830"
+msgid "Automatic Next Play Position"
+msgstr "Posição de reprodução seguinte automática"
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr "Defina um atraso de 0 a 60 segundos em relação à posição atual de reprodução ao retomar a reprodução a partir de um marcador."
@@ -1176,3 +1180,6 @@ msgctxt "#30583"
 msgid "Mezzmo Kodi: Arquivo de banco de dados de vídeo inválido encontrado: "
 msgstr ""
 
+msgctxt "#30584"
+msgid "This option will have Kodi position on the next item to play in a movieset, collection or TV Episode listing.  This is skin independent and carries across Kodi restarts. Default is disabled."
+msgstr "Essa opção faz com que o Kodi posicione o cursor no próximo item a ser reproduzido em uma coleção de filmes ou em uma lista de episódios de série. Esse recurso independe da *skin* utilizada e permanece ativo mesmo após reiniciar o Kodi. A configuração padrão é desativado."

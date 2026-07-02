@@ -793,10 +793,10 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         media.mgenlogUpdate(mgenlog) 
     elif (cselect[vcontext]) == menuitem8 or (cselect[vcontext]) == menuitem14:   # Display movie sets or episodes
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
-        ';mode=movieset;source=browse;searchset=' + movieset))
+        ';mode=movieset;source=browse;searchset=' + movieset.replace('&','%26')))
     elif (cselect[vcontext]) == menuitem9 or (cselect[vcontext]) == menuitem10 : # Mezzmo display collections          
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
-        ';mode=collection;source=browse;searchset=' + collection))
+        ';mode=collection;source=browse;searchset=' + collection.replace('&','%26')))
     elif (cselect[vcontext]) == menuitem11:              # Mezzmo display keywords
         selectKeywords(keytarget, menuitem11, 'browse', contenturl)
     elif (cselect[vcontext]) == menuitem13:              # Play trailer movie  
