@@ -23,6 +23,7 @@ With the Mezzmo Kodi addon there is full integration into Kodi and <a href="http
 
 <b>Features: </b>
 - Kodi 18 and 19-22+ versions with almost 100% feature parity
+- Automatic database version detection with Kodi 22 and higher
 - Play and resume videos with 0-60 sec rewind / <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Mezzmo-Kodi-Addon-Settings#timers--servers">lookback option with separate timers for stopped and paused videos</a>
 - Share <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/How-it-works-%3F#resume-point-sharing">resume points</a> between other devices through the Mezzmo server
 - <a href="https://github.com/jbinkley60/MezzmoKodiPlugin/wiki/Last-Played-Media">Last Played Media</a> feature for quick access to recently played media
