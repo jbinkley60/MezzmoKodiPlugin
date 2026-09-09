@@ -837,7 +837,7 @@ msgid "Resume Playback Rewind 0-60 (secs)"
 msgstr "Retomar reprodução — Retroceder 0-60 (segundos)"
 
 msgctxt "#30828"
-msgid "Kodi Video Database number"
+msgid "Kodi Video Database Number"
 msgstr "Número do banco de dados de vídeo do Kodi"
 
 msgctxt "#30829"
@@ -847,6 +847,14 @@ msgstr "Erro no banco de dados do Mezzmo Kodi"
 msgctxt "#30830"
 msgid "Automatic Next Play Position"
 msgstr "Posição de reprodução seguinte automática"
+
+msgctxt "#30831"
+msgid "Kodi Database Selection Mode"
+msgstr "Modo de Seleção de Banco de Dados do Kodi"
+
+msgctxt "#30832"
+msgid "Kodi Music Database Number"
+msgstr "Número do banco de dados de música do Kodi"
 
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
@@ -1166,7 +1174,7 @@ msgstr "A reprodução automática retoma com um retrocesso de 0 a 60 segundos e
 
 msgctxt "#30580"
 msgid "This option provides the ability to override the standard Kodi Video Database numbers.  This can be useful for Kodi Alpha and Beta code testing.  An error will occur if the database selected does not exist and this setting will revert to default.  Default is the normal setting."
-msgstr "Esta opção permite substituir os números padrão do banco de dados de vídeo do Kodi. Isso pode ser útil para testar o código das versões Alpha e Beta do Kodi. Ocorrerá um erro caso o banco de dados selecionado não exista, e esta configuração retornará ao padrão. O padrão corresponde à configuração normal."
+msgstr "Esta opção permite substituir os números padrão do banco de dados do Kodi. Isso pode ser útil para testes de código das versões Alpha e Beta do Kodi. Ocorrerá um erro se o banco de dados selecionado não existir, e a configuração retornará para "Auto" ou "Padrão". "Padrão" é a configuração normal."
 
 msgctxt "#30581"
 msgid "Mezzmo Kodi video database file not found: "
@@ -1183,3 +1191,7 @@ msgstr ""
 msgctxt "#30584"
 msgid "This option will have Kodi position on the next item to play in a movieset, collection or TV Episode listing.  This is skin independent and carries across Kodi restarts. Default is disabled."
 msgstr "Essa opção faz com que o Kodi posicione o cursor no próximo item a ser reproduzido em uma coleção de filmes ou em uma lista de episódios de série. Esse recurso independe da *skin* utilizada e permanece ativo mesmo após reiniciar o Kodi. A configuração padrão é desativado."
+
+msgctxt "#30585"
+msgid "This option selects how the Kodi databae numbers are identified.  Automatic is for Kodi 22 and higher and will be determined by Kodi.  Default is set by the Mezzmo Kodi addon default setting.  Manual allows you to assign your own database number. Auto is the default setting."
+msgstr "Esta opção define como os números do banco de dados do Kodi são identificados. A opção "Automático" destina-se ao Kodi 22 e versões superiores, sendo a definição realizada pelo próprio Kodi. A opção "Padrão" utiliza a configuração padrão do complemento Mezzmo para Kodi. A opção "Manual" permite que você atribua seu próprio número de banco de dados. "Automático" é a configuração padrão."

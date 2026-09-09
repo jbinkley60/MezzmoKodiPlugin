@@ -392,13 +392,17 @@ def syncMezzmo(syncurl, syncpin, count):                 #  Sync Mezzmo to Kodi
         difference = str(int(duration // 60)) + 'm ' + str(int(duration % 60)) + 's checked.'
         media.settings('sync_offset', str(syncoffset))
         dupelog = 'false'                              #  Set Mezzmo duplicate logging to disable
-        #xbmc.log('Sync info: ' + ksync + ' ' + str(count) + ' ' + str(clean) + ' ' + str(rows), xbmc.LOGINFO) 
-        if ksync != 'Daily' or count < 30 or clean == 1:  #  Display summary stats if restart or not daily
+        #xbmc.log('Sync info: ' + ksync + ' ' + str(count) + ' ' + str(clean) + ' ' + str(rows), xbmc.LOGINFO)
+        if clean == 1:                                 # Full sync stats 
+            msynclog = 'Mezzmo full sync completed. ' + str(mezzmocounts) + ' videos in ' + difference
+            #xbmc.log('Sync flags: ' + ksync + ' ' + str(count) + ' ' + str(clean), xbmc.LOGINFO)
+            xbmc.log('Mezzmo counts: ' + str(mezzmocounts), xbmc.LOGDEBUG) 
+        elif ksync != 'Daily' or count < 30 :           #  Display summary stats if restart or not daily
             #if rows != None and rows > mezzmorecs:  #  Account for +5 totalrecs fetching
             #    rows = mezzmorecs
             msynclog = 'Mezzmo sync completed. ' + str(mezzmocounts) + ' videos in ' + difference
             #xbmc.log('Sync flags: ' + ksync + ' ' + str(count) + ' ' + str(clean), xbmc.LOGINFO)
-            xbmc.log('Mezzmo counts: ' + str(mezzmocounts), xbmc.LOGDEBUG)  
+            xbmc.log('Mezzmo counts: ' + str(mezzmocounts), xbmc.LOGDEBUG)
         elif ksync == 'Daily':
             msynclog = 'Mezzo sync Daily set.  Hourly sync not enabled.'  
         media.mezlogUpdate(msynclog)  

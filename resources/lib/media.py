@@ -209,56 +209,93 @@ def get_installedversion():
 
 def getDatabaseName():
     installed_version = get_installedversion()
-    vdbnumber = settings('vdbnumber')
-    if vdbnumber != 'Default':
-        return "MyVideos" + vdbnumber + ".db"
-    elif installed_version == '19':
-        return "MyVideos119.db"
-    elif installed_version == '20':
-        return "MyVideos121.db"
-    elif installed_version == '21':
-        return "MyVideos131.db"
-    elif installed_version == '22':
-        return "MyVideos146.db"
-      
+    dbmode = settings('dbmode')
+    if dbmode == 'Default':
+        if installed_version == '19':
+            return "MyVideos119.db"
+        elif installed_version == '20':
+            return "MyVideos121.db"
+        elif installed_version == '21':
+            return "MyVideos131.db"
+        elif installed_version == '22':
+            return "MyVideos149.db"
+    elif dbmode == 'Auto':
+        autovideodb = settings('autovideodb')
+        return (autovideodb + ".db")
+    elif dbmode == 'Manual':
+        vdbnumber = settings('vdbnumber')
+        return "MyVideos" + vdbnumber + ".db"     
     return ""
 
 
 def getteDatabaseName():
     installed_version = get_installedversion()
-    if installed_version == '19':
-        return "Textures13.db"
-    elif installed_version == '20':
-        return "Textures13.db"
-    elif installed_version == '21':
-        return "Textures13.db"   
-    elif installed_version == '22':
-        return "Textures14.db"
-    else:     
-        return None  
+    dbmode = settings('dbmode')
+    autotexturesdb = settings('autotexturesdb')
+    if dbmode == 'Auto' and autotexturesdb != 'None':
+        autotexturesdb = settings('autotexturesdb')
+        return (autotexturesdb + ".db")
+    else:
+        if installed_version == '19':
+            return "Textures13.db"
+        elif installed_version == '20':
+            return "Textures13.db"
+        elif installed_version == '21':
+            return "Textures13.db"   
+        elif installed_version == '22':
+            return "Textures14.db"
+        else:     
+            return None  
 
 
 def checkKodiDBfile():
 
+    try:
+        autovideodb = xbmc.getDatabaseName('videos')
+        automusicdb = xbmc.getDatabaseName('music')
+        autotexturesdb = xbmc.getDatabaseName('textures')
+        dbmode = settings('dbmode')
+        mgenlog = 'Mezzmo autodetected Kodi databases: ' + autovideodb + ', ' + automusicdb + ', ' +   \
+        autotexturesdb
+        mgenlogUpdate(mgenlog, 'yes')
+        settings('autovideodb', autovideodb)
+        settings('automusicdb', automusicdb)
+        settings('autotexturesdb', autotexturesdb)
+    except:
+        mgenlogUpdate('Mezzmo did not automatically detect databases with this version of Kodi', 'yes')
+        settings('autovideodb', 'None')
+        settings('automusicdb', 'None')
+        settings('autotexturesdb', 'None')
+        settings('dbmode', 'Default')
+        dbmode = 'Default'
+
+    if settings('vdbnumber') == 'Default':                        # Clear default setting from v2.2.2.8 and earlier
+        settings('vdbnumber', '0')
     
     dbfile = os.path.join(xbmcvfs.translatePath("special://database"), getDatabaseName())
     if not os.path.isfile(dbfile):
         mgenlog = translate(30581) + dbfile
         mgenlogUpdate(mgenlog, 'yes')
-        settings('vdbnumber', 'Default')
+        if dbmode == 'Manual':
+            settings('dbmode', 'Default')
+            settings('vdbnumber', '0')            
         mgenlog = translate(30582)
         mgenlogUpdate(mgenlog, 'yes')
         xbmcgui.Dialog().ok(translate(30829), translate(30581) + dbfile + "\n" + translate(30582))
     elif os.path.getsize(dbfile) < 1024:    
         mgenlog = translate(30583) + dbfile
         mgenlogUpdate(mgenlog, 'yes')
-        settings('vdbnumber', 'Default')
+        if dbmode == 'Manual':
+            settings('dbmode', 'Default')
+            settings('vdbnumber', '0')   
         mgenlog = translate(30582)
         mgenlogUpdate(mgenlog, 'yes')
         xbmcgui.Dialog().ok(translate(30829), translate(30583) + dbfile + "\n" + translate(30582))
     else:
         mgenlog = 'Mezzmo using Kodi database file: ' + getDatabaseName()
         mgenlogUpdate(mgenlog, 'yes')
+
+
 
 
 def openKodiDB():                                   #  Open Kodi database

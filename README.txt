@@ -1,3 +1,9 @@
+2.2.2.9 9/10/2026
+- Added additional Daily Sync stats menu item to only display full sync logs for easier tracking of the
+performance of daily Mezzmo to Kodi database synchronizations over time.
+- Updated default database names for Kodi 22 beta 2
+- Added feature to autodetect Kodi database names which is a new capability supported in Kodi 22 and higher. 
+
 2.2.2.8 7/2/2026
 
 - Updated pause rewind feature introduced in v2.2.2.6 to set rewind value on pause vs. resume playback.  

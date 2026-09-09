@@ -848,6 +848,14 @@ msgctxt "#30830"
 msgid "Automatic Next Play Position"
 msgstr ""
 
+msgctxt "#30831"
+msgid "Kodi Database Selection Mode"
+msgstr ""
+
+msgctxt "#30832"
+msgid "Kodi Music Database number"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr ""
@@ -1164,7 +1172,7 @@ msgid "Automatic resume playback rewind 0-60 secs behind current paused playback
 msgstr ""
 
 msgctxt "#30580"
-msgid "This option provides the ability to override the standard Kodi Video Database numbers.  This can be useful for Kodi Alpha and Beta code testing.  An error will occur if the database selected does not exist and this setting will revert to default.  Default is the normal setting."
+msgid "This option provides the ability to override the standard Kodi Database numbers.  This can be useful for Kodi Alpha and Beta code testing.  An error will occur if the database selected does not exist and this setting will revert to Auto or Default.  Default is the normal setting."
 msgstr ""
 
 msgctxt "#30581"
@@ -1181,5 +1189,9 @@ msgstr ""
 
 msgctxt "#30584"
 msgid "This option will have Kodi position on the next item to play in a movieset, collection or TV Episode listing.  This is skin independent and carries across Kodi restarts. Default is disabled."
+msgstr ""
+
+msgctxt "#30585"
+msgid "This option selects how the Kodi databae numbers are identified.  Automatic is for Kodi 22 and higher and will be determined by Kodi.  Default is set by the Mezzmo Kodi addon default setting.  Manual allows you to assign your own database number. Auto is the default setting."
 msgstr ""
 

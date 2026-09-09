@@ -77,8 +77,9 @@ def displayMenu():
             mstatdates = curpf.fetchone()                        # Get dates from sync database
             if mstatdates and len(pselect) > 0:                  # If dates in sync table 
                 pselect.extend(["Mezzmo Addon Sync Logs"])
+                pselect.extend(["Mezzmo Addon Full Sync Logs"])
             elif mstatdates and len(pselect) == 0: 
-                pselect = ["Mezzmo Addon Sync Logs"]   
+                pselect = ["Mezzmo Addon Sync Logs", "Mezzmo Addon Full Sync Logs"]
 
             curpf = pdfile.execute('SELECT psDate FROM mperfStats LIMIT 1', )
             pstatdates = curpf.fetchone()                        # Get dates from perf database
@@ -120,6 +121,8 @@ def displayMenu():
             displayDupeLogs()
         elif (pselect[vdate]) == "Mezzmo Addon Sync Logs":
             displaySyncLogs()
+        elif (pselect[vdate]) == "Mezzmo Addon Full Sync Logs":
+            displayFullSyncLogs()
         elif (pselect[vdate]) == "Mezzmo Addon General Logs":
             displayGenLogs()
         elif "Mezzmo Clear Performance Logs" in (pselect[vdate]):
@@ -334,6 +337,34 @@ def displaySyncLogs():
     cursync.close()                                              # New 2.2.1.7     
     dsfile.close()
     return
+
+
+def displayFullSyncLogs():                                      # Display full sync logs
+
+    pdfile = openNosyncDB()                                      # Open Sync Stats database
+    curpf = pdfile.execute('SELECT * FROM msyncLog where msSyncDat like "%Full Sync Completed%" \
+    order by msDate DESC')
+    headval = "Mezzmo Full Sync Stats"
+    mslogs = curpf.fetchall()
+    curpf.close()                                               
+    pdfile.close()
+    textval1 = "{:^48}".format("Date") + "{:>48}".format("Full Sync Log Details")
+    textval1 = textval1 + "\n" 
+    if mslogs:
+        msdialog = xbmcgui.Dialog() 
+        for a in range(len(mslogs)):                             # Display logs if exist   
+            msdate = mslogs[a][0]
+            mstime = mslogs[a][1][:8]                            # Strip off milliseconds
+            msdatetime = msdate + "   " + mstime + "      "
+            msynclog = mslogs[a][2]
+            textval1 = textval1 + "\n" + msdatetime + msynclog
+        msdialog.textviewer(headval, textval1)                                     
+    else:                                                        # No records found for date selected  
+        msdialog = xbmcgui.Dialog()
+        dialog_text = "No Full sync logs found."        
+        msdialog.ok("Mezzmo Addon Database Error", dialog_text)
+    return
+
 
 
 def displayGenLogs():
