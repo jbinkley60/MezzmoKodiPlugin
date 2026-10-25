@@ -1,3 +1,17 @@
+2.2.3.0 10/23/2026
+
+- Added new MPG delay detection setting to fix issue with intermittent startskip not working due to 
+checking too quickly for value when playback is started.  A 1=10 second delay can before checking for 
+skip value and other VideoInfoTags values from Kodi player.
+- Fixed None video and music metadata value causing error messages in now Kodi Piers RC1 release due to 
+additional InfoLabels input validation checking in Kodi.
+- Cleaned up / reduced / improved some Kodi logging
+- Improved Plex and other UPnP artwork handling by now parsing XML for both posters and backdrops vs. 
+previously only backdrops.
+- Improved metadata parsing for some UPnP serves including Jellyfin and others
+- Fixed long standing bug where on occasion when manually adding a new UPnP server the server IP address
+would be presented as the default value for the serve port number instead of the correct port number. 
+
 2.2.2.9 9/10/2026
 - Added additional Daily Sync stats menu item to only display full sync logs for easier tracking of the
 performance of daily Mezzmo to Kodi database synchronizations over time.

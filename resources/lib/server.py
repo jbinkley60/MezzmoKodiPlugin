@@ -101,7 +101,8 @@ def addServers():                                                #  Manually add
     if server < 0:
         return 'None'
     else:
-        sport = sdialog.input(translate(30449), serverdict[server]['port'], type=xbmcgui.INPUT_NUMERIC)
+        pdialog = xbmcgui.Dialog() 
+        sport = pdialog.numeric(0, translate(30449), defaultt=serverdict[server]['port'])
 
     if len(sport) == 0:
         return 'None'

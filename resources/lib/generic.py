@@ -102,17 +102,30 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                 if description != None and description.text != None:
                     description_text = description.text 
     
-                icon = container.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
+                icon = container.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}icon')
                 if icon != None:
                     icon = icon.text
                     if 'jpg' not in icon: 
                         icon = icon + '.jpg'
-                    xbmc.log('Handle browse second icon is: ' + icon, xbmc.LOGDEBUG)   
+                    xbmc.log('Handle browse second icon is: ' + icon, xbmc.LOGDEBUG)
+
+                backdropurl = container.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
+                if backdropurl != None:
+                    backdropurl = backdropurl.text
+                    if 'jpg' not in backdropurl: 
+                        backdropurl = backdropurl + '.jpg'
+                    xbmc.log('Handle browse second icon is: ' + backdropurl, xbmc.LOGDEBUG)   
+   
 
                 itemurl = build_url({'mode': 'server', 'parentID': objectID, 'objectID': containerid,             \
                 'contentdirectory': contenturl})        
                 li = xbmcgui.ListItem(title)
-                li.setArt({'banner': icon, 'poster': icon, 'icon': icon, 'fanart': addon_fanart})
+                #if icon != None:
+                #    li.setArt({'banner': icon, 'poster': icon, 'icon': icon, 'fanart': addon_fanart})
+                if icon != None and backdropurl != None:
+                    li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
+                elif icon != None and backdropurl == None:
+                    li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': icon})
 
                 mediaClass_text = 'video'
                 if installed_version == '19':                         #  Kodi 19 format
@@ -145,12 +158,21 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                 title = item.find('.//{http://purl.org/dc/elements/1.1/}title').text
                 itemid = item.get('id')
                 icon = None
-                albumartUri = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
-                if albumartUri != None:
-                    icon = albumartUri.text
+                albumartUri = None
+                albumArtURI = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}albumArtURI')
+                if albumArtURI != None:
+                    albumArtURI = albumArtURI.text
+                    if 'jpg' not in albumArtURI: 
+                        albumArtURI = albumArtURI + '.jpg'
+                    xbmc.log('Handle browse first icon is: ' + albumArtURI, xbmc.LOGDEBUG) 
+
+                icon = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}icon')
+                if icon != None:
+                    icon = icon.text
                     if 'jpg' not in icon: 
                         icon = icon + '.jpg'
-                    xbmc.log('Handle browse second icon is: ' + icon, xbmc.LOGDEBUG)    
+                    xbmc.log('Handle browse second icon is: ' + icon, xbmc.LOGDEBUG)  
+
 
                 res = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}res')
                 subtitleurl = None
@@ -160,6 +182,9 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                 aspect = 0.0
                 validf = 0
                 protocol_text = ''
+                video_codec = ''
+                audio_codec = ''
+                audio_channels = ''
 
                 if res != None:
                     itemurl = res.text
@@ -184,7 +209,17 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                     protocol = res.get('protocolInfo')
                     if protocol != None:
                         protocol_text = protocol
-                    #xbmc.log('The protocol is: ' + str(protocol), xbmc.LOGINFO) 
+                    try:
+                        res_split = itemurl.split('&')
+                        for split in res_split:
+                            #xbmc.log('Res split value is: ' + split, xbmc.LOGINFO)
+                            if "VideoCodec" in split: video_codec = split.split('=')[1]
+                            if "AudioCodec" in split: audio_codec = split.split('=')[1]
+                    except:
+                        pass
+                    audio_channels = res.get('nrAudioChannels')
+                    #xbmc.log('Res audio channels: ' + audio_channels, xbmc.LOGINFO)
+                        
                 else:
                     duration_text = '00:00:00.000'
                     itemurl = getItemlUrl(contenturl, itemid)
@@ -224,14 +259,22 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                     #xbmc.log('The class is: ' + str(upnpclass_text), xbmc.LOGINFO)  
 
                 li = xbmcgui.ListItem(title)
-                li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
+                if icon != None and backdropurl != None:
+                    li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
+                elif albumArtURI != None and backdropurl == None:
+                    li.setArt({'thumb': albumArtURI, 'poster': albumArtURI, 'icon': albumArtURI, 'fanart': albumArtURI})
+                elif icon != None and albumArtURI != None:
+                    li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': albumArtURI})
+                elif icon != None and backdropurl == None:
+                    li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': icon})
+
                 if subtitleurl != None:
                     li.setSubtitles([subtitleurl])
                   
                 trailerurl = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}trailer')
-                if len(thumb) > 0 and len(poster) > 0:
+                if len(thumb) > 0 and len(poster) > 0 and icon != None and backdropurl != None:
                     li.setArt({'thumb': thumb, 'poster': poster, 'icon': icon, 'fanart': backdropurl})
-                else:
+                elif icon != None and backdropurl != None:
                     li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
                 
                 genre_text = []
@@ -472,9 +515,12 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                     if production_company != None:
                         production_company_text = production_company.text
                     else:                                             # Jellyfin publisher
-                        production_company = item.find('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}publisher')
+                        production_company = item.findall('.//{urn:schemas-upnp-org:metadata-1-0/upnp/}publisher')
                         if production_company != None:
-                            production_company_text = production_company.text
+                            company_text = ''
+                            for company in production_company:
+                                company_text += company.text + ','
+                            production_company_text = company_text.rstrip(',')
 
                 sort_title_text = ''
                 sort_title = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}sort_title')
@@ -482,21 +528,29 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                     sort_title_text = sort_title.text    
 
                 video_codec_text = ''
-                video_codec = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}video_codec')
-                if video_codec != None:
-                    video_codec_text = video_codec.text
+                if not video_codec:
+                    video_codec = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}video_codec')
+                    if video_codec != None:
+                        video_codec_text = video_codec.text
+                else:
+                    video_codec_text = video_codec
                 if video_codec_text == 'vc1':     #  adjust for proper Kodi codec display
                     video_codec_text = 'vc-1'
                 
                 audio_codec_text = ''
-                audio_codec = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}audio_codec')
-                if audio_codec != None:
-                    audio_codec_text = audio_codec.text
-                
+                if not audio_codec:
+                    audio_codec = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}audio_codec')
+                    if audio_codec != None:
+                        audio_codec_text = audio_codec.text
+                else:
+                    audio_codec_text = audio_codec                
                 audio_channels_text = '0'
-                audio_channels = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}audio_channels')
-                if audio_channels != None:
-                    audio_channels_text = audio_channels.text               
+                if not audio_channels:
+                    audio_channels = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}audio_channels')
+                    if audio_channels != None:
+                        audio_channels_text = audio_channels.text
+                else:
+                    audio_channels_text = audio_channels               
                 audio_lang = ''
                 audio_streams = item.find('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}audio')
                 if audio_streams != None:
@@ -511,8 +565,7 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                     for stream in captions_streams.findall('.//{urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/}stream'):
                         if stream.get('selected') == 'auto' or stream.get('selected') == 'true':
                             subtitle_lang = stream.get('language')
-                            break
-                                   
+                            break                                
                 #mediaClass 
                 if 'video' in upnpclass_text or 'video' in protocol_text:
                     mediaClass_text = 'video'
@@ -568,32 +621,32 @@ def ghandleBrowse(content, contenturl, objectID, parentID):
                         li.addStreamInfo('subtitle', {'language': subtitle_lang})
                     else:
                         vinfo = li.getVideoInfoTag()
-                        vinfo.setDuration(durationsecs)
+                        if durationsecs is not None: vinfo.setDuration(durationsecs)
                         if len(genre_text) > 0: vinfo.setGenres(genre_text)
                         if len(release_year_text) > 0: vinfo.setYear(int(release_year_text))
-                        vinfo.setTitle(title)
-                        vinfo.setPlot(description_text)
+                        if title is not None: vinfo.setTitle(title)
+                        if description_text is not None: vinfo.setPlot(description_text)
                         if creator_text is not None: vinfo.setDirectors(creator_text.split(','))
-                        vinfo.setTagLine(tagline_text)
+                        if tagline_text is not None: vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         #xbmc.log('Mezzmo rartists is: ' + str(artist_text), xbmc.LOGINFO) 
                         if artist_text is not None and isinstance(artist_text, list): vinfo.setArtists(artist_text) 
                         if len(str(rating_valf)) > 0: vinfo.setRating(rating_valf)
-                        vinfo.setIMDBNumber(imdb_text)
-                        vinfo.setMediaType(categories_text)
+                        if imdb_text is not None: vinfo.setIMDBNumber(imdb_text)
+                        if categories_text is not None: vinfo.setMediaType(categories_text)
                         if len(season_text) > 0 and season_text.isdigit(): vinfo.setSeason(int(season_text))
                         if len(episode_text) > 0 and episode_text.isdigit(): vinfo.setEpisode(int(episode_text))
-                        vinfo.setLastPlayed(last_played_text)
-                        vinfo.setFirstAired(aired_text)
-                        vinfo.setMpaa(content_rating_text)
+                        if last_played_text is not None: vinfo.setLastPlayed(last_played_text)
+                        if aired_text is not None: vinfo.setFirstAired(aired_text)
+                        if content_rating_text is not None: vinfo.setMpaa(content_rating_text)
                         if production_company_text is not None: vinfo.setStudios(production_company_text.split(','))
                         if playcount is not None: vinfo.setPlaycount(int(playcount))
-                        vinfo.setSortTitle(sort_title_text)
-                        vinfo.setTvShowTitle(showtitle)
-                        vinfo.setTrailer(trailerurl)
-                        vinfo.setDateAdded(date_added_text)
+                        if sort_title_text is not None: vinfo.setSortTitle(sort_title_text)
+                        if showtitle is not None: vinfo.setTvShowTitle(showtitle)
+                        if trailerurl is not None: vinfo.setTrailer(trailerurl)
+                        if date_added_text is not None: vinfo.setDateAdded(date_added_text)
 
-                        vinfo.setResumePoint(float(dcmInfo_text), durationsecs)
+                        if dcmInfo_text is not None: vinfo.setResumePoint(float(dcmInfo_text), durationsecs)
                         vstrinfo = xbmc.VideoStreamDetail(video_width, video_height, aspect, codec=video_codec_text)
                         vinfo.addVideoStream(vstrinfo)
                         astrinfo = xbmc.AudioStreamDetail(int(audio_channels_text), audio_codec_text, audio_lang)

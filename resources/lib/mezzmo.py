@@ -463,6 +463,8 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                     backdropurl = backdropurl.text
                     #if (backdropurl [-4:]) !=  '.jpg': 
                     #    backdropurl  = backdropurl  + '.jpg'
+                else:
+                    backdropurl = ''
 
                 li = xbmcgui.ListItem(title, offscreen=True)
                 #li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
@@ -774,7 +776,7 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})                        
                     pctitle = '"' + mtitle + '"'  		                        #  Handle commas
                     pcseries = '"' + album_text + '"'                                   #  Handle commas
-                    mtype = categories_text             
+                    mtype = categories_text
                     li.addContextMenuItems([ (menuitem1, 'Container.Refresh'), (menuitem2, 'Action(ParentDir)'),   \
                     (menuitem10, 'RunScript(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)' % \
                     ("plugin.video.mezzmo", "context", pctitle, itemurl, season_text, episode_text, playcount,     \
@@ -826,10 +828,10 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         vinfo.setDuration(durationsecs)
                         if genre_text is not None: vinfo.setGenres(genre_text.split(','))
                         if len(release_year_text) > 0: vinfo.setYear(int(release_year_text))
-                        vinfo.setTitle(title)
-                        vinfo.setPlot(description_text)
+                        if title is not None: vinfo.setTitle(title)
+                        if description_text is not None: vinfo.setPlot(description_text)
                         if creator_text is not None: vinfo.setDirectors(creator_text.split(','))
-                        vinfo.setTagLine(tagline_text)
+                        if tagline_text is not None: vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
                         if tags_text is not None:
@@ -838,20 +840,20 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                                 if int(skipval) > 0:     
                                     vinfo.setUniqueID(skipval, "startskip")
                             vinfo.setTags(tags_text.split(','))
-                        vinfo.setRating(rating_valf)
-                        vinfo.setIMDBNumber(imdb_text)
-                        vinfo.setMediaType(categories_text)
+                        if rating_valf is not None: vinfo.setRating(rating_valf)
+                        if imdb_text is not None: vinfo.setIMDBNumber(imdb_text)
+                        if categories_text is not None: vinfo.setMediaType(categories_text)
                         if season_kodi is not None: vinfo.setSeason(int(season_text))
                         if episode_text is not None: vinfo.setEpisode(int(episode_text))
-                        vinfo.setLastPlayed(last_played_text)
-                        vinfo.setFirstAired(aired_text)
-                        vinfo.setMpaa(content_rating_text)
+                        if last_played_text is not None: vinfo.setLastPlayed(last_played_text)
+                        if aired_text is not None: vinfo.setFirstAired(aired_text)
+                        if content_rating_text is not None: vinfo.setMpaa(content_rating_text)
                         if production_company_text is not None: vinfo.setStudios(production_company_text.split(','))
                         if playcount is not None: vinfo.setPlaycount(int(playcount))
-                        vinfo.setSortTitle(sort_title_text)
-                        vinfo.setTvShowTitle(showtitle)
-                        vinfo.setTrailer(trailerurl)
-                        vinfo.setDateAdded(date_added_text)
+                        if sort_title_text is not None: vinfo.setSortTitle(sort_title_text)
+                        if showtitle is not None: vinfo.setTvShowTitle(showtitle)
+                        if trailerurl is not None: vinfo.setTrailer(trailerurl)
+                        if date_added_text is not None: vinfo.setDateAdded(date_added_text)
 
                         vinfo.setResumePoint(float(dcmInfo_text), durationsecs)
                         vstrinfo = xbmc.VideoStreamDetail(video_width, video_height, aspect, codec=video_codec_text)
@@ -965,19 +967,19 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
                         li.setInfo(mediaClass_text, info)
                     else:
                         minfo = li.getMusicInfoTag()
-                        minfo.setDuration(durationsecs)
+                        if durationsecs is not None: minfo.setDuration(durationsecs)
                         if genre_text is not None: minfo.setGenres(genre_text.split(','))
                         if len(release_year_text) > 0: minfo.setYear(int(release_year_text))
-                        minfo.setTitle(title)
-                        minfo.setComment(mcomment)
+                        if title is not None: minfo.setTitle(title)
+                        if mcomment is not None: minfo.setComment(mcomment)
                         if artist_text is not None: minfo.setArtist(artist_text)
-                        minfo.setRating(rating_valf)
+                        if rating_valf is not None: minfo.setRating(rating_valf)
                         if season_text is not None: minfo.setDisc(int(season_text))
                         minfo.setMediaType('song')
                         if episode_text is not None: minfo.setTrack(int(episode_text))
-                        minfo.setAlbum(album_text)
+                        if album_text is not None: minfo.setAlbum(album_text)
                         if playcount is not None: minfo.setPlayCount(int(playcount))
-                        minfo.setLastPlayed(last_played_text)
+                        if last_played_text is not None: minfo.setLastPlayed(last_played_text)
                     validf = 1	     #  Set valid file info flag
                     contentType = 'songs'
 
@@ -1084,8 +1086,6 @@ def handleBrowse(content, contenturl, objectID, parentID, reqcount = 0):
     if reqcount > 0:
         #xbmc.sleep(100)
         xbmc.executebuiltin('Container.SetSortMethod(0)')
-
-
 
 
 def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch = ''):
@@ -1259,6 +1259,8 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                     backdropurl = backdropurl.text
                     #if (backdropurl [-4:]) !=  '.jpg': 
                     #    backdropurl  = backdropurl  + '.jpg'
+                else:
+                    backdropurl = ''
                 
                 li = xbmcgui.ListItem(title)
                 #li.setArt({'thumb': icon, 'poster': icon, 'icon': icon, 'fanart': backdropurl})
@@ -1597,10 +1599,10 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                         vinfo.setDuration(durationsecs)
                         if genre_text is not None: vinfo.setGenres(genre_text.split(','))
                         if len(release_year_text) > 0: vinfo.setYear(int(release_year_text))
-                        vinfo.setTitle(title)
-                        vinfo.setPlot(description_text)
+                        if title is not None: vinfo.setTitle(title)
+                        if description_text is not None: vinfo.setPlot(description_text)
                         if creator_text is not None: vinfo.setDirectors(creator_text.split(','))
-                        vinfo.setTagLine(tagline_text)
+                        if tagline_text is not None: vinfo.setTagLine(tagline_text)
                         if writer_text is not None: vinfo.setWriters(writer_text.split(','))
                         if artist_text is not None: vinfo.setArtists(artist_text.split(','))
                         if tags_text is not None:
@@ -1609,20 +1611,20 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                                 if int(skipval) > 0:     
                                     vinfo.setUniqueID(skipval, "startskip")
                             vinfo.setTags(tags_text.split(','))
-                        vinfo.setRating(rating_valf)
-                        vinfo.setIMDBNumber(imdb_text)
-                        vinfo.setMediaType(categories_text)
+                        if rating_valf is not None: vinfo.setRating(rating_valf)
+                        if imdb_text is not None: vinfo.setIMDBNumber(imdb_text)
+                        if categories_text is not None: vinfo.setMediaType(categories_text)
                         if season_kodi is not None: vinfo.setSeason(int(season_text))
                         if episode_text is not None: vinfo.setEpisode(int(episode_text))
-                        vinfo.setLastPlayed(last_played_text)
-                        vinfo.setFirstAired(aired_text)
-                        vinfo.setMpaa(content_rating_text)
+                        if last_played_text is not None: vinfo.setLastPlayed(last_played_text)
+                        if aired_text is not None: vinfo.setFirstAired(aired_text)
+                        if content_rating_text is not None: vinfo.setMpaa(content_rating_text)
                         if production_company_text is not None: vinfo.setStudios(production_company_text.split(','))
                         if playcount is not None: vinfo.setPlaycount(int(playcount))
-                        vinfo.setSortTitle(sort_title_text)
-                        vinfo.setTvShowTitle(showtitle)
-                        vinfo.setTrailer(trailerurl)
-                        vinfo.setDateAdded(date_added_text)
+                        if sort_title_text is not None: vinfo.setSortTitle(sort_title_text)
+                        if showtitle is not None: vinfo.setTvShowTitle(showtitle)
+                        if trailerurl is not None: vinfo.setTrailer(trailerurl)
+                        if date_added_text is not None: vinfo.setDateAdded(date_added_text)
 
                         vinfo.setResumePoint(float(dcmInfo_text), durationsecs)
                         vstrinfo = xbmc.VideoStreamDetail(video_width, video_height, aspect, codec=video_codec_text)
@@ -1738,19 +1740,19 @@ def handleSearch(content, contenturl, objectID, term, reqcount = 1000, albumsrch
                         li.setInfo(mediaClass_text, info)
                     else:
                         minfo = li.getMusicInfoTag()
-                        minfo.setDuration(durationsecs)
+                        if durationsecs is not None: minfo.setDuration(durationsecs)
                         if genre_text is not None: minfo.setGenres(genre_text.split(','))
                         if len(release_year_text) > 0: minfo.setYear(int(release_year_text))
-                        minfo.setTitle(title)
-                        minfo.setComment(mcomment)
+                        if title is not None: minfo.setTitle(title)
+                        if mcomment is not None: minfo.setComment(mcomment)
                         if artist_text is not None: minfo.setArtist(artist_text)
-                        minfo.setRating(rating_valf)
+                        if rating_valf is not None: minfo.setRating(rating_valf)
                         if season_text is not None: minfo.setDisc(int(season_text))
                         minfo.setMediaType('song')
                         if episode_text is not None: minfo.setTrack(int(episode_text))
-                        minfo.setAlbum(album_text)
+                        if album_text is not None: minfo.setAlbum(album_text)
                         if playcount is not None: minfo.setPlayCount(int(playcount))
-                        minfo.setLastPlayed(last_played_text)
+                        if last_played_text is not None: minfo.setLastPlayed(last_played_text)
                     validf = 1	     #  Set valid file info flag
                     contentType = 'songs'
 

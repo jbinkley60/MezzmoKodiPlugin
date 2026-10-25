@@ -46,6 +46,18 @@
 						<heading>30340</heading>
 					</control>
 				</setting>
+				<setting id="mpgdelay" type="integer" label="30833" help="30586">
+					<level>0</level>
+					<default>0</default>
+					<constraints>
+						<minimum>0</minimum>
+						<step>1</step>
+						<maximum>10</maximum>
+					</constraints>
+					<control type="slider" format="integer">
+						<popup>false</popup>
+					</control>
+				</setting>
 				<setting id="pastop" type="string" label="30383" help="30523">
 					<level>0</level>
 					<default>0</default>

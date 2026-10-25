@@ -856,6 +856,10 @@ msgctxt "#30832"
 msgid "Kodi Music Database Number"
 msgstr "Número do banco de dados de música do Kodi"
 
+msgctxt "#30833"
+msgid "Video Detection Delay for MPG files 0-10 (secs)"
+msgstr "Atraso na detecção de vídeo para arquivos MPG: 0–10 (segundos)"
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr "Defina um atraso de 0 a 60 segundos em relação à posição atual de reprodução ao retomar a reprodução a partir de um marcador."
@@ -1195,3 +1199,5 @@ msgstr "Essa opção faz com que o Kodi posicione o cursor no próximo item a se
 msgctxt "#30585"
 msgid "This option selects how the Kodi databae numbers are identified.  Automatic is for Kodi 22 and higher and will be determined by Kodi.  Default is set by the Mezzmo Kodi addon default setting.  Manual allows you to assign your own database number. Auto is the default setting."
 msgstr "Esta opção define como os números do banco de dados do Kodi são identificados. A opção "Automático" destina-se ao Kodi 22 e versões superiores, sendo a definição realizada pelo próprio Kodi. A opção "Padrão" utiliza a configuração padrão do complemento Mezzmo para Kodi. A opção "Manual" permite que você atribua seu próprio número de banco de dados. "Automático" é a configuração padrão."
+
+

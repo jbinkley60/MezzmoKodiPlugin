@@ -816,12 +816,12 @@ def guiContext(mtitle, vurl, vseason, vepisode, playcount, mseries, mtype, conte
         media.nativeNotify()                             # Kodi native notification
         xbmc.sleep(1000)  
         xbmc.executebuiltin('Container.Refresh')
-        mgenlog ='Mezzmo Kodi bookmark cleared for: ' + title
+        mgenlog ='Mezzmo Kodi bookmark cleared for: ' + mtitle
         xbmc.log(mgenlog, xbmc.LOGINFO)
         mgenlog = '###' + mtitle
-        media.mgenlogUpdate(mgenlog)   
+        media.mgenlogUpdate(mgenlog, "Nolog")   
         mgenlog ='Mezzmo Kodi bookmark cleared for: '
-        media.mgenlogUpdate(mgenlog) 
+        media.mgenlogUpdate(mgenlog, "Nolog") 
     elif (cselect[vcontext]) == menuitem8 or (cselect[vcontext]) == menuitem14:   # Display movie sets or episodes
         xbmc.executebuiltin('RunAddon(%s, %s)' % ("plugin.video.mezzmo", "contentdirectory=" + contenturl + \
         ';mode=movieset;source=browse;searchset=' + movieset.replace('&','%26')))

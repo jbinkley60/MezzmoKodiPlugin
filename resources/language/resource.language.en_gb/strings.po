@@ -856,6 +856,10 @@ msgctxt "#30832"
 msgid "Kodi Music Database number"
 msgstr ""
 
+msgctxt "#30833"
+msgid "Video Detection Delay for MPG files 0-10 (secs)"
+msgstr ""
+
 msgctxt "#30501"
 msgid "Set bookmark delay 0-60 secs behind current playback position when restarting playback from a bookmark."
 msgstr ""
@@ -1194,4 +1198,8 @@ msgstr ""
 msgctxt "#30585"
 msgid "This option selects how the Kodi databae numbers are identified.  Automatic is for Kodi 22 and higher and will be determined by Kodi.  Default is set by the Mezzmo Kodi addon default setting.  Manual allows you to assign your own database number. Auto is the default setting."
 msgstr ""
+
+msgctxt "#30586"
+msgid "Adds a delay to help Kodi properly detect playing MPG files as video format.  This can be helpful for interaced broadcat video files.  Default is 0.  2 is recommended if option is utilized."
+msgstr "Adiciona um atraso para ajudar o Kodi a identificar corretamente arquivos MPG em reprodução como formato de vídeo. Isso pode ser útil para arquivos de vídeo provenientes de transmissões com entrelaçamento. O valor padrão é 0. Recomenda-se usar 2, caso a opção seja ativada."
 

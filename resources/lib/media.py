@@ -809,9 +809,10 @@ def mgenlogUpdate(mgenlog, reduceglog = 'no'):           #  Add Mezzmo general l
      
         mgfile.commit()
         mgfile.close()
-
-        if settings('reduceglog') == 'false' or reduceglog != 'no':
-            xbmc.log(mgenlog, xbmc.LOGINFO)             #  Write to Kodi logfile
+        #xbmc.log("Reduceglog = : " + reduceglog, xbmc.LOGINFO)             #  Write to Kodi logfile
+        if reduceglog != 'Nolog' and (settings('reduceglog') == 'false' or reduceglog != 'no'):
+        #if settings('reduceglog') == 'false' or reduceglog != 'no':
+            xbmc.log(mgenlog, xbmc.LOGINFO)             #  Write to Kodi logfile          
 
     except Exception as e:
         xbmc.log('Problem writing to general log DB: ' + str(e), xbmc.LOGINFO)
